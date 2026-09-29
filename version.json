@@ -1,9 +1,11 @@
 {
-  "version": "0.8.1",
+  "version": "0.8.2",
   "published": "2026-09-30",
-  "inventory_elements": 63,
+  "inventory_elements": 76,
   "features": [
-    "63 inventory elements",
+    "76 inventory elements",
+    "church interior heritage inventory",
+    "food and lodging visitor services",
     "verified open-license Wikimedia imagery",
     "external visual references",
     "PNOA satellite basemap",
@@ -21,5 +23,6 @@
     "bounded runtime map cache"
   ],
   "mediaPolicy": "Images embedded only when reuse metadata is verified; other images are linked to their source.",
+  "commercialDataPolicy": "Commercial services are marked as time-sensitive and require periodic verification.",
   "fieldDataStatus": "local, unpublished until reviewed"
 }
