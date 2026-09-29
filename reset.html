@@ -16,7 +16,7 @@ button{border:0;border-radius:999px;background:#244b3a;color:white;padding:13px 
 <h1>Descubre A Lamosa</h1>
 <p>Preparando la versión nueva…</p>
 <div id="state">Limpiando la versión anterior.</div>
-<button id="go" hidden>Abrir v0.7.1</button>
+<button id="go" hidden>Abrir v0.7.2</button>
 </main>
 <script>
 (async()=>{
@@ -30,14 +30,14 @@ button{border:0;border-radius:999px;background:#244b3a;color:white;padding:13px 
      const keys=await caches.keys();
      await Promise.all(keys.map(k=>caches.delete(k)));
    }
-   state.textContent='Actualización preparada. Abriendo v0.7.1…';
+   state.textContent='Actualización preparada. Abriendo v0.7.2…';
    go.hidden=false;
-   go.onclick=()=>location.replace('./?v=071&fresh='+Date.now());
+   go.onclick=()=>location.replace('./?v=072&fresh='+Date.now());
    setTimeout(()=>go.click(),900);
  }catch(e){
    state.textContent='Pulsa el botón para abrir la versión nueva.';
    go.hidden=false;
-   go.onclick=()=>location.replace('./?v=071&fresh='+Date.now());
+   go.onclick=()=>location.replace('./?v=072&fresh='+Date.now());
  }
 })();
 </script></body></html>

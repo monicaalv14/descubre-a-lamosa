@@ -1,6 +1,9 @@
 {
-  "version": "0.7.0",
+  "version": "0.7.2",
   "published": "2026-09-29",
   "shell": "data-first",
-  "cache": "network-first"
+  "cache": "network-first",
+  "features": [
+    "PNOA satellite basemap"
+  ]
 }

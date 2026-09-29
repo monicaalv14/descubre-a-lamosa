@@ -1,4 +1,4 @@
-const CACHE='a-lamosa-v071';
+const CACHE='a-lamosa-v072';
 self.addEventListener('install',()=>self.skipWaiting());
 self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const keys=await caches.keys();
