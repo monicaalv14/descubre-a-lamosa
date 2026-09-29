@@ -38,7 +38,7 @@ function card(x,isFav){
   const ev=x.web_evidence?'<span class="chip">Existencia contrastada</span>':'';
   const priv=/privad/i.test(x.access||'')?'<span class="chip private">Acceso sensible</span>':'';
   const dist=(S.userPosition&&x.coordinates)?`<span class="chip">${formatDistance(distanceM(S.userPosition,x.coordinates))}</span>`:'';
-  const photo=x.image_url?`<img class="poi-thumb" src="${esc(x.image_url)}" alt="${esc(x.name)}" loading="lazy" referrerpolicy="no-referrer">`:'';
+  const photo=x.image_url?`<figure class="card-photo"><img class="poi-thumb" src="${esc(x.image_url)}" alt="${esc(x.name)}" loading="lazy" referrerpolicy="no-referrer"><figcaption>${esc(x.image_credit||'')}${x.image_license?' · '+esc(x.image_license):''}</figcaption></figure>`:'';
   return `<article class="card" data-poi="${esc(x.id)}">${photo}<button class="favorite-btn ${isFav?'on':''}" data-fav="${esc(x.id)}">${isFav?'★':'☆'}</button><h3>${esc(x.name)}</h3><div class="muted">${esc(x.area)}</div><div class="chips"><span class="chip">${esc(x.subtype)}</span>${pend}${ev}${priv}${dist}</div><div>${esc(x.description)}</div></article>`;
 }
 export function renderRoutes(){
@@ -47,6 +47,11 @@ export function renderRoutes(){
   $$('[data-field-route]').forEach(b=>b.onclick=()=>{const r=S.ROUTES.find(x=>x.ID===b.dataset.fieldRoute);emit('prepare-track',r?.['Nombre provisional']||'');});
 }
 export function renderPlaces(){
-  $('#placecards').innerHTML=S.PLACES.map(x=>{const d=S.userPosition?formatDistance(distanceM(S.userPosition,x.coordinates)):'';const media=x.image_page?`<div class="card-actions"><a class="mini-btn link-btn" href="${esc(x.image_page)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(x.image_link_label||'Ver fotografía')}</a></div>`:'';return `<article class="card place" data-place="${esc(x.id)}"><h3>${esc(x.name)}</h3><div class="chips"><span class="chip">Núcleo oficial</span><span class="chip">PBA</span>${d?`<span class="chip">${d}</span>`:''}</div><div class="muted">${x.coordinates[1].toFixed(6)}, ${x.coordinates[0].toFixed(6)}</div>${media}</article>`;}).join('');
-  $$('[data-place]').forEach(e=>e.onclick=()=>emit('fly',S.PLACES.find(p=>p.id===e.dataset.place)?.coordinates));
+  $('#placecards').innerHTML=S.PLACES.map(x=>{
+    const d=S.userPosition?formatDistance(distanceM(S.userPosition,x.coordinates)):'';
+    const photo=x.image_url?`<figure class="card-photo"><img class="poi-thumb place-thumb" src="${esc(x.image_url)}" alt="${esc(x.name)}" loading="lazy" referrerpolicy="no-referrer"><figcaption>${esc(x.image_credit||'')}${x.image_license?' · '+esc(x.image_license):''}</figcaption></figure>`:'';
+    const media=x.image_page?`<div class="card-actions"><a class="mini-btn link-btn" href="${esc(x.image_page)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(x.image_link_label||'Ver fotografía')}</a></div>`:'';
+    return `<article class="card place" data-place="${esc(x.id)}">${photo}<h3>${esc(x.name)}</h3><div class="chips"><span class="chip">Núcleo oficial</span><span class="chip">PBA</span>${d?`<span class="chip">${d}</span>`:''}</div><div class="muted">${x.coordinates[1].toFixed(6)}, ${x.coordinates[0].toFixed(6)}</div>${media}</article>`;
+  }).join('');
+  $('[data-place]').forEach(e=>e.onclick=()=>emit('fly',S.PLACES.find(p=>p.id===e.dataset.place)?.coordinates));
 }

@@ -64,10 +64,16 @@
     "id": "POI-031",
     "media_links": [
       {
-        "label": "Fotografía del lavadoiro de Corzós",
+        "label": "Ficha y original en Wikimedia Commons",
         "url": "https://commons.wikimedia.org/wiki/File:Lavadoiro_de_Corz%C3%B3s,_Covelo.jpg"
       }
-    ]
+    ],
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Lavadoiro_de_Corz%C3%B3s%2C_Covelo.jpg/960px-Lavadoiro_de_Corz%C3%B3s%2C_Covelo.jpg",
+    "image_page": "https://commons.wikimedia.org/wiki/File:Lavadoiro_de_Corz%C3%B3s,_Covelo.jpg",
+    "image_credit": "Bene Riobó · Wikimedia Commons",
+    "image_license": "CC BY-SA 4.0",
+    "image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "image_date": "2019-02-24"
   },
   {
     "id": "POI-056",
@@ -108,7 +114,12 @@
   {
     "id": "N-005",
     "image_page": "https://commons.wikimedia.org/wiki/File:Barrio_de_Congostra.JPG",
-    "image_link_label": "Fotografía de A Congostra"
+    "image_link_label": "Ficha de la fotografía",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b3/Barrio_de_Congostra.JPG/960px-Barrio_de_Congostra.JPG",
+    "image_credit": "Davisuke · Wikimedia Commons",
+    "image_license": "CC BY-SA 4.0",
+    "image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "image_date": "2012-10-12"
   },
   {
     "id": "N-006",
@@ -118,22 +129,46 @@
   {
     "id": "N-008",
     "image_page": "https://commons.wikimedia.org/wiki/File:Barrio_de_Currelos.JPG",
-    "image_link_label": "Fotografía de Currelos"
+    "image_link_label": "Ficha de la fotografía",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/Barrio_de_Currelos.JPG/960px-Barrio_de_Currelos.JPG",
+    "image_credit": "Davisuke · Wikimedia Commons",
+    "image_license": "CC BY-SA 4.0",
+    "image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "image_date": "2012-10-12"
   },
   {
     "id": "N-009",
     "image_page": "https://commons.wikimedia.org/wiki/File:Custeu,_A_Lamosa.jpg",
-    "image_link_label": "Fotografía de Custeu"
+    "image_link_label": "Ficha de la fotografía",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Custeu%2C_A_Lamosa.jpg/960px-Custeu%2C_A_Lamosa.jpg",
+    "image_credit": "Bene Riobó · Wikimedia Commons",
+    "image_license": "CC BY-SA 4.0",
+    "image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "image_date": "2014-08-04"
   },
   {
     "id": "N-010",
     "image_page": "https://commons.wikimedia.org/wiki/File:Barrio_de_Paredes.JPG",
-    "image_link_label": "Fotografía de Paredes",
+    "image_link_label": "Ficha de la fotografía",
     "media_links": [
       {
         "label": "Segunda fotografía de Paredes",
         "url": "https://commons.wikimedia.org/wiki/File:Barrio_de_Paredes_2.JPG"
       }
-    ]
+    ],
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Barrio_de_Paredes.JPG/960px-Barrio_de_Paredes.JPG",
+    "image_credit": "Davisuke · Wikimedia Commons",
+    "image_license": "CC BY-SA 4.0",
+    "image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "image_date": "2012-10-12"
+  },
+  {
+    "id": "POI-006",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Peto_de_%C3%A1nimas_na_Lamosa%2C_Covelo.jpg/500px-Peto_de_%C3%A1nimas_na_Lamosa%2C_Covelo.jpg",
+    "image_page": "https://commons.wikimedia.org/wiki/File:Peto_de_%C3%A1nimas_na_Lamosa,_Covelo.jpg",
+    "image_credit": "Bene Riobó · Wikimedia Commons",
+    "image_license": "CC BY-SA 4.0",
+    "image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "image_date": "2014-08-04"
   }
 ]
