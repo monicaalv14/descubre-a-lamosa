@@ -2,18 +2,35 @@
   "name": "Descubre A Lamosa",
   "short_name": "A Lamosa",
   "id": "./",
-  "start_url": "./",
+  "start_url": "./?v=070",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["window-controls-overlay","standalone"],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ],
   "orientation": "portrait-primary",
   "background_color": "#f4f1e9",
   "theme_color": "#244b3a",
   "lang": "es",
-  "description": "Mapa cultural, patrimonial y de rutas de A Lamosa, Covelo.",
-  "categories": ["travel","navigation","education"],
+  "description": "Mapa cultural, patrimonial y de rutas de A Lamosa, Covelo. Versión 0.7.",
+  "categories": [
+    "travel",
+    "navigation",
+    "education"
+  ],
   "icons": [
-    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
