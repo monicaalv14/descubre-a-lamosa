@@ -1,28 +1,7 @@
 {
-  "version": "0.8.2",
+  "version": "0.8.2.1",
   "published": "2026-09-30",
   "inventory_elements": 76,
-  "features": [
-    "76 inventory elements",
-    "church interior heritage inventory",
-    "food and lodging visitor services",
-    "verified open-license Wikimedia imagery",
-    "external visual references",
-    "PNOA satellite basemap",
-    "GPS nearby sorting",
-    "field point capture",
-    "manual map capture",
-    "field photos",
-    "route GPS recording",
-    "GeoJSON export",
-    "GPX export",
-    "field backup/import",
-    "favorites",
-    "shareable POI links",
-    "layer controls",
-    "bounded runtime map cache"
-  ],
-  "mediaPolicy": "Images embedded only when reuse metadata is verified; other images are linked to their source.",
-  "commercialDataPolicy": "Commercial services are marked as time-sensitive and require periodic verification.",
+  "hotfix": "Corrige el fallo de inicialización en la lista de núcleos.",
   "fieldDataStatus": "local, unpublished until reviewed"
 }

@@ -53,5 +53,5 @@ export function renderPlaces(){
     const media=x.image_page?`<div class="card-actions"><a class="mini-btn link-btn" href="${esc(x.image_page)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(x.image_link_label||'Ver fotografía')}</a></div>`:'';
     return `<article class="card place" data-place="${esc(x.id)}">${photo}<h3>${esc(x.name)}</h3><div class="chips"><span class="chip">Núcleo oficial</span><span class="chip">PBA</span>${d?`<span class="chip">${d}</span>`:''}</div><div class="muted">${x.coordinates[1].toFixed(6)}, ${x.coordinates[0].toFixed(6)}</div>${media}</article>`;
   }).join('');
-  $('[data-place]').forEach(e=>e.onclick=()=>emit('fly',S.PLACES.find(p=>p.id===e.dataset.place)?.coordinates));
+  $$('[data-place]').forEach(e=>e.onclick=()=>emit('fly',S.PLACES.find(p=>p.id===e.dataset.place)?.coordinates));
 }
