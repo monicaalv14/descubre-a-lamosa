@@ -1,7 +1,20 @@
 {
-  "version": "0.8.2.1",
+  "version": "0.9.0",
   "published": "2026-09-30",
   "inventory_elements": 76,
-  "hotfix": "Corrige el fallo de inicialización en la lista de núcleos.",
+  "route_references": 7,
+  "features": [
+    "OpenStreetMap rural path and track overlay",
+    "PR-G 119 official route layer",
+    "Via Mariana official route reference",
+    "community trail references clearly separated",
+    "PNOA satellite basemap",
+    "GPS nearby sorting",
+    "field point capture",
+    "route GPS recording",
+    "GeoJSON and GPX export",
+    "favorites and layer controls"
+  ],
+  "trailPolicy": "OSM lines and user tracks do not imply public access, safety or current passability.",
   "fieldDataStatus": "local, unpublished until reviewed"
 }

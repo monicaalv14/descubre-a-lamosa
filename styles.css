@@ -10,3 +10,17 @@
 .media-links b{margin-bottom:2px}
 .link-btn{display:inline-block;text-decoration:none}
 @media(max-width:800px){.poi-thumb{height:190px}.poi-hero img{max-height:52vh}}
+
+.known-trails{margin:8px 0 14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.known-trails h3{margin:12px 0 4px}
+.project-routes-title{margin:18px 0 10px}
+.trail-card{cursor:default}
+.trail-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0}
+.trail-metrics div{background:#f4f3ed;border-radius:9px;padding:8px}
+.trail-metrics b,.trail-metrics span{display:block}.trail-metrics b{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#66736c;margin-bottom:2px}.trail-metrics span{font-size:13px}
+.route-warning{background:#fff6dc;border-left:3px solid #c79531;padding:8px 9px;border-radius:8px;font-size:12px;line-height:1.4}
+.official-route{background:#dfece4;color:#173d2d}.community-route{background:#eee8dc;color:#59472f}
+.trail-layer-control{border-top:1px solid #e1ddd2;margin-top:7px;padding-top:7px}
+.trail-layer-control small{display:block;font-size:10px;line-height:1.35;color:var(--muted);margin:3px 0 0 21px}
+.osm-note{opacity:.85}.trail-popup{font-size:12px;line-height:1.35}.trail-popup a{color:#315c48;font-weight:700}
+@media(max-width:800px){.trail-metrics{grid-template-columns:1fr 1fr}}

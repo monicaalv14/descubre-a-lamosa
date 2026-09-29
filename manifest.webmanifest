@@ -2,7 +2,7 @@
   "name": "Descubre A Lamosa",
   "short_name": "A Lamosa",
   "id": "./",
-  "start_url": "./?v=0821",
+  "start_url": "./?v=090",
   "scope": "./",
   "display": "standalone",
   "display_override": [
@@ -13,7 +13,7 @@
   "background_color": "#f4f1e9",
   "theme_color": "#244b3a",
   "lang": "es",
-  "description": "Mapa cultural, patrimonial, de rutas y trabajo de campo de A Lamosa, Covelo. Versión 0.8.2.1.",
+  "description": "Mapa cultural, patrimonial, de rutas y trabajo de campo de A Lamosa, Covelo. Versión 0.9.0.",
   "categories": [
     "travel",
     "navigation",
@@ -37,7 +37,7 @@
     {
       "name": "Trabajo de campo",
       "short_name": "Campo",
-      "url": "./?v=0821&tab=field",
+      "url": "./?v=090&tab=field",
       "icons": [
         {
           "src": "icons/icon-192.png",
@@ -48,7 +48,7 @@
     {
       "name": "Cerca de mí",
       "short_name": "Cerca",
-      "url": "./?v=0821&near=1",
+      "url": "./?v=090&near=1",
       "icons": [
         {
           "src": "icons/icon-192.png",
