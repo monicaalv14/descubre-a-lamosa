@@ -1,5 +1,5 @@
 let POIS=[], ROUTES=[], PLACES=[], map=null;
-const VERSION='0.6.2';
+const VERSION='0.7.0';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=s=>document.querySelector(s);
 
@@ -17,12 +17,12 @@ async function boot(){
   try{
     setAppStatus('cargando datos…');
     const [p1,p2,p3,p4,routes,places]=await Promise.all([
-      getJSON('data/pois-1.json?v=062'),
-      getJSON('data/pois-2.json?v=062'),
-      getJSON('data/pois-3.json?v=062'),
-      getJSON('data/pois-4.json?v=062'),
-      getJSON('data/routes.json?v=062'),
-      getJSON('data/places.json?v=062')
+      getJSON('data/pois-1.json?v=070'),
+      getJSON('data/pois-2.json?v=070'),
+      getJSON('data/pois-3.json?v=070'),
+      getJSON('data/pois-4.json?v=070'),
+      getJSON('data/routes.json?v=070'),
+      getJSON('data/places.json?v=070')
     ]);
     POIS=[...p1,...p2,...p3,...p4]; ROUTES=routes; PLACES=places;
     setupUI();
@@ -120,6 +120,6 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installProm
 $('#install')?.addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#install').hidden=true;});
 
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js?v=062',{updateViaCache:'none'}).catch(console.warn);
+  navigator.serviceWorker.register('sw.js?v=070',{updateViaCache:'none'}).catch(console.warn);
 }
 boot();
