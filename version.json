@@ -1,9 +1,20 @@
 {
-  "version": "0.7.2",
+  "version": "0.8.0",
   "published": "2026-09-29",
-  "shell": "data-first",
-  "cache": "network-first",
   "features": [
-    "PNOA satellite basemap"
-  ]
+    "PNOA satellite basemap",
+    "GPS nearby sorting",
+    "field point capture",
+    "manual map capture",
+    "field photos",
+    "route GPS recording",
+    "GeoJSON export",
+    "GPX export",
+    "field backup/import",
+    "favorites",
+    "shareable POI links",
+    "layer controls",
+    "bounded runtime map cache"
+  ],
+  "fieldDataStatus": "local, unpublished until reviewed"
 }
