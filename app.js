@@ -1,5 +1,6 @@
+import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.11.2/dist/maplibre-gl.mjs';
 let POIS=[], ROUTES=[], PLACES=[], map=null;
-const VERSION='0.7.0';
+const VERSION='0.7.1';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=s=>document.querySelector(s);
 
@@ -17,12 +18,12 @@ async function boot(){
   try{
     setAppStatus('cargando datos…');
     const [p1,p2,p3,p4,routes,places]=await Promise.all([
-      getJSON('data/pois-1.json?v=070'),
-      getJSON('data/pois-2.json?v=070'),
-      getJSON('data/pois-3.json?v=070'),
-      getJSON('data/pois-4.json?v=070'),
-      getJSON('data/routes.json?v=070'),
-      getJSON('data/places.json?v=070')
+      getJSON('data/pois-1.json?v=071'),
+      getJSON('data/pois-2.json?v=071'),
+      getJSON('data/pois-3.json?v=071'),
+      getJSON('data/pois-4.json?v=071'),
+      getJSON('data/routes.json?v=071'),
+      getJSON('data/places.json?v=071')
     ]);
     POIS=[...p1,...p2,...p3,...p4]; ROUTES=routes; PLACES=places;
     setupUI();
@@ -79,9 +80,9 @@ function renderPlaces(){
 
 function initMap(){
   const note=$('#officialLayers');
-  if(!window.maplibregl){ if(note)note.textContent='Mapa externo no disponible; datos locales cargados.'; return; }
+  if(!maplibregl){ if(note)note.textContent='Mapa externo no disponible; datos locales cargados.'; return; }
   try{
-    map=new maplibregl.Map({container:'map',style:'https://demotiles.maplibre.org/style.json',center:[-8.356,42.209],zoom:13});
+    map=new maplibregl.Map({container:'map',style:'https://tiles.openfreemap.org/styles/bright',center:[-8.356,42.209],zoom:13});
     map.addControl(new maplibregl.NavigationControl(),'top-right');
     map.addControl(new maplibregl.GeolocateControl({positionOptions:{enableHighAccuracy:true},trackUserLocation:true,showAccuracyCircle:true}),'top-right');
     map.on('load',()=>{renderMapPoints();loadOfficialLayers();});
@@ -120,6 +121,6 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installProm
 $('#install')?.addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#install').hidden=true;});
 
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js?v=070',{updateViaCache:'none'}).catch(console.warn);
+  navigator.serviceWorker.register('sw.js?v=071',{updateViaCache:'none'}).catch(console.warn);
 }
 boot();
