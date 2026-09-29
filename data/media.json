@@ -1,0 +1,139 @@
+[
+  {
+    "id": "POI-001",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Igrexa_da_Lamosa%2C_Covelo.jpg/500px-Igrexa_da_Lamosa%2C_Covelo.jpg",
+    "image_page": "https://commons.wikimedia.org/wiki/File:Igrexa_da_Lamosa,_Covelo.jpg",
+    "image_credit": "Bene Riobó · Wikimedia Commons",
+    "image_license": "CC BY-SA 4.0",
+    "image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "image_date": "2014-08-04",
+    "media_links": [
+      {
+        "label": "Otra fotografía de la iglesia en Wikimedia Commons",
+        "url": "https://commons.wikimedia.org/wiki/File:Igrexa_da_Lamosa.jpg"
+      },
+      {
+        "label": "Fotografía de la torre en Wikimedia Commons",
+        "url": "https://commons.wikimedia.org/wiki/File:Torre_da_igrexa_da_Lamosa,_Covelo.jpg"
+      }
+    ]
+  },
+  {
+    "id": "POI-004",
+    "media_links": [
+      {
+        "label": "Fotografía de la torre de la iglesia",
+        "url": "https://commons.wikimedia.org/wiki/File:Torre_da_igrexa_da_Lamosa,_Covelo.jpg"
+      }
+    ]
+  },
+  {
+    "id": "POI-008",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Capela_de_San_Miguel_en_Corz%C3%B3s%2C_Covelo.jpg/960px-Capela_de_San_Miguel_en_Corz%C3%B3s%2C_Covelo.jpg",
+    "image_page": "https://commons.wikimedia.org/wiki/File:Capela_de_San_Miguel_en_Corz%C3%B3s,_Covelo.jpg",
+    "image_credit": "Bene Riobó · Wikimedia Commons",
+    "image_license": "CC BY-SA 4.0",
+    "image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "image_date": "2019-02-24",
+    "media_links": [
+      {
+        "label": "Otra fotografía de la capilla",
+        "url": "https://commons.wikimedia.org/wiki/File:Capela_en_Corzos.JPG"
+      }
+    ]
+  },
+  {
+    "id": "POI-009",
+    "media_links": [
+      {
+        "label": "Fotografía del cruceiro de Corzós",
+        "url": "https://commons.wikimedia.org/wiki/File:Cruceiro_en_Corzos.JPG"
+      }
+    ]
+  },
+  {
+    "id": "POI-010",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/Peto_de_%C3%A1nimas_en_Corz%C3%B3s%2C_Covelo.jpg/500px-Peto_de_%C3%A1nimas_en_Corz%C3%B3s%2C_Covelo.jpg",
+    "image_page": "https://commons.wikimedia.org/wiki/File:Peto_de_%C3%A1nimas_en_Corz%C3%B3s,_Covelo.jpg",
+    "image_credit": "Bene Riobó · Wikimedia Commons",
+    "image_license": "CC BY-SA 4.0",
+    "image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "image_date": "2019-02-24"
+  },
+  {
+    "id": "POI-031",
+    "media_links": [
+      {
+        "label": "Fotografía del lavadoiro de Corzós",
+        "url": "https://commons.wikimedia.org/wiki/File:Lavadoiro_de_Corz%C3%B3s,_Covelo.jpg"
+      }
+    ]
+  },
+  {
+    "id": "POI-056",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Cruz_no_cemiterio_da_Lamosa.jpg/500px-Cruz_no_cemiterio_da_Lamosa.jpg",
+    "image_page": "https://commons.wikimedia.org/wiki/File:Cruz_no_cemiterio_da_Lamosa.jpg",
+    "image_credit": "Bene Riobó · Wikimedia Commons",
+    "image_license": "CC BY-SA 4.0",
+    "image_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "image_date": "2014-08-04"
+  },
+  {
+    "id": "POI-057",
+    "media_links": [
+      {
+        "label": "Fotografías y waypoint de Ponte Folón",
+        "url": "https://es.wikiloc.com/rutas-senderismo/vmlg07-itinerario-2022-110799060"
+      }
+    ]
+  },
+  {
+    "id": "POI-058",
+    "media_links": [
+      {
+        "label": "José Gil y memoria de A Lamosa (Concello)",
+        "url": "https://concellodecovelo.es/?id_noticia=226&lang=es&sec=96"
+      }
+    ]
+  },
+  {
+    "id": "POI-059",
+    "media_links": [
+      {
+        "label": "José Gil y la casa-cuartel (Concello)",
+        "url": "https://concellodecovelo.es/?id_noticia=226&lang=es&sec=96"
+      }
+    ]
+  },
+  {
+    "id": "N-005",
+    "image_page": "https://commons.wikimedia.org/wiki/File:Barrio_de_Congostra.JPG",
+    "image_link_label": "Fotografía de A Congostra"
+  },
+  {
+    "id": "N-006",
+    "image_page": "https://commons.wikimedia.org/wiki/File:Corzos.JPG",
+    "image_link_label": "Fotografía de Corzós"
+  },
+  {
+    "id": "N-008",
+    "image_page": "https://commons.wikimedia.org/wiki/File:Barrio_de_Currelos.JPG",
+    "image_link_label": "Fotografía de Currelos"
+  },
+  {
+    "id": "N-009",
+    "image_page": "https://commons.wikimedia.org/wiki/File:Custeu,_A_Lamosa.jpg",
+    "image_link_label": "Fotografía de Custeu"
+  },
+  {
+    "id": "N-010",
+    "image_page": "https://commons.wikimedia.org/wiki/File:Barrio_de_Paredes.JPG",
+    "image_link_label": "Fotografía de Paredes",
+    "media_links": [
+      {
+        "label": "Segunda fotografía de Paredes",
+        "url": "https://commons.wikimedia.org/wiki/File:Barrio_de_Paredes_2.JPG"
+      }
+    ]
+  }
+]

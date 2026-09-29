@@ -1,4 +1,4 @@
-export const VERSION='0.8.0';
+export const VERSION='0.8.1';
 export const S={
   POIS:[],ROUTES:[],PLACES:[],map:null,poiMarkers:[],placeMarkers:[],fieldMarkers:[],
   userMarker:null,userPosition:null,currentFieldFix:null,mapPickMode:false,

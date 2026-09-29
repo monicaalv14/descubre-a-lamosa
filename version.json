@@ -1,7 +1,11 @@
 {
-  "version": "0.8.0",
-  "published": "2026-09-29",
+  "version": "0.8.1",
+  "published": "2026-09-30",
+  "inventory_elements": 63,
   "features": [
+    "63 inventory elements",
+    "verified open-license Wikimedia imagery",
+    "external visual references",
     "PNOA satellite basemap",
     "GPS nearby sorting",
     "field point capture",
@@ -16,5 +20,6 @@
     "layer controls",
     "bounded runtime map cache"
   ],
+  "mediaPolicy": "Images embedded only when reuse metadata is verified; other images are linked to their source.",
   "fieldDataStatus": "local, unpublished until reviewed"
 }
