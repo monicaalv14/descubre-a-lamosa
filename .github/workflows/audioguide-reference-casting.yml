@@ -2,6 +2,9 @@ name: Casting referencias maduras es-ES
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/audioguide-reference-casting.yml'
 
 jobs:
   referencias:
