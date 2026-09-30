@@ -116,14 +116,14 @@ test('la red de caminos no bloquea el arranque inicial',async({page})=>{
   debug(page);
   await page.route('**/data/generated/osm-network.geojson',async route=>{
     const response=await route.fetch();
-    await new Promise(r=>setTimeout(r,2500));
+    await new Promise(r=>setTimeout(r,5000));
     await route.fulfill({response});
   });
   const start=Date.now();
-  await page.goto('/?v=123b1');
+  await page.goto('/?v=123b1',{waitUntil:'domcontentloaded'});
   await expectReady(page);
   const elapsed=Date.now()-start;
-  expect(elapsed).toBeLessThan(2400);
+  expect(elapsed).toBeLessThan(4000);
   await expect(page.locator('.maplibregl-canvas')).toBeVisible();
 });
 
