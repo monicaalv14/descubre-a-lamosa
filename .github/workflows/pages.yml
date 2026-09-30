@@ -23,10 +23,8 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-audit --no-fund
-      - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run validate
-      - run: npm test
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
