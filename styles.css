@@ -201,3 +201,17 @@ body[data-theme="dark"] .advanced-layers>summary{color:#a7b4ad}
 .route-difficulty{padding:2px 6px;border-radius:999px;background:color-mix(in srgb,currentColor 8%,transparent)}
 .route-open{font-size:.73rem;font-weight:700;white-space:nowrap;opacity:.72}
 @media(max-width:390px){.route-card{grid-template-columns:auto minmax(0,1fr)}.route-open{grid-column:2;justify-self:start}}
+
+/* Seguimiento activo: un único HUD compacto y mapa prioritario */
+.route-nav-hud{top:12px;left:10px;right:10px;padding:10px 11px;background:rgba(23,35,29,.95);color:#fff;border:0;grid-template-columns:auto minmax(0,1fr) auto auto;gap:8px 12px;backdrop-filter:blur(12px)}
+.route-nav-hud .follow-progress{grid-column:1/-1;background:rgba(255,255,255,.18)}
+.route-nav-hud .route-nav-main strong{font-size:1.18rem}.route-nav-hud small{display:block;color:rgba(255,255,255,.66);font-size:.68rem}
+.route-nav-next{min-width:0}.route-nav-next strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.82rem}
+.route-nav-status{display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.72rem}.route-nav-status span:last-child{font-weight:800}
+.route-nav-hud .route-finish,.route-nav-hud #returnRouteBtn{border:0;border-radius:10px;padding:9px 10px;font-weight:700}
+.route-nav-hud .route-finish{background:#fff;color:#17231d}.route-nav-hud #returnRouteBtn{background:rgba(255,255,255,.14);color:#fff}
+body.route-following #nearbyStrip,body.route-following #activeRouteBar{display:none!important}
+body.route-following .drawer{transform:translate3d(0,calc(100% - 52px),0)!important}
+body.route-following .drawer-view{pointer-events:none}
+@media(max-width:430px){.route-nav-hud{grid-template-columns:auto minmax(0,1fr) auto}.route-nav-status{grid-column:1/3}.route-nav-hud #returnRouteBtn{grid-column:1/3}.route-nav-hud .route-finish{grid-column:3;grid-row:2/4}}
+@media(min-width:900px){body.route-following .drawer{transform:none!important}body.route-following .drawer-view{pointer-events:auto}.route-nav-hud{right:410px}}
