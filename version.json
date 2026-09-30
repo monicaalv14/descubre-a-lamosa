@@ -1,15 +1,13 @@
 {
-  "version": "0.12.3-beta.1",
+  "version": "0.12.4-beta.1",
   "published": "2026-09-30",
   "branch": "beta",
-  "focus": "cierre de saneamiento",
+  "focus": "fluidez táctil del panel inferior",
   "fixes": [
-    "Vía Mariana local derivada de la relación OSM y la red de caminos ya validada",
-    "red OSM validada con contenido mínimo",
-    "arranque desacoplado de caminos y capas secundarias",
-    "offline y caché de red lenta saneados",
-    "IndexedDB reutilizada y herramientas de investigación bajo demanda",
-    "seguimiento GPS y grabación de Campo optimizados",
-    "galerías y enlaces compartidos corregidos"
+    "arrastre del panel inferior continuo y sincronizado con cada frame",
+    "zona táctil del asa ampliada a 44 px sin cambiar su aspecto visual",
+    "gesto táctil reservado al bottom sheet para evitar cancelaciones por scroll nativo",
+    "manejo de pointercancel y pérdida de captura para evitar estados de arrastre bloqueados",
+    "scroll interno del panel contenido y suave"
   ]
 }
