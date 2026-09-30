@@ -215,3 +215,10 @@ body.route-following .drawer{transform:translate3d(0,calc(100% - 52px),0)!import
 body.route-following .drawer-view{pointer-events:none}
 @media(max-width:430px){.route-nav-hud{grid-template-columns:auto minmax(0,1fr) auto}.route-nav-status{grid-column:1/3}.route-nav-hud #returnRouteBtn{grid-column:1/3}.route-nav-hud .route-finish{grid-column:3;grid-row:2/4}}
 @media(min-width:900px){body.route-following .drawer{transform:none!important}body.route-following .drawer-view{pointer-events:auto}.route-nav-hud{right:410px}}
+
+/* Ruta activa: reducir el panel inferior al tirador */
+body.route-following .drawer{height:52px!important;min-height:52px!important;max-height:52px!important;transform:none!important;overflow:hidden;background:rgba(255,253,248,.94)}
+body.route-following .drawer-handle{height:52px;margin:0;display:block}
+body.route-following .drawer-view{display:none!important}
+body.route-following .bottom-nav{opacity:.28;pointer-events:none}
+@media(min-width:900px){body.route-following .drawer{height:100%!important;min-height:0!important;max-height:none!important}body.route-following .drawer-view{display:block!important}body.route-following .bottom-nav{opacity:1;pointer-events:auto}}
