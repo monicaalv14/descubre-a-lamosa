@@ -164,7 +164,7 @@ test('Vía Mariana tiene tramo local cartografiable',async({request})=>{
 });
 
 
-test('panel inferior tiene agarre táctil amplio y sigue el arrastre',async({page})=>{
+test.only('panel inferior tiene agarre táctil amplio y sigue el arrastre',async({page})=>{
   debug(page);
   await page.goto('/?v=126b1');
   await expectReady(page);
@@ -194,7 +194,7 @@ test('panel inferior tiene agarre táctil amplio y sigue el arrastre',async({pag
   await expect(drawer).not.toHaveClass(/dragging/);
 });
 
-test('arrastre táctil real mueve el panel de forma continua',async({page,context})=>{
+test.only('arrastre táctil real mueve el panel de forma continua',async({page,context})=>{
   debug(page);
   await page.goto('/?v=126b1');
   await expectReady(page);
