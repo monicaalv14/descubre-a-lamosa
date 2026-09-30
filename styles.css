@@ -156,3 +156,11 @@ button,a,input,select,textarea{min-height:44px}
 #connectionBadge[hidden]{display:none}
 body[data-theme="dark"] .show-all-btn{color:#a8ceb7}
 body[data-theme="dark"] .advanced-layers>summary{color:#a7b4ad}
+
+/* Historias integradas en Explorar · cambio aislado sobre v0.12.7 */
+.explore-stories{margin:14px 0 10px;overflow:hidden}
+.section-heading{display:flex;flex-direction:column;gap:2px;margin:0 2px 8px}.section-heading small{opacity:.7}
+.story-strip{display:flex;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding:2px 2px 8px;scrollbar-width:none}.story-strip::-webkit-scrollbar{display:none}
+.story-strip .timeline-item{flex:0 0 min(78vw,300px);scroll-snap-align:start;margin:0;padding:14px;border-radius:16px}
+.story-strip .timeline-item p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:10px}
+.drawer.collapsed .explore-stories{display:none}
