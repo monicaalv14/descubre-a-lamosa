@@ -186,3 +186,10 @@ body[data-theme="dark"] .advanced-layers>summary{color:#a7b4ad}
 #panelExplore .compact-list{margin-top:2px}
 #panelExplore .list-row{padding-top:9px;padding-bottom:9px}
 @media(max-width:390px){.explore-tools{align-items:flex-start;flex-direction:column}.explore-secondary-filters{width:100%}}
+
+/* Mapa primero: tira contextual discreta sobre el mapa */
+.nearby-strip{gap:9px;padding:7px 12px 10px;scroll-padding-inline:12px;overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+.nearby-card{scroll-snap-align:start;min-width:min(68vw,245px);max-width:245px;box-shadow:0 5px 18px rgba(0,0,0,.12);backdrop-filter:blur(10px)}
+.nearby-card img,.nearby-icon{flex:0 0 auto}
+.nearby-copy{min-width:0}.nearby-copy strong,.nearby-copy small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drawer:not(.collapsed)~.nearby-strip{pointer-events:none}
