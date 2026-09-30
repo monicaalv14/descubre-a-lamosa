@@ -93,12 +93,14 @@
       </div>
       <div class="searchbox"><span aria-hidden="true">⌕</span><input id="searchInput" data-i18n-placeholder="search" placeholder="Buscar en A Lamosa…" autocomplete="off"></div>
       <div class="chip-scroll" id="categoryChips"></div>
-      <div class="quick-row">
-        <button id="nearbyBtn" class="soft-btn">◎ <span data-i18n="nearby">Cerca de mí</span></button>
-        <button id="favoritesBtn" class="soft-btn">☆ <span data-i18n="favorites">Favoritos</span></button>
-        <button id="photosBtn" class="soft-btn">▧ Con foto</button>
+      <div class="explore-tools">
+        <button id="nearbyBtn" class="soft-btn explore-primary-tool">◎ <span data-i18n="nearby">Cerca de mí</span></button>
+        <div class="explore-secondary-filters" aria-label="Filtros rápidos">
+          <button id="favoritesBtn" class="filter-mini">☆ <span data-i18n="favorites">Favoritos</span></button>
+          <button id="photosBtn" class="filter-mini">▧ Con foto</button>
+        </div>
       </div>
-      <div id="exploreSummary" class="section-note"></div>
+      <div class="explore-results-head"><strong>Lugares</strong><div id="exploreSummary" class="section-note"></div></div>
       <section class="explore-stories"><div class="section-heading"><strong>Historias de A Lamosa</strong><small>Descubre el territorio a través de su memoria</small></div><div id="storiesList" class="story-strip"></div></section>
       <div id="exploreList" class="compact-list"></div>
     </section>
