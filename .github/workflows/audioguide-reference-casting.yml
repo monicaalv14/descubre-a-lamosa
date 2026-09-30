@@ -25,17 +25,17 @@ jobs:
           from datasets import load_dataset
           import soundfile as sf, json, re
 
-          ds=load_dataset("bookbot/common_voice_23_0_es", split="train", streaming=True)
+          ds=load_dataset("Thermostatic/CommonVoice-17.0-Spanish", split="train", streaming=True)
           wanted_age={"fifties","sixties","seventies","eighties"}
           chosen=[]
           def peninsular(a):
               a=(a or "").lower()
-              return any(k in a for k in ("españa","spain","peninsular","castell"))
+              return (("españa" in a or "spain" in a or "peninsular" in a or "castell" in a) and not any(k in a for k in ("sur peninsular","andaluc","extremadura","murcia","canarias")))
 
           for row in ds:
               if row.get("gender")!="male_masculine": continue
               if row.get("age") not in wanted_age: continue
-              if not peninsular(row.get("accents")): continue
+              if not peninsular(row.get("accent")): continue
               if (row.get("up_votes") or 0)<2 or (row.get("down_votes") or 0)>0: continue
               audio=row["audio"]
               name=f"referencias/ref_{len(chosen)+1}_{row['age']}.wav"
@@ -43,7 +43,7 @@ jobs:
               chosen.append({
                 "file":name.split("/")[-1],
                 "age":row.get("age"),
-                "accent":row.get("accents"),
+                "accent":row.get("accent"),
                 "sentence":row.get("sentence"),
                 "up_votes":row.get("up_votes"),
                 "license":"CC0-1.0",
