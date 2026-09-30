@@ -193,3 +193,11 @@ body[data-theme="dark"] .advanced-layers>summary{color:#a7b4ad}
 .nearby-card img,.nearby-icon{flex:0 0 auto}
 .nearby-copy{min-width:0}.nearby-copy strong,.nearby-copy small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .drawer:not(.collapsed)~.nearby-strip{pointer-events:none}
+
+/* Rutas: resumen útil antes de abrir la ficha */
+.route-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:11px;padding:13px 12px}
+.route-card-copy{min-width:0;display:flex;flex-direction:column;gap:3px}.route-card-copy>strong{line-height:1.2}
+.route-card-meta{display:flex;align-items:center;flex-wrap:wrap;gap:5px 8px;margin-top:2px;font-size:.75rem;opacity:.72}.route-card-meta span+span:before{content:'·';margin-right:8px;opacity:.55}
+.route-difficulty{padding:2px 6px;border-radius:999px;background:color-mix(in srgb,currentColor 8%,transparent)}
+.route-open{font-size:.73rem;font-weight:700;white-space:nowrap;opacity:.72}
+@media(max-width:390px){.route-card{grid-template-columns:auto minmax(0,1fr)}.route-open{grid-column:2;justify-self:start}}
