@@ -1,0 +1,31 @@
+name: Casting castellano peninsular
+
+on:
+  workflow_dispatch:
+
+jobs:
+  casting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preparar Piper
+        run: |
+          mkdir -p piper voices casting
+          curl -L -o /tmp/piper.tar.gz https://github.com/rhasspy/piper/releases/download/v1.2.0/piper_amd64.tar.gz
+          tar -xzf /tmp/piper.tar.gz -C .
+          curl -L -o voices/davefx.onnx https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx
+          curl -L -o voices/davefx.onnx.json https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx.json
+          curl -L -o voices/sharvard.onnx https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/sharvard/medium/es_ES-sharvard-medium.onnx
+          curl -L -o voices/sharvard.onnx.json https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/sharvard/medium/es_ES-sharvard-medium.onnx.json
+      - name: Generar muestras es-ES
+        run: |
+          TEXT='Estás junto a Ponte Folón, uno de los elementos destacados de la Ruta do Xabriña. Este puente de piedra forma parte de un paisaje marcado por el río y los caminos. Antes de continuar, detente un momento. Observa la piedra, escucha el agua y fíjate en la luz, el cielo y la vegetación. Cerca de aquí, cada rincón conserva pequeñas huellas del tiempo.'
+          echo "$TEXT" | ./piper/piper --model voices/davefx.onnx --length_scale 1.28 --output_file casting/davefx-es-ES.wav
+          echo "$TEXT" | ./piper/piper --model voices/sharvard.onnx --speaker 0 --length_scale 1.28 --output_file casting/sharvard-m-es-ES.wav
+      - name: Guardar casting
+        uses: actions/upload-artifact@v4
+        with:
+          name: casting-castellano-peninsular
+          path: casting/*.wav
+          retention-days: 14
