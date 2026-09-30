@@ -15,7 +15,8 @@ export function renderRoutes(){
   const host=$('#routeList'),trails=S.mode==='visitor'?S.trails.filter(r=>/oficial/i.test(r.class||'')):S.trails,project=S.mode==='research'?S.projectRoutes:[];
   host.innerHTML=trails.map(r=>{
     const official=/oficial/i.test(r.class||''),icon=official?'↝':'⌁';
-    return '<article class="route-row '+(official?'official':'community')+'" data-route-id="'+esc(r.id)+'"><div class="route-row-icon">'+icon+'</div><div><span class="route-kind">'+esc(r.class||'Ruta')+'</span><strong>'+esc(r.name)+'</strong><small>'+esc([r.distance,r.duration,r.difficulty].filter(Boolean).join(' · '))+'</small></div><span class="route-arrow">›</span></article>';
+    const facts=[r.distance,r.duration].filter(Boolean),difficulty=r.difficulty?'<span class="route-difficulty">'+esc(r.difficulty)+'</span>':'';
+    return '<article class="route-row route-card '+(official?'official':'community')+'" data-route-id="'+esc(r.id)+'"><div class="route-row-icon">'+icon+'</div><div class="route-card-copy"><span class="route-kind">'+esc(r.class||'Ruta')+'</span><strong>'+esc(r.name)+'</strong><div class="route-card-meta">'+facts.map(v=>'<span>'+esc(v)+'</span>').join('')+difficulty+'</div></div><span class="route-open">Ver ruta ›</span></article>';
   }).join('')+(project.length?'<div class="section-note route-section-label"><b>Proyectos por verificar</b></div>'+project.map(r=>'<article class="route-row project" data-project-route="'+esc(r.ID)+'"><div class="route-row-icon">✎</div><div><span class="route-kind">Investigación</span><strong>'+esc(r['Nombre provisional'])+'</strong><small>'+esc(r['Tipo'])+' · '+esc(r['Estado'])+'</small></div><span class="route-arrow">›</span></article>').join(''):'');
   $$('[data-project-route]').forEach(x=>x.onclick=()=>openProjectRoute(x.dataset.projectRoute));
   $$('[data-route-id]').forEach(x=>x.onclick=()=>openRoute(x.dataset.routeId));
