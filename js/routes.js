@@ -81,8 +81,8 @@ function startFollowing(route,geo){
   const sampleIdx=[];for(let i=0;i<coords.length;i+=sampleStep)sampleIdx.push(i);if(sampleIdx.at(-1)!==coords.length-1)sampleIdx.push(coords.length-1);
   const watch=navigator.geolocation.watchPosition(pos=>{
     if(Number.isFinite(pos.coords.accuracy)&&pos.coords.accuracy>100){
-      $('#routeDeviation').textContent='GPS ±'+Math.round(pos.coords.accuracy)+' m';
-      $('#routeDeviation').style.color='#ffd27a';
+      $('#routeFollowStatus').textContent='Señal GPS débil';
+      $('#routeDeviation').textContent='±'+Math.round(pos.coords.accuracy)+' m';
       return;
     }
     const c=[pos.coords.longitude,pos.coords.latitude];S.userPosition=c;updateUserMarker(c);
@@ -92,17 +92,17 @@ function startFollowing(route,geo){
     for(let i=a;i<=z;i++){const d=distanceM(c,coords[i]);if(d<best){best=d;idx=i;}}
     lastNearest=coords[idx];const remaining=Math.max(0,total-cum[idx]),progress=total?cum[idx]/total:0;
     $('#followDistance').textContent=formatDistance(remaining);$('#routeRemaining').textContent=formatDistance(remaining)+' restantes';$('#followProgressBar').style.width=Math.round(progress*100)+'%';
-    const off=best>80;$('#routeDeviation').textContent=off?'⚠ '+Math.round(best)+' m fuera':'✓ sobre ruta';$('#routeDeviation').style.color=off?'#ffd27a':'#bce4c8';$('#returnRouteBtn').hidden=!off;
+    const off=best>80;$('#routeFollowStatus').textContent=off?'Fuera del trazado':'Sobre la ruta';$('#routeDeviation').textContent=off?'⚠ '+Math.round(best)+' m':'✓';$('#returnRouteBtn').hidden=!off;
     if(off&&!lastOff&&navigator.vibrate)navigator.vibrate([120,80,120]);lastOff=off;
     let nearest=null,nearestD=Infinity;
     for(const p of S.pois){if(!p.coordinates||!p.visitor_visible)continue;const d=distanceM(c,p.coordinates);if(d<nearestD){nearest=p;nearestD=d;}}
     $('#followNearestPoi').textContent=nearest&&nearestD<1200?nearest.name+' · '+formatDistance(nearestD):'—';
   },e=>{recordError(e,'route-follow');toast('Se perdió la señal GPS');},{enableHighAccuracy:true,maximumAge:2000,timeout:15000});
-  S.routeFollow={watch,routeId:route.id};$('#routeFollowPanel').hidden=false;toast('Seguimiento de ruta iniciado');
+  S.routeFollow={watch,routeId:route.id};$('#routeFollowPanel').hidden=false;$('#activeRouteBar').hidden=true;$('#nearbyStrip').hidden=true;document.body.classList.add('route-following');$('#routeFollowStatus').textContent='Buscando posición…';toast('Seguimiento de ruta iniciado');
 }
 export function stopFollowing(){
   if(S.routeFollow?.watch!=null)navigator.geolocation.clearWatch(S.routeFollow.watch);
-  S.routeFollow=null;lastNearest=null;lastOff=false;$('#routeFollowPanel').hidden=true;$('#returnRouteBtn').hidden=true;$('#routeRemaining').textContent='';$('#routeDeviation').textContent='';
+  S.routeFollow=null;lastNearest=null;lastOff=false;$('#routeFollowPanel').hidden=true;$('#returnRouteBtn').hidden=true;$('#routeRemaining').textContent='';$('#routeDeviation').textContent='';document.body.classList.remove('route-following');if(selected)$('#activeRouteBar').hidden=false;
 }
 async function importGpx(e){
   const file=e.target.files?.[0];if(!file)return;
