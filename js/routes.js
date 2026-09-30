@@ -79,6 +79,13 @@ function startFollowing(route,geo){
   const cum=[0];for(let i=1;i<coords.length;i++)cum[i]=cum[i-1]+distanceM(coords[i-1],coords[i]);const total=cum.at(-1);
   const sampleStep=Math.max(1,Math.ceil(coords.length/450));
   const sampleIdx=[];for(let i=0;i<coords.length;i+=sampleStep)sampleIdx.push(i);if(sampleIdx.at(-1)!==coords.length-1)sampleIdx.push(coords.length-1);
+  const routePois=S.pois.filter(p=>p.coordinates&&p.visitor_visible).map(p=>{
+    let routeIdx=0,routeD=Infinity;
+    for(const i of sampleIdx){const d=distanceM(p.coordinates,coords[i]);if(d<routeD){routeD=d;routeIdx=i;}}
+    const a=Math.max(0,routeIdx-sampleStep),z=Math.min(coords.length-1,routeIdx+sampleStep);
+    for(let i=a;i<=z;i++){const d=distanceM(p.coordinates,coords[i]);if(d<routeD){routeD=d;routeIdx=i;}}
+    return {p,routeIdx,routeD,along:cum[routeIdx]};
+  }).filter(x=>x.routeD<=320).sort((a,b)=>a.along-b.along);
   const watch=navigator.geolocation.watchPosition(pos=>{
     if(Number.isFinite(pos.coords.accuracy)&&pos.coords.accuracy>100){
       $('#routeFollowStatus').textContent='Señal GPS débil';
@@ -94,9 +101,9 @@ function startFollowing(route,geo){
     $('#followDistance').textContent=formatDistance(remaining);$('#routeRemaining').textContent=formatDistance(remaining)+' restantes';$('#followProgressBar').style.width=Math.round(progress*100)+'%';
     const off=best>80;$('#routeFollowStatus').textContent=off?'Fuera del trazado':'Sobre la ruta';$('#routeDeviation').textContent=off?'⚠ '+Math.round(best)+' m':'✓';$('#returnRouteBtn').hidden=!off;
     if(off&&!lastOff&&navigator.vibrate)navigator.vibrate([120,80,120]);lastOff=off;
-    let nearest=null,nearestD=Infinity;
-    for(const p of S.pois){if(!p.coordinates||!p.visitor_visible)continue;const d=distanceM(c,p.coordinates);if(d<nearestD){nearest=p;nearestD=d;}}
-    $('#followNearestPoi').textContent=nearest&&nearestD<1200?nearest.name+' · '+formatDistance(nearestD):'—';
+    const next=routePois.find(x=>x.along>cum[idx]+25);
+    const nextD=next?Math.max(0,next.along-cum[idx]):Infinity;
+    $('#followNearestPoi').textContent=next?next.p.name+' · '+formatDistance(nextD):'Final de ruta';
   },e=>{recordError(e,'route-follow');toast('Se perdió la señal GPS');},{enableHighAccuracy:true,maximumAge:2000,timeout:15000});
   S.routeFollow={watch,routeId:route.id};$('#routeFollowPanel').hidden=false;$('#activeRouteBar').hidden=true;$('#nearbyStrip').hidden=true;document.body.classList.add('route-following');$('#routeFollowStatus').textContent='Buscando posición…';toast('Seguimiento de ruta iniciado');
 }
