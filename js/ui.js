@@ -38,7 +38,7 @@ export function openNav(name){
   emit('nav',name);
 }
 function setDrawer(size){
-  const d=$('#drawer');d.style.height='';d.classList.remove('collapsed','half','full');d.classList.add(size);d.dataset.snap=size;
+  const d=$('#drawer');d.style.height='';d.style.transform='';d.classList.remove('collapsed','half','full','dragging');d.classList.add(size);d.dataset.snap=size;
   $('#collapseDrawerBtn')?.setAttribute('aria-expanded',size!=='collapsed'?'true':'false');
   const strip=$('#nearbyStrip');
   if(strip)strip.hidden=size!=='collapsed'||!(S.lastViewportPois?.length);
@@ -48,37 +48,43 @@ function cycleDrawer(){
 }
 function bindDrawer(){
   const h=$('[data-drawer-drag]'),d=$('#drawer');if(!h||!d)return;
-  let startY=0,startH=0,dragging=false,pointerId=null,pendingH=null,raf=0;
-  const baseHeight=()=>d.parentElement?.getBoundingClientRect().height||innerHeight;
-  const applyPending=()=>{
+  let startY=0,startOffset=0,currentOffset=0,dragging=false,pointerId=null,pendingOffset=null,raf=0;
+  const geometry=()=>{
+    const p=d.parentElement?.getBoundingClientRect(),base=p?.height||innerHeight,max=base*.88,min=92;
+    return {base,max,min,naturalTop:(p?.top||0)+base-max};
+  };
+  const paint=()=>{
     raf=0;
-    if(pendingH==null)return;
-    d.style.height=pendingH+'px';
-    pendingH=null;
+    if(pendingOffset==null)return;
+    currentOffset=pendingOffset;
+    d.style.transform='translate3d(0,'+currentOffset+'px,0)';
+    pendingOffset=null;
   };
   const finish=e=>{
     if(!dragging||(e?.pointerId!=null&&e.pointerId!==pointerId))return;
     if(raf){cancelAnimationFrame(raf);raf=0;}
-    applyPending();
+    paint();
     dragging=false;pointerId=null;
     d.classList.remove('dragging');h.classList.remove('dragging');
-    const ratio=d.getBoundingClientRect().height/baseHeight();
-    d.style.height='';
+    const {base,max}=geometry(),visible=max-currentOffset,ratio=visible/base;
+    d.style.transform='';
     setDrawer(ratio<.25?'collapsed':ratio>.68?'full':'half');
   };
   h.onpointerdown=e=>{
     if(e.pointerType==='mouse'&&e.button!==0)return;
     e.preventDefault();
-    dragging=true;pointerId=e.pointerId;startY=e.clientY;startH=d.getBoundingClientRect().height;
-    h.setPointerCapture?.(e.pointerId);
+    const {max,naturalTop}=geometry(),rect=d.getBoundingClientRect();
+    dragging=true;pointerId=e.pointerId;startY=e.clientY;
+    startOffset=Math.max(0,Math.min(max-92,rect.top-naturalTop));currentOffset=startOffset;
+    try{h.setPointerCapture?.(e.pointerId)}catch{}
     d.classList.add('dragging');h.classList.add('dragging');
   };
   h.onpointermove=e=>{
     if(!dragging||e.pointerId!==pointerId)return;
     e.preventDefault();
-    const base=baseHeight(),min=92,max=base*.88;
-    pendingH=Math.max(min,Math.min(max,startH+(startY-e.clientY)));
-    if(!raf)raf=requestAnimationFrame(applyPending);
+    const {max,min}=geometry();
+    pendingOffset=Math.max(0,Math.min(max-min,startOffset+(e.clientY-startY)));
+    if(!raf)raf=requestAnimationFrame(paint);
   };
   h.onpointerup=finish;
   h.onpointercancel=finish;
