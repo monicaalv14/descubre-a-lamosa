@@ -192,8 +192,10 @@ function row(x,isFav){
   return '<article class="list-row" data-poi-row="'+esc(x.id)+'">'+thumb+'<div><strong>'+esc(x.name)+'</strong><small>'+esc(x.area||'')+d+'</small></div><div class="row-end"><span class="badge '+(x.coordinates?'':'pending')+'">'+(x.coordinates?'Mapa':t('pending'))+'</span><button class="star-btn" data-fav="'+esc(x.id)+'" aria-label="Favorito">'+(isFav?'★':'☆')+'</button></div></article>';
 }
 function renderViewport(rows,near=false){
-  const host=$('#nearbyStrip');if(!rows?.length){host.hidden=true;return;}
-  host.innerHTML=rows.map(x=>{
+  const host=$('#nearbyStrip');if(!rows?.length){host.hidden=true;host.innerHTML='';return;}
+  const contextual=rows.slice(0,near?12:6);
+  host.setAttribute('aria-label',near?'Lugares cercanos':'Lugares visibles en el mapa');
+  host.innerHTML=contextual.map(x=>{
     const d=near&&Number.isFinite(x._d)?formatDistance(x._d):(x._mapd?formatDistance(x._mapd):'');
     const media=x.image_url?'<img loading="lazy" decoding="async" src="'+esc(x.image_url)+'" alt="">':'<span class="nearby-icon">'+icon(x.type)+'</span>';
     return '<button class="nearby-card" data-near-poi="'+esc(x.id)+'">'+media+'<span class="nearby-copy"><strong>'+esc(x.name)+'</strong><small>'+esc(shortCat(x.type))+(d?' · '+d:'')+'</small></span></button>';
