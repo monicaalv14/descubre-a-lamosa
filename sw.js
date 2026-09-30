@@ -1,5 +1,5 @@
-const SHELL='a-lamosa-shell-v122b1';
-const RUNTIME='a-lamosa-runtime-v122b1';
+const SHELL='a-lamosa-shell-v123b1';
+const RUNTIME='a-lamosa-runtime-v123b1';
 const CORE=[
   './','./index.html','./styles.css?v=122b1','./app.js?v=122b1','./manifest.webmanifest?v=122b1',
   './vendor/maplibre-gl.mjs','./vendor/maplibre-gl-shared.mjs','./vendor/maplibre-gl-worker.mjs','./vendor/maplibre-gl.css','./vendor/jszip.min.js',

@@ -1,4 +1,4 @@
-export const VERSION='0.12.2-beta.1';
+export const VERSION='0.12.3-beta.1';
 export const S={
   map:null,pois:[],places:[],trails:[],projectRoutes:[],stories:[],osmNetwork:null,osmNetworkLoading:null,
   mode:localStorage.getItem('aLamosaMode')||'visitor',

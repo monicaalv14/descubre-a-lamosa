@@ -51,6 +51,13 @@ function parseOsmRelation(xml){
   return {type:'FeatureCollection',features};
 }
 function attr(tag,name){const m=tag.match(new RegExp('\\b'+name+'=["\\\']([^"\\\']+)["\\\']','i'));return m?.[1]??null;}
+function parseRelationWayRefs(xml){
+  const refs=new Set();
+  for(const m of xml.matchAll(/<member\b([^>]*)\/>/gi)){
+    if(attr(m[1],'type')==='way'){const ref=attr(m[1],'ref');if(ref)refs.add(String(ref));}
+  }
+  return refs;
+}
 function parseOsmNetworkXml(xml){
   const nodes=new Map();
   for(const m of xml.matchAll(/<node\b([^>]*)>/gi)){
@@ -126,13 +133,18 @@ const prgXml=await fetchText(prgUrl,true,{timeout:45000,attempts:2}),prgCoords=p
 const prg={type:'FeatureCollection',features:[lineFeature(prgCoords,{id:'TR-OF-001',name:'PR-G 119 · Ruta do Xabriña',source:'Concello de Covelo',source_url:prgUrl,official:true})]};
 await fs.writeFile(path.join(DIST,'data/generated/prg119.geojson'),JSON.stringify(prg));
 
-const viaXml=await fetchText('https://api.openstreetmap.org/api/0.6/relation/11075472/full',false,{timeout:60000,attempts:2});
-const via=viaXml?parseOsmRelation(viaXml):{type:'FeatureCollection',features:[]};
-await fs.writeFile(path.join(DIST,'data/generated/via-mariana.geojson'),JSON.stringify(via));
-
 const osmResult=await fetchOsmNetwork();
 const net=osmResult.net;
 await fs.writeFile(path.join(DIST,'data/generated/osm-network.geojson'),JSON.stringify(net));
+
+const viaRelationXml=await fetchText('https://api.openstreetmap.org/api/0.6/relation/11075472',false,{timeout:30000,attempts:2});
+const viaRefs=viaRelationXml?parseRelationWayRefs(viaRelationXml):new Set();
+let via={type:'FeatureCollection',features:net.features.filter(f=>viaRefs.has(String(f.properties?.osm_id)))};
+if(!via.features.length){
+  const viaFull=await fetchText('https://api.openstreetmap.org/api/0.6/relation/11075472/full',false,{timeout:45000,attempts:1});
+  if(viaFull)via=parseOsmRelation(viaFull);
+}
+await fs.writeFile(path.join(DIST,'data/generated/via-mariana.geojson'),JSON.stringify(via));
 
 const media=JSON.parse(await fs.readFile(path.join(ROOT,'data/media.json'),'utf8'));
 let pois=[];for(let i=1;i<=6;i++)pois.push(...JSON.parse(await fs.readFile(path.join(ROOT,`data/pois-${i}.json`),'utf8')));
@@ -157,5 +169,5 @@ await fs.writeFile(path.join(DIST,'data/generated/build-info.json'),JSON.stringi
 const files=[];
 async function walk(dir,prefix=''){for(const e of await fs.readdir(dir,{withFileTypes:true})){const rel=prefix+e.name;if(e.isDirectory())await walk(path.join(dir,e.name),rel+'/');else if(!rel.startsWith('data/generated/offline-manifest'))files.push('./'+rel);}}
 await walk(DIST);
-await fs.writeFile(path.join(DIST,'data/generated/offline-manifest.json'),JSON.stringify({version:'0.12.2-beta.1',assets:files.filter(x=>!x.includes('/vendor/jszip'))},null,2));
+await fs.writeFile(path.join(DIST,'data/generated/offline-manifest.json'),JSON.stringify({version:'0.12.3-beta.1',assets:files.filter(x=>!x.includes('/vendor/jszip'))},null,2));
 console.log(JSON.stringify(buildInfo));

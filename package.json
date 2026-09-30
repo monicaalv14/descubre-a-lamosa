@@ -1,7 +1,7 @@
 {
   "name": "descubre-a-lamosa",
   "private": true,
-  "version": "0.12.2-beta.1",
+  "version": "0.12.3-beta.1",
   "type": "module",
   "scripts": {
     "build": "node tools/build-static.mjs",

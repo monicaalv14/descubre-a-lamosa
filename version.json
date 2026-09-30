@@ -1,36 +1,15 @@
 {
-  "version": "0.12.2-beta.1",
+  "version": "0.12.3-beta.1",
   "published": "2026-09-30",
   "branch": "beta",
-  "focus": "saneamiento, estabilidad y rendimiento",
-  "inventory_elements": 76,
+  "focus": "cierre de saneamiento",
   "fixes": [
-    "la red de caminos OSM deja de poder publicarse vacía",
-    "generación OSM con API principal, división por zonas y fallback Overpass",
-    "red de caminos cargada en segundo plano para no bloquear el arranque",
-    "capas secundarias e IndexedDB dejan de bloquear el mapa inicial",
-    "service worker con respuesta rápida desde caché cuando la red es lenta",
-    "routes.json y estilo online añadidos a la precarga offline",
-    "conexión IndexedDB reutilizada",
-    "descarga offline paralelizada con límite de concurrencia",
-    "seguimiento de ruta optimizado y filtrado de GPS poco preciso",
-    "grabación de Campo deja de recalcular toda la distancia en cada punto",
-    "grabación de Campo deja de reajustar el mapa en cada actualización",
-    "JSZip se carga solo al exportar trabajo de campo",
-    "aportaciones y Campo se hidratan solo cuando se usan",
-    "galerías cambian correctamente la foto principal",
-    "enlaces compartidos conservan la versión activa",
-    "portapapeles degrada sin excepción cuando no está disponible",
-    "peticiones JSON tienen tiempo máximo de espera"
-  ],
-  "tests": [
-    "validación de red OSM con mínimo de tramos",
-    "arranque móvil",
-    "rutas y PR-G 119",
-    "modo visitante/investigación",
-    "audioguía",
-    "offline",
-    "arranque con red de caminos retrasada",
-    "regresión de selectores DOM"
+    "Vía Mariana local derivada de la relación OSM y la red de caminos ya validada",
+    "red OSM validada con contenido mínimo",
+    "arranque desacoplado de caminos y capas secundarias",
+    "offline y caché de red lenta saneados",
+    "IndexedDB reutilizada y herramientas de investigación bajo demanda",
+    "seguimiento GPS y grabación de Campo optimizados",
+    "galerías y enlaces compartidos corregidos"
   ]
 }
