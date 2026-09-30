@@ -47,10 +47,42 @@ function cycleDrawer(){
   const d=$('#drawer'),s=d.dataset.snap||'half';setDrawer(s==='full'?'half':s==='half'?'collapsed':'half');
 }
 function bindDrawer(){
-  const h=$('[data-drawer-drag]');if(!h)return;let startY=0,startH=0,dragging=false;
-  h.onpointerdown=e=>{dragging=true;startY=e.clientY;startH=$('#drawer').getBoundingClientRect().height;h.setPointerCapture(e.pointerId);$('#drawer').classList.add('dragging');};
-  h.onpointermove=e=>{if(!dragging)return;const d=$('#drawer'),max=innerHeight*.88,min=92,next=Math.max(min,Math.min(max,startH+(startY-e.clientY)));d.style.height=next+'px';};
-  h.onpointerup=e=>{if(!dragging)return;dragging=false;const d=$('#drawer');d.classList.remove('dragging');const ratio=d.getBoundingClientRect().height/innerHeight;d.style.height='';setDrawer(ratio<.25?'collapsed':ratio>.68?'full':'half');};
+  const h=$('[data-drawer-drag]'),d=$('#drawer');if(!h||!d)return;
+  let startY=0,startH=0,dragging=false,pointerId=null,pendingH=null,raf=0;
+  const baseHeight=()=>d.parentElement?.getBoundingClientRect().height||innerHeight;
+  const applyPending=()=>{
+    raf=0;
+    if(pendingH==null)return;
+    d.style.height=pendingH+'px';
+    pendingH=null;
+  };
+  const finish=e=>{
+    if(!dragging||(e?.pointerId!=null&&e.pointerId!==pointerId))return;
+    if(raf){cancelAnimationFrame(raf);raf=0;}
+    applyPending();
+    dragging=false;pointerId=null;
+    d.classList.remove('dragging');h.classList.remove('dragging');
+    const ratio=d.getBoundingClientRect().height/baseHeight();
+    d.style.height='';
+    setDrawer(ratio<.25?'collapsed':ratio>.68?'full':'half');
+  };
+  h.onpointerdown=e=>{
+    if(e.pointerType==='mouse'&&e.button!==0)return;
+    e.preventDefault();
+    dragging=true;pointerId=e.pointerId;startY=e.clientY;startH=d.getBoundingClientRect().height;
+    h.setPointerCapture?.(e.pointerId);
+    d.classList.add('dragging');h.classList.add('dragging');
+  };
+  h.onpointermove=e=>{
+    if(!dragging||e.pointerId!==pointerId)return;
+    e.preventDefault();
+    const base=baseHeight(),min=92,max=base*.88;
+    pendingH=Math.max(min,Math.min(max,startH+(startY-e.clientY)));
+    if(!raf)raf=requestAnimationFrame(applyPending);
+  };
+  h.onpointerup=finish;
+  h.onpointercancel=finish;
+  h.onlostpointercapture=finish;
 }
 function bindSheets(){
   $$('[data-close-sheet]').forEach(b=>b.onclick=closeSheets);$('#sheetBackdrop').onclick=closeSheets;
