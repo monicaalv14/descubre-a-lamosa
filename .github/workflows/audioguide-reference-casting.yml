@@ -13,11 +13,11 @@ jobs:
           python-version: '3.11'
       - name: Instalar lector de dataset
         run: |
-          pip install -q "datasets[audio]" soundfile huggingface_hub
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg\n          pip install -q "datasets[audio]" soundfile huggingface_hub
       - name: Seleccionar referencias CC0
         run: |
           mkdir -p referencias
-          cat > /tmp/select.py <<'PY'
+          cat > /tmp/pick_references.py <<'PY'
           from datasets import load_dataset
           import soundfile as sf, json, re
 
@@ -52,7 +52,7 @@ jobs:
               json.dump(chosen,f,ensure_ascii=False,indent=2)
           print(json.dumps(chosen,ensure_ascii=False,indent=2))
           PY
-          python /tmp/select.py
+          python /tmp/pick_references.py
       - name: Guardar referencias
         uses: actions/upload-artifact@v4
         with:
