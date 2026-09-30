@@ -48,7 +48,7 @@ function cycleDrawer(){
 }
 function bindDrawer(){
   const h=$('[data-drawer-drag]'),d=$('#drawer');if(!h||!d)return;
-  let startY=0,startOffset=0,currentOffset=0,dragging=false,pointerId=null,pendingOffset=null,raf=0;
+  let startY=0,startOffset=0,currentOffset=0,dragging=false,mode='',pendingOffset=null,raf=0;
   const geometry=()=>{
     const p=d.parentElement?.getBoundingClientRect(),base=p?.height||innerHeight,max=base*.88,min=92;
     return {base,max,min};
@@ -65,35 +65,55 @@ function bindDrawer(){
     d.style.transform='translate3d(0,'+currentOffset+'px,0)';
     pendingOffset=null;
   };
-  const finish=e=>{
-    if(!dragging||(e?.pointerId!=null&&e.pointerId!==pointerId))return;
+  const begin=(clientY,inputMode)=>{
+    const {max,min}=geometry();
+    startY=clientY;startOffset=Math.max(0,Math.min(max-min,translateY()));currentOffset=startOffset;
+    dragging=true;mode=inputMode;pendingOffset=null;
+    d.classList.add('dragging');h.classList.add('dragging');
+  };
+  const move=clientY=>{
+    if(!dragging)return;
+    const {max,min}=geometry();
+    pendingOffset=Math.max(0,Math.min(max-min,startOffset+(clientY-startY)));
+    if(!raf)raf=requestAnimationFrame(paint);
+  };
+  const finish=()=>{
+    if(!dragging)return;
     if(raf){cancelAnimationFrame(raf);raf=0;}
     paint();
-    dragging=false;pointerId=null;
+    dragging=false;mode='';
     d.classList.remove('dragging');h.classList.remove('dragging');
     const {base,max}=geometry(),visible=max-currentOffset,ratio=visible/base;
     d.style.transform='';
     setDrawer(ratio<.25?'collapsed':ratio>.68?'full':'half');
   };
-  h.onpointerdown=e=>{
-    if(e.pointerType==='mouse'&&e.button!==0)return;
-    e.preventDefault();
-    const {max,min}=geometry();
-    dragging=true;pointerId=e.pointerId;startY=e.clientY;
-    startOffset=Math.max(0,Math.min(max-min,translateY()));currentOffset=startOffset;
-    try{h.setPointerCapture?.(e.pointerId)}catch{}
-    d.classList.add('dragging');h.classList.add('dragging');
-  };
-  h.onpointermove=e=>{
-    if(!dragging||e.pointerId!==pointerId)return;
-    e.preventDefault();
-    const {max,min}=geometry();
-    pendingOffset=Math.max(0,Math.min(max-min,startOffset+(e.clientY-startY)));
-    if(!raf)raf=requestAnimationFrame(paint);
-  };
-  h.onpointerup=finish;
-  h.onpointercancel=finish;
-  h.onlostpointercapture=finish;
+
+  h.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1)return;
+    e.preventDefault();begin(e.touches[0].clientY,'touch');
+  },{passive:false});
+  h.addEventListener('touchmove',e=>{
+    if(!dragging||mode!=='touch'||!e.touches.length)return;
+    e.preventDefault();move(e.touches[0].clientY);
+  },{passive:false});
+  h.addEventListener('touchend',e=>{
+    if(!dragging||mode!=='touch')return;
+    e.preventDefault();finish();
+  },{passive:false});
+  h.addEventListener('touchcancel',()=>{if(mode==='touch')finish()},{passive:true});
+
+  h.addEventListener('mousedown',e=>{
+    if(e.button!==0)return;
+    e.preventDefault();begin(e.clientY,'mouse');
+    const onMove=ev=>{if(mode==='mouse'){ev.preventDefault();move(ev.clientY)}};
+    const onUp=()=>{
+      window.removeEventListener('mousemove',onMove);
+      window.removeEventListener('mouseup',onUp);
+      if(mode==='mouse')finish();
+    };
+    window.addEventListener('mousemove',onMove,{passive:false});
+    window.addEventListener('mouseup',onUp,{once:true});
+  });
 }
 function bindSheets(){
   $$('[data-close-sheet]').forEach(b=>b.onclick=closeSheets);$('#sheetBackdrop').onclick=closeSheets;
