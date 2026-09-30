@@ -97,7 +97,7 @@ function bindSettings(){
 export function renderExplore(){
   const rows0=visiblePois(),cats=[...new Set(rows0.map(x=>x.type).filter(Boolean))].sort();
   $('#categoryChips').innerHTML='<button class="filter-chip '+(!selectedCategories.size?'active':'')+'" data-cat="">Todo</button>'+cats.map(c=>'<button class="filter-chip '+(selectedCategories.has(c)?'active':'')+'" data-cat="'+esc(c)+'"><span class="filter-icon">'+icon(c)+'</span>'+esc(shortCat(c))+'</button>').join('');
-  $('[data-cat]').forEach(b=>b.onclick=()=>{
+  $$('[data-cat]').forEach(b=>b.onclick=()=>{
     const c=b.dataset.cat;showAll=false;
     if(!c)selectedCategories.clear();else selectedCategories.has(c)?selectedCategories.delete(c):selectedCategories.add(c);
     setCategoryFilter([...selectedCategories]);renderExplore();
@@ -119,8 +119,8 @@ export function renderExplore(){
     (!intent?'<button class="show-all-btn" id="showAllPlaces">Ver todo el inventario</button>':'')+
     (intent&&rows.length>limit?'<p class="section-note">Sigue afinando con búsqueda o filtros para reducir resultados.</p>':'');
   $('#showAllPlaces')?.addEventListener('click',()=>{showAll=true;renderExplore();setDrawer('full');});
-  $('[data-poi-row]').forEach(e=>e.onclick=()=>{const x=S.pois.find(p=>p.id===e.dataset.poiRow);if(x?.coordinates)focusPoi(x);openPoi(e.dataset.poiRow);});
-  $('[data-fav]').forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.fav;setFavorite(id,!favorites().has(id));});
+  $$('[data-poi-row]').forEach(e=>e.onclick=()=>{const x=S.pois.find(p=>p.id===e.dataset.poiRow);if(x?.coordinates)focusPoi(x);openPoi(e.dataset.poiRow);});
+  $$('[data-fav]').forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.fav;setFavorite(id,!favorites().has(id));});
 }
 function hasExploreIntent(){return !!(search||selectedCategories.size||favoritesOnly||photosOnly||showAll);}
 function row(x,isFav){
@@ -135,7 +135,7 @@ function renderViewport(rows,near=false){
     return '<button class="nearby-card" data-near-poi="'+esc(x.id)+'">'+media+'<span class="nearby-copy"><strong>'+esc(x.name)+'</strong><small>'+esc(shortCat(x.type))+(d?' · '+d:'')+'</small></span></button>';
   }).join('');
   host.hidden=($('#drawer')?.dataset.snap||'half')!=='collapsed';
-  $('[data-near-poi]').forEach(b=>b.onclick=()=>{const x=S.pois.find(p=>p.id===b.dataset.nearPoi);if(x)focusPoi(x);openPoi(b.dataset.nearPoi);});
+  $$('[data-near-poi]').forEach(b=>b.onclick=()=>{const x=S.pois.find(p=>p.id===b.dataset.nearPoi);if(x)focusPoi(x);openPoi(b.dataset.nearPoi);});
 }
 export function openPoi(id){
   const x=S.pois.find(p=>p.id===id);if(!x)return;const fav=favorites().has(id),d=S.userPosition&&x.coordinates?formatDistance(distanceM(S.userPosition,x.coordinates)):'';
