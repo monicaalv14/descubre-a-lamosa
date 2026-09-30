@@ -18,8 +18,8 @@ async function render(){
     const moderation=S.mode==='research'?'<div class="moderation-actions"><button data-contrib-status="'+esc(r.id)+'|Aceptada">✓</button><button data-contrib-status="'+esc(r.id)+'|Rechazada">×</button></div>':'<button class="tiny-share" data-contrib-share="'+esc(r.id)+'">↗</button>';
     return '<article class="list-row"><div class="ico">+</div><div><strong>'+esc(r.name)+'</strong><small>'+esc(r.type)+' · '+esc(r.status)+'</small></div>'+moderation+'</article>';
   }).join('');
-  $('[data-contrib-share]').forEach(b=>b.onclick=()=>share(rows.find(r=>r.id===b.dataset.contribShare)));
-  $('[data-contrib-status]').forEach(b=>b.onclick=async()=>{const [id,status]=b.dataset.contribStatus.split('|');const row=rows.find(r=>r.id===id);if(!row)return;row.status=status;row.reviewedAt=new Date().toISOString();await dbPut('contributions',row);render();});
+  $$('[data-contrib-share]').forEach(b=>b.onclick=()=>share(rows.find(r=>r.id===b.dataset.contribShare)));
+  $$('[data-contrib-status]').forEach(b=>b.onclick=async()=>{const [id,status]=b.dataset.contribStatus.split('|');const row=rows.find(r=>r.id===id);if(!row)return;row.status=status;row.reviewedAt=new Date().toISOString();await dbPut('contributions',row);render();});
 }
 async function share(r){
   if(!r)return;const data=JSON.stringify({...r,photo:r.photo?'[foto adjunta en la copia local]':null},null,2);

@@ -32,6 +32,8 @@ test('app carga, navega y dibuja la PR-G 119 local',async({page})=>{
 
   await page.locator('[data-nav="more"]').click();
   await expect(page.locator('#modeSelect')).toBeVisible();
+  const tools=page.locator('details').filter({hasText:'Herramientas'});
+  await tools.locator('summary').click();
   await expect(page.locator('#diagnosticBtn')).toBeVisible();
 });
 
