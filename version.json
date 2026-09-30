@@ -1,13 +1,14 @@
 {
-  "version": "0.12.6-beta.1",
+  "version": "0.12.7-beta.1",
   "published": "2026-09-30",
   "branch": "beta",
-  "focus": "arrastre táctil sin salto inicial",
+  "focus": "bottom sheet táctil estable",
   "fixes": [
-    "la posición inicial del panel se lee de la matriz transform ya renderizada",
-    "el cambio de porcentaje CSS a píxeles ya no provoca saltos al tocar el asa",
-    "movimiento del panel mediante translate3d acelerado por GPU",
-    "pruebas de ratón y eventos táctiles reales verifican seguimiento del gesto",
-    "service worker y recursos unificados en la revisión 126b1"
+    "eliminadas las reglas antiguas de altura que interferían con el panel",
+    "un único sistema de desplazamiento translate3d para contraído, medio y completo",
+    "touchstart/touchmove/touchend directos con preventDefault para Android",
+    "arrastre de ratón separado del táctil para evitar interferencias",
+    "pruebas automatizadas verifican seguimiento superior a 90 px para un gesto de 120 px",
+    "caché y service worker renovados a 127b1"
   ]
 }
