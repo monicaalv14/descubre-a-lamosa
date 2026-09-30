@@ -1,0 +1,61 @@
+name: Casting referencias maduras es-ES
+
+on:
+  workflow_dispatch:
+
+jobs:
+  referencias:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar lector de dataset
+        run: |
+          pip install -q "datasets[audio]" soundfile huggingface_hub
+      - name: Seleccionar referencias CC0
+        run: |
+          mkdir -p referencias
+          cat > /tmp/select.py <<'PY'
+          from datasets import load_dataset
+          import soundfile as sf, json, re
+
+          ds=load_dataset("bookbot/common_voice_23_0_es", split="train", streaming=True)
+          wanted_age={"fifties","sixties","seventies","eighties"}
+          chosen=[]
+          def peninsular(a):
+              a=(a or "").lower()
+              return any(k in a for k in ("españa","spain","peninsular","castell"))
+
+          for row in ds:
+              if row.get("gender")!="male_masculine": continue
+              if row.get("age") not in wanted_age: continue
+              if not peninsular(row.get("accents")): continue
+              if (row.get("up_votes") or 0)<2 or (row.get("down_votes") or 0)>0: continue
+              audio=row["audio"]
+              name=f"referencias/ref_{len(chosen)+1}_{row['age']}.wav"
+              sf.write(name,audio["array"],audio["sampling_rate"])
+              chosen.append({
+                "file":name.split("/")[-1],
+                "age":row.get("age"),
+                "accent":row.get("accents"),
+                "sentence":row.get("sentence"),
+                "up_votes":row.get("up_votes"),
+                "license":"CC0-1.0",
+              })
+              if len(chosen)>=6: break
+
+          if not chosen:
+              raise RuntimeError("No se encontraron candidatos con el filtro peninsular; revisar etiquetas de acento.")
+          with open("referencias/metadata.json","w",encoding="utf-8") as f:
+              json.dump(chosen,f,ensure_ascii=False,indent=2)
+          print(json.dumps(chosen,ensure_ascii=False,indent=2))
+          PY
+          python /tmp/select.py
+      - name: Guardar referencias
+        uses: actions/upload-artifact@v4
+        with:
+          name: referencias-maduras-es-ES-cc0
+          path: referencias/*
+          retention-days: 14
