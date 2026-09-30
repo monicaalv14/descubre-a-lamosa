@@ -28,18 +28,20 @@ jobs:
 
           texto = """Estás junto a Ponte Folón, uno de los elementos destacados de la Ruta do Xabriña. Este puente de piedra forma parte de un paisaje marcado por el río, los caminos y el paso de quienes recorrieron este territorio. La documentación municipal lo relaciona con un camino histórico, y hoy la ruta P R G ciento diecinueve nos permite acercarnos de nuevo a este lugar. Antes de continuar, detente un momento. Observa la piedra, escucha el agua y mira cómo el camino se integra en el paisaje. En lugares como este, la historia de A Lamosa no se encuentra solamente en los documentos. También permanece en los caminos."""
           pipe=KPipeline(lang_code='e')
-          partes=[]
-          for _,_,audio in pipe(texto,voice='em_santa',speed=0.88):
-              if audio is not None:
-                  partes.append(audio.numpy() if hasattr(audio,'numpy') else np.asarray(audio))
-          if not partes:
-              raise RuntimeError('Kokoro no devolvio audio')
-          sf.write('audio/ponte-folon-santa.wav',np.concatenate(partes),24000)
+          for velocidad in (0.82, 0.76):
+              partes=[]
+              for _,_,audio in pipe(texto,voice='em_santa',speed=velocidad):
+                  if audio is not None:
+                      partes.append(audio.numpy() if hasattr(audio,'numpy') else np.asarray(audio))
+              if not partes:
+                  raise RuntimeError(f'Kokoro no devolvio audio a {velocidad}')
+              nombre=str(velocidad).replace('.','')
+              sf.write(f'audio/ponte-folon-santa-{nombre}.wav',np.concatenate(partes),24000)
           PY
           python /tmp/narrar.py
       - name: Guardar piloto
         uses: actions/upload-artifact@v4
         with:
-          name: piloto-ponte-folon-santa
-          path: audio/ponte-folon-santa.wav
+          name: piloto-ponte-folon-santa-lento
+          path: audio/ponte-folon-santa-*.wav
           retention-days: 14
