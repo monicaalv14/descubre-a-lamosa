@@ -72,12 +72,13 @@
       <button id="activeRouteClose" aria-label="Cerrar ruta">×</button>
     </div>
 
-    <div id="routeFollowPanel" class="follow-panel" hidden>
+    <div id="routeFollowPanel" class="follow-panel route-nav-hud" hidden>
       <div class="follow-progress"><span id="followProgressBar"></span></div>
-      <div><strong id="followDistance">—</strong><small>restante</small></div>
-      <div><strong id="followNearestPoi">—</strong><small>próxima parada</small></div>
-      <button id="returnRouteBtn" class="soft-btn compact-btn" hidden>Volver</button>
-      <button id="stopFollowingBtn" data-i18n="stopRoute">Finalizar</button>
+      <div class="route-nav-main"><small>Restante</small><strong id="followDistance">—</strong></div>
+      <div class="route-nav-next"><small>Siguiente lugar</small><strong id="followNearestPoi">—</strong></div>
+      <div class="route-nav-status"><span id="routeFollowStatus">Esperando GPS…</span><span id="routeDeviation"></span></div>
+      <button id="returnRouteBtn" class="soft-btn compact-btn" hidden>Volver a ruta</button>
+      <button id="stopFollowingBtn" class="route-finish" data-i18n="stopRoute">Finalizar</button>
     </div>
 
     <div class="map-credit"><span id="mapStatus">Preparando mapa…</span></div>
