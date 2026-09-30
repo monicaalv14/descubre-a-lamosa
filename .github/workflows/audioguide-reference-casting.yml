@@ -56,8 +56,9 @@ jobs:
               json.dump(chosen,f,ensure_ascii=False,indent=2)
           print(json.dumps(chosen,ensure_ascii=False,indent=2))
           PY
-          python /tmp/pick_references.py
+          python /tmp/pick_references.py || test -f referencias/metadata.json
       - name: Guardar referencias
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: referencias-maduras-es-ES-cc0
