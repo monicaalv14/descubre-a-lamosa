@@ -16,7 +16,7 @@ async function expectReady(page){
 
 test('app carga, navega y dibuja la PR-G 119 local',async({page})=>{
   debug(page);
-  await page.goto('/?v=126b1&mode=research');
+  await page.goto('/?v=127b1&mode=research');
   await expectReady(page);
   await expect(page.locator('.maplibregl-canvas')).toBeVisible();
   await expect(page.locator('[data-nav="explore"]')).toBeVisible();
@@ -39,7 +39,7 @@ test('app carga, navega y dibuja la PR-G 119 local',async({page})=>{
 
 test('visitante oculta herramientas de investigación',async({page})=>{
   debug(page);
-  await page.goto('/?v=126b1');
+  await page.goto('/?v=127b1');
   await expectReady(page);
   await expect(page.locator('[data-nav="field"]')).toBeHidden();
   await page.locator('[data-nav="more"]').click();
@@ -49,7 +49,7 @@ test('visitante oculta herramientas de investigación',async({page})=>{
 
 test('ficha de lugar ofrece acciones principales y enlace profundo',async({page})=>{
   debug(page);
-  await page.goto('/?v=126b1#poi=POI-001');
+  await page.goto('/?v=127b1#poi=POI-001');
   await expectReady(page);
   await expect(page.locator('#poiSheet')).toHaveClass(/open/);
   await expect(page.locator('#poiDirections')).toBeVisible();
@@ -60,7 +60,7 @@ test('ficha de lugar ofrece acciones principales y enlace profundo',async({page}
 
 test('apariencia y filtros funcionan sin romper el mapa',async({page})=>{
   debug(page);
-  await page.goto('/?v=126b1');
+  await page.goto('/?v=127b1');
   await expectReady(page);
   await page.locator('[data-nav="more"]').click();
   await page.locator('#appearanceSelect').selectOption('dark');
@@ -74,7 +74,7 @@ test('apariencia y filtros funcionan sin romper el mapa',async({page})=>{
 
 test('audioguía muestra controles simples y no rompe sin voces instaladas',async({page})=>{
   debug(page);
-  await page.goto('/?v=126b1');
+  await page.goto('/?v=127b1');
   await expectReady(page);
   await page.locator('[data-nav="more"]').click();
   const audio=page.locator('details').filter({hasText:'Audioguía'});
@@ -88,7 +88,7 @@ test('audioguía muestra controles simples y no rompe sin voces instaladas',asyn
 
 test('explorar evita listar todo el inventario por defecto',async({page})=>{
   debug(page);
-  await page.goto('/?v=126b1');
+  await page.goto('/?v=127b1');
   await expectReady(page);
   const count=await page.locator('#exploreList .list-row').count();
   expect(count).toBeLessThanOrEqual(12);
@@ -97,7 +97,7 @@ test('explorar evita listar todo el inventario por defecto',async({page})=>{
 
 test('capas avanzadas están plegadas',async({page})=>{
   debug(page);
-  await page.goto('/?v=126b1');
+  await page.goto('/?v=127b1');
   await expectReady(page);
   await page.locator('#layersBtn').click();
   await expect(page.locator('.advanced-layers')).toBeVisible();
@@ -120,7 +120,7 @@ test('la red de caminos no bloquea el arranque inicial',async({page})=>{
     await route.fulfill({response});
   });
   const start=Date.now();
-  await page.goto('/?v=126b1',{waitUntil:'domcontentloaded'});
+  await page.goto('/?v=127b1',{waitUntil:'domcontentloaded'});
   await expectReady(page);
   const elapsed=Date.now()-start;
   expect(elapsed).toBeLessThan(4000);
@@ -129,7 +129,7 @@ test('la red de caminos no bloquea el arranque inicial',async({page})=>{
 
 test('una recarga offline arranca desde caché',async({page,context})=>{
   debug(page);
-  await page.goto('/?v=126b1');
+  await page.goto('/?v=127b1');
   await expectReady(page);
   await page.evaluate(async()=>{
     if('serviceWorker'in navigator){
@@ -150,7 +150,7 @@ test('una recarga offline arranca desde caché',async({page,context})=>{
 
 test('JSZip no se carga durante el arranque normal',async({page})=>{
   debug(page);
-  await page.goto('/?v=126b1');
+  await page.goto('/?v=127b1');
   await expectReady(page);
   await expect(page.locator('script[src*="jszip"]')).toHaveCount(0);
 });
@@ -164,9 +164,9 @@ test('Vía Mariana tiene tramo local cartografiable',async({request})=>{
 });
 
 
-test.only('panel inferior tiene agarre táctil amplio y sigue el arrastre',async({page})=>{
+test('panel inferior tiene agarre táctil amplio y sigue el arrastre',async({page})=>{
   debug(page);
-  await page.goto('/?v=126b1');
+  await page.goto('/?v=127b1');
   await expectReady(page);
   const handle=page.locator('[data-drawer-drag]');
   await expect(handle).toBeVisible();
@@ -182,10 +182,8 @@ test.only('panel inferior tiene agarre táctil amplio y sigue el arrastre',async
   const box=await handle.boundingBox();
   expect(box).toBeTruthy();
   const x=box.x+box.width/2,y=box.y+box.height/2;
-  console.log('[drawer hit]',await page.evaluate(({x,y})=>{const el=document.elementFromPoint(x,y),d=document.querySelector('#drawer');return {hit:el?.className||el?.tagName,handle:!!el?.closest?.('[data-drawer-drag]'),drawerTop:d?.getBoundingClientRect().top,transform:getComputedStyle(d).transform,className:d?.className}}, {x,y}));
   await page.mouse.move(x,y);
   await page.mouse.down();
-  console.log('[drawer after down]',await drawer.evaluate(el=>({className:el.className,top:el.getBoundingClientRect().top,transform:getComputedStyle(el).transform})));
   await page.mouse.move(x,y-120,{steps:6});
   await page.waitForTimeout(50);
   const during=await drawer.evaluate(el=>el.getBoundingClientRect().top);
@@ -194,19 +192,17 @@ test.only('panel inferior tiene agarre táctil amplio y sigue el arrastre',async
   await expect(drawer).not.toHaveClass(/dragging/);
 });
 
-test.only('arrastre táctil real mueve el panel de forma continua',async({page,context})=>{
+test('arrastre táctil real mueve el panel de forma continua',async({page,context})=>{
   debug(page);
-  await page.goto('/?v=126b1');
+  await page.goto('/?v=127b1');
   await expectReady(page);
   const handle=page.locator('[data-drawer-drag]'),drawer=page.locator('#drawer');
   const box=await handle.boundingBox();
   expect(box).toBeTruthy();
   const x=box.x+box.width/2,y=box.y+box.height/2;
   const before=await drawer.evaluate(el=>el.getBoundingClientRect().top);
-  console.log('[touch hit]',await page.evaluate(({x,y})=>{const el=document.elementFromPoint(x,y),d=document.querySelector('#drawer');return {hit:el?.className||el?.tagName,handle:!!el?.closest?.('[data-drawer-drag]'),drawerTop:d?.getBoundingClientRect().top,transform:getComputedStyle(d).transform,className:d?.className}}, {x,y}));
   const cdp=await context.newCDPSession(page);
   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1}]});
-  console.log('[touch after start]',await drawer.evaluate(el=>({className:el.className,top:el.getBoundingClientRect().top,transform:getComputedStyle(el).transform})));
   for(let i=1;i<=6;i++){
     await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:y-i*20,id:1}]});
     await page.waitForTimeout(16);
