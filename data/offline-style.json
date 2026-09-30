@@ -1,0 +1,14 @@
+{
+  "version": 8,
+  "name": "A Lamosa offline",
+  "sources": {},
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#efece3"
+      }
+    }
+  ]
+}

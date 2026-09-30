@@ -1,0 +1,18 @@
+{
+  "name": "descubre-a-lamosa",
+  "private": true,
+  "version": "0.11.0-beta.1",
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build-static.mjs",
+    "validate": "node tools/validate.mjs",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "maplibre-gl": "6.11.2",
+    "jszip": "3.10.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.0"
+  }
+}

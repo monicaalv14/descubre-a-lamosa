@@ -1,15 +1,33 @@
 {
-  "version": "0.10.0",
+  "version": "0.11.0-beta.1",
   "published": "2026-09-30",
+  "branch": "beta",
+  "architecture": "map-first + visitor/research split",
   "inventory_elements": 76,
-  "route_references": 7,
-  "redesign": "map-first",
-  "fixes": [
-    "Ficha inferior al tocar puntos, núcleos, caminos y capturas de campo",
-    "Inventario y secciones convertidos en desplegables compactos",
-    "Trazados con cascada Xunta → OpenStreetMap API → Overpass",
-    "Ruta activa resaltada en una capa independiente y removible"
+  "features": [
+    "MapLibre vendorizado en build",
+    "PR-G 119 oficial convertida a GeoJSON local",
+    "instantánea local de caminos OpenStreetMap",
+    "límite parroquial e hidrografía locales en build",
+    "modo Visitante e Investigación",
+    "navegación inferior móvil",
+    "clustering de POI",
+    "fichas inferiores deslizables",
+    "rutas oficiales locales y seguimiento GPS",
+    "perfil de elevación",
+    "importación GPX",
+    "paquete offline esencial",
+    "Campo con varias fotos y edición",
+    "exportación ZIP de trabajo",
+    "audioguía manual y automática",
+    "interfaz castellano/galego",
+    "línea del tiempo e historias",
+    "aportaciones pendientes con revisión",
+    "diagnóstico interno",
+    "CI con Playwright móvil"
   ],
-  "trailPolicy": "La cartografía OSM y los tracks externos no implican paso público, seguridad ni transitabilidad actual.",
-  "fieldDataStatus": "local, unpublished until reviewed"
+  "limitations": [
+    "El paquete offline no incluye una copia masiva de todas las teselas de mapa/ortofoto; usa un mapa esencial local sin cobertura.",
+    "Las traducciones de contenido patrimonial usan el texto original cuando no existe versión gallega específica."
+  ]
 }

@@ -1,0 +1,104 @@
+[
+  {
+    "id": "story-cera",
+    "year": "s. XVIII–XX",
+    "title_es": "A Lamosa cereira",
+    "title_gl": "A Lamosa cereira",
+    "summary_es": "La cera fue una actividad económica central: colmenas, lagares, eiras y cereros conectaban A Lamosa con mercados y rutas de arriería.",
+    "summary_gl": "A cera foi unha actividade económica central: colmeas, lagares, eiras e cereiros conectaban A Lamosa con mercados e rutas de arrieiría.",
+    "poi_ids": [
+      "POI-017",
+      "POI-018",
+      "POI-019",
+      "POI-020",
+      "POI-052"
+    ]
+  },
+  {
+    "id": "story-arrieria",
+    "year": "s. XVIII–XIX",
+    "title_es": "Caminos de arrieros",
+    "title_gl": "Camiños de arrieiros",
+    "summary_es": "El Camino Real y las vereas tradicionales enlazaban aldeas, mercancías, ganado, vino y cera entre O Condado y O Ribeiro.",
+    "summary_gl": "O Camiño Real e as vereas tradicionais enlazaban aldeas, mercadorías, gando, viño e cera entre O Condado e O Ribeiro.",
+    "poi_ids": [
+      "POI-041",
+      "POI-063",
+      "POI-057"
+    ]
+  },
+  {
+    "id": "story-parroquia",
+    "year": "1644–1784",
+    "title_es": "De ermita a parroquia",
+    "title_gl": "De ermida a parroquia",
+    "summary_es": "La documentación sitúa una capilla ya en 1644 y la separación parroquial de A Lamosa en 1783–1784.",
+    "summary_gl": "A documentación sitúa unha capela xa en 1644 e a separación parroquial da Lamosa en 1783–1784.",
+    "poi_ids": [
+      "POI-001"
+    ]
+  },
+  {
+    "id": "story-libramento",
+    "year": "1842–1952",
+    "title_es": "Nosa Señora do Libramento",
+    "title_gl": "Nosa Señora do Libramento",
+    "summary_es": "La capilla sur, el cruceiro y el panel de azulejos de 1952 condensan devoción, emigración y memoria comunitaria.",
+    "summary_gl": "A capela sur, o cruceiro e o panel de azulexos de 1952 condensan devoción, emigración e memoria comunitaria.",
+    "poi_ids": [
+      "POI-002",
+      "POI-005",
+      "POI-055"
+    ]
+  },
+  {
+    "id": "story-josegil",
+    "year": "1881–1927",
+    "title_es": "José Gil y A Lamosa",
+    "title_gl": "José Gil e A Lamosa",
+    "summary_es": "El pionero del cine gallego pasó parte de su juventud en A Lamosa, ligado al destino de su padre en la Guardia Civil y a la escuela de Paredes.",
+    "summary_gl": "O pioneiro do cinema galego pasou parte da súa mocidade na Lamosa, ligado ao destino do seu pai na Garda Civil e á escola de Paredes.",
+    "poi_ids": [
+      "POI-058",
+      "POI-059"
+    ]
+  },
+  {
+    "id": "story-agua",
+    "year": "1958–1961",
+    "title_es": "Agua, fuentes y lavaderos",
+    "title_gl": "Auga, fontes e lavadoiros",
+    "summary_es": "Las obras de abastecimiento, riego, fuentes y lavaderos muestran cómo cambió la vida cotidiana del pueblo a mediados del siglo XX.",
+    "summary_gl": "As obras de abastecemento, rega, fontes e lavadoiros amosan como mudou a vida cotiá da aldea a mediados do século XX.",
+    "poi_ids": [
+      "POI-029",
+      "POI-031",
+      "POI-032",
+      "POI-049",
+      "POI-050"
+    ]
+  },
+  {
+    "id": "story-reloj",
+    "year": "1957",
+    "title_es": "La torre del reloj",
+    "title_gl": "A torre do reloxo",
+    "summary_es": "La torre occidental con reloj se añadió en 1957 y se convirtió en uno de los perfiles más reconocibles del conjunto parroquial.",
+    "summary_gl": "A torre occidental con reloxo engadiuse en 1957 e converteuse nun dos perfís máis recoñecibles do conxunto parroquial.",
+    "poi_ids": [
+      "POI-004"
+    ]
+  },
+  {
+    "id": "story-emigracion",
+    "year": "s. XX",
+    "title_es": "Emigración y retorno",
+    "title_gl": "Emigración e retorno",
+    "summary_es": "Donaciones, azulejos, asociaciones y mejoras locales reflejan el vínculo mantenido por vecinos emigrados con A Lamosa.",
+    "summary_gl": "Doazóns, azulexos, asociacións e melloras locais reflicten o vínculo mantido pola veciñanza emigrada coa Lamosa.",
+    "poi_ids": [
+      "POI-055",
+      "POI-060"
+    ]
+  }
+]

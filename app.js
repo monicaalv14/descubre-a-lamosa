@@ -1,82 +1,50 @@
-import {S,$,VERSION,setStatus,connectionStatus,getJSON,updateStorageInfo} from './js/state.js';
-import {setupUI,openPOI,openPlace,openFieldRecord,openMapFeature,setTab} from './js/ui.js?v=100';
-import {setupMapEvents,initMap} from './js/map.js?v=100';
-import {setupField,renderRecords} from './js/field.js?v=100';
-import {setupTracks,renderTracks} from './js/tracks.js?v=100';
-import {setupExports} from './js/export.js';
-
-addEventListener('online',connectionStatus);
-addEventListener('offline',connectionStatus);
-connectionStatus();
-
-window.addEventListener('alm:open-poi',e=>openPOI(e.detail));
-window.addEventListener('alm:open-place',e=>openPlace(e.detail));
-window.addEventListener('alm:open-field',e=>openFieldRecord(e.detail));
-window.addEventListener('alm:map-feature',e=>openMapFeature(e.detail));
+import {S,$,setMode,recordError} from './js/state.js';
+import {loadData} from './js/data.js';
+import {initMap} from './js/map.js';
+import {initUI} from './js/ui.js';
+import {initRoutes} from './js/routes.js';
+import {initField} from './js/field.js';
+import {initOffline} from './js/offline.js';
+import {initAudio} from './js/audio.js';
+import {initContributions} from './js/contributions.js';
+import {initDiagnostics} from './js/diagnostics.js';
 
 async function boot(){
   try{
-    setStatus('cargando datos…');
-    const [p1,p2,p3,p4,p5,p6,routes,places,media]=await Promise.all([
-      getJSON('data/pois-1.json?v=100'),
-      getJSON('data/pois-2.json?v=100'),
-      getJSON('data/pois-3.json?v=100'),
-      getJSON('data/pois-4.json?v=100'),
-      getJSON('data/pois-5.json?v=100'),
-      getJSON('data/pois-6.json?v=100'),
-      getJSON('data/routes.json?v=100'),
-      getJSON('data/places.json?v=100'),
-      getJSON('data/media.json?v=100')
-    ]);
-    const mediaMap=Object.fromEntries(media.map(x=>[x.id,x]));
-    S.POIS=[...p1,...p2,...p3,...p4,...p5,...p6].map(x=>({...x,...(mediaMap[x.id]||{})}));
-    S.ROUTES=routes;
-    S.PLACES=places.map(x=>({...x,...(mediaMap[x.id]||{})}));
-
-    setupUI();
-    setupMapEvents();
-    setupField();
-    setupTracks();
-    setupExports();
-    initMap();
-    await renderRecords();
-    await renderTracks();
-    updateStorageInfo();
-    setStatus(S.POIS.length+' elementos · listo');
-
-    import('./js/trail-network.js?v=100')
-      .then(m=>m.setupTrailNetwork())
-      .catch(e=>console.warn('Caminos/rutas:',e));
-
-    launch();
+    const params=new URLSearchParams(location.search);
+    if(params.get('mode')==='research'||params.get('mode')==='visitor')setMode(params.get('mode'));
+    await loadData();
+    initUI();
+    await initMap();
+    initRoutes();
+    initField();
+    initOffline();
+    initAudio();
+    initContributions();
+    initDiagnostics();
+    bindPwa();
+    connection();
+    document.body.dataset.appReady='true';
   }catch(e){
-    console.error(e);
-    setStatus('ERROR al cargar datos');
-    $('#stats').textContent='Error cargando los datos locales: '+e.message;
-    $('#officialLayers').textContent='Datos locales no disponibles.';
+    recordError(e,'boot');document.body.dataset.appReady='error';
+    const s=document.querySelector('#mapStatus');if(s)s.textContent='Error de arranque: '+e.message;
   }
 }
-function launch(){
-  const p=new URLSearchParams(location.search);
-  if(p.get('tab'))setTab(p.get('tab'));
-  if(p.get('near')==='1')setTimeout(()=>$('#nearbyToggle').click(),350);
-  const m=location.hash.match(/^#poi=(.+)$/);
-  if(m)setTimeout(()=>openPOI(decodeURIComponent(m[1])),450);
+function connection(){
+  const b=$('#connectionBadge');if(!b)return;
+  b.textContent=navigator.onLine?'● Online':'● Offline';b.title=navigator.onLine?'Con conexión':'Sin conexión';
 }
-let installPrompt=null;
-addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('#install').hidden=false;});
-$('#install')?.addEventListener('click',async()=>{
-  if(!installPrompt)return;
-  installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('#install').hidden=true;
-});
-if('serviceWorker'in navigator){
-  navigator.serviceWorker.register('sw.js?v=100',{updateViaCache:'none'}).then(reg=>{
-    reg.addEventListener('updatefound',()=>{
-      const w=reg.installing;
-      if(w)w.addEventListener('statechange',()=>{
-        if(w.state==='installed'&&navigator.serviceWorker.controller)$('#updateBanner').hidden=false;
-      });
-    });
-  }).catch(console.warn);
+window.addEventListener('online',connection);window.addEventListener('offline',connection);
+
+function bindPwa(){
+  let prompt=null;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();prompt=e;$('#installBtn').hidden=false;});
+  $('#installBtn').onclick=async()=>{if(!prompt)return;prompt.prompt();await prompt.userChoice;prompt=null;$('#installBtn').hidden=true;};
+  $('#reloadBtn').onclick=()=>location.reload();
+  if('serviceWorker'in navigator){
+    navigator.serviceWorker.register('sw.js?v=110b1',{updateViaCache:'none'}).then(reg=>{
+      reg.addEventListener('updatefound',()=>{const w=reg.installing;w?.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)$('#updateBanner').hidden=false;});});
+    }).catch(e=>recordError(e,'service-worker'));
+  }
 }
 boot();
