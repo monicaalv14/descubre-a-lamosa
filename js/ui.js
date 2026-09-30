@@ -51,7 +51,12 @@ function bindDrawer(){
   let startY=0,startOffset=0,currentOffset=0,dragging=false,pointerId=null,pendingOffset=null,raf=0;
   const geometry=()=>{
     const p=d.parentElement?.getBoundingClientRect(),base=p?.height||innerHeight,max=base*.88,min=92;
-    return {base,max,min,naturalTop:(p?.top||0)+base-max};
+    return {base,max,min};
+  };
+  const translateY=()=>{
+    const tr=getComputedStyle(d).transform;
+    if(!tr||tr==='none')return 0;
+    try{return new DOMMatrixReadOnly(tr).m42||0}catch{return 0}
   };
   const paint=()=>{
     raf=0;
@@ -73,9 +78,9 @@ function bindDrawer(){
   h.onpointerdown=e=>{
     if(e.pointerType==='mouse'&&e.button!==0)return;
     e.preventDefault();
-    const {max,naturalTop}=geometry(),rect=d.getBoundingClientRect();
+    const {max,min}=geometry();
     dragging=true;pointerId=e.pointerId;startY=e.clientY;
-    startOffset=Math.max(0,Math.min(max-92,rect.top-naturalTop));currentOffset=startOffset;
+    startOffset=Math.max(0,Math.min(max-min,translateY()));currentOffset=startOffset;
     try{h.setPointerCapture?.(e.pointerId)}catch{}
     d.classList.add('dragging');h.classList.add('dragging');
   };
