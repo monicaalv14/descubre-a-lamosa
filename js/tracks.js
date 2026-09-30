@@ -1,5 +1,5 @@
 import {S,$,$$,toast,dbPut,dbGetAll,dbDelete,distanceM,formatDistance,updateStorageInfo,downloadText,xmlEsc,esc} from './state.js';
-import {updateUserMarker,updateLiveTrackLayer,showSavedTrackOnMap} from './map.js';
+import {updateUserMarker,updateLiveTrackLayer,showSavedTrackOnMap} from './map.js?v=100';
 
 export function setupTracks(){
   $('#startTrackBtn').onclick=start;$('#stopTrackBtn').onclick=stop;
@@ -27,7 +27,7 @@ async function stop(){
 }
 export async function renderTracks(){
   const rows=(await dbGetAll('tracks')).sort((a,b)=>b.startedAt.localeCompare(a.startedAt));
-  $('#trackRecords').innerHTML=rows.length?rows.map(t=>`<article class="card"><div class="chips"><span class="chip field-chip">Sin publicar</span><span class="chip">${formatDistance(t.distanceM)}</span><span class="chip">${t.points.length} puntos</span></div><h3>${esc(t.name)}</h3><div class="muted">${new Date(t.startedAt).toLocaleString('es-ES')}</div><div class="card-actions"><button class="mini-btn" data-track-map="${t.id}">Ver</button><button class="mini-btn" data-track-gpx="${t.id}">GPX</button><button class="mini-btn" data-track-delete="${t.id}">Eliminar</button></div></article>`).join(''):'<p class="muted">Aún no hay recorridos grabados.</p>';
+  $('#trackRecords').innerHTML=rows.length?rows.map(t=>`<details class="route-disclosure"><summary><span><b>${esc(t.name)}</b><small>${formatDistance(t.distanceM)} · ${t.points.length} puntos · ${new Date(t.startedAt).toLocaleString('es-ES')}</small></span><span class="chip field-chip">Sin publicar</span></summary><div class="route-body"><div class="card-actions"><button class="mini-btn" data-track-map="${t.id}">Ver en mapa</button><button class="mini-btn" data-track-gpx="${t.id}">GPX</button><button class="mini-btn" data-track-delete="${t.id}">Eliminar</button></div></div></details>`).join(''):'<p class="muted" style="padding:10px">Aún no hay recorridos grabados.</p>';
   $$('[data-track-map]').forEach(b=>b.onclick=async()=>{const t=(await dbGetAll('tracks')).find(x=>x.id===b.dataset.trackMap);if(t)showSavedTrackOnMap(t);});
   $$('[data-track-gpx]').forEach(b=>b.onclick=()=>exportGPX(b.dataset.trackGpx));
   $$('[data-track-delete]').forEach(b=>b.onclick=async()=>{if(confirm('¿Eliminar este recorrido?')){await dbDelete('tracks',b.dataset.trackDelete);renderTracks();updateStorageInfo();}});

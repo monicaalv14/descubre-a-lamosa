@@ -1,24 +1,15 @@
 {
-  "version": "0.9.1",
+  "version": "0.10.0",
   "published": "2026-09-30",
   "inventory_elements": 76,
   "route_references": 7,
+  "redesign": "map-first",
   "fixes": [
-    "Ver trazado en mapa ahora desplaza la pantalla hasta el mapa",
-    "PR-G 119 usa su relación OpenStreetMap como respaldo cuando falla la capa de Xunta"
+    "Ficha inferior al tocar puntos, núcleos, caminos y capturas de campo",
+    "Inventario y secciones convertidos en desplegables compactos",
+    "Trazados con cascada Xunta → OpenStreetMap API → Overpass",
+    "Ruta activa resaltada en una capa independiente y removible"
   ],
-  "features": [
-    "classified OpenStreetMap rural network",
-    "forest/rural tracks",
-    "paths",
-    "pedestrian and bridleways",
-    "local/service ways",
-    "PR-G 119 map relation 3172784",
-    "Via Mariana local map relation 11075472",
-    "official GPX link for PR-G 119",
-    "PNOA satellite basemap",
-    "field GPS and route recording"
-  ],
-  "trailPolicy": "OSM classification and geometry do not imply public access, safety or current passability.",
+  "trailPolicy": "La cartografía OSM y los tracks externos no implican paso público, seguridad ni transitabilidad actual.",
   "fieldDataStatus": "local, unpublished until reviewed"
 }

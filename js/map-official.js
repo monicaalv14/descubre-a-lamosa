@@ -19,13 +19,17 @@ export function showOfficialRoute(){
   document.querySelector('.mapwrap')?.scrollIntoView({behavior:'smooth',block:'start'});
   setTimeout(()=>S.map?.resize(),350);
   if(!S.prgData){
-    toast('Cargando trazado de la PR-G 119…',3200);
-    window.dispatchEvent(new CustomEvent('alm:show-osm-route',{detail:{relation:3172784,name:'PR-G 119 · Ruta do Xabriña',localOnly:false,color:'#e0b51b'}}));
+    toast('Cargando trazado de la PR-G 119…',2600);
+    const b=document.querySelector('[data-map-route="TR-OF-001"]');
+    if(b){b.click();return;}
+    toast('Abre Rutas y vuelve a pulsar “Ver trazado”',3200);
     return;
   }
   const c=[];collect(S.prgData,c);
   if(!c.length){
-    window.dispatchEvent(new CustomEvent('alm:show-osm-route',{detail:{relation:3172784,name:'PR-G 119 · Ruta do Xabriña',localOnly:false,color:'#e0b51b'}}));
+    const b=document.querySelector('[data-map-route="TR-OF-001"]');
+    if(b){b.click();return;}
+    toast('No se encontró geometría de la PR-G 119',3000);
     return;
   }
   if($('#layerPrg'))$('#layerPrg').checked=true;

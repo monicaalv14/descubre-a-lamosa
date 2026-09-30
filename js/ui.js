@@ -1,6 +1,6 @@
 import {S,$,$$,esc,emit,toast,distanceM,formatDistance,favorites,setFavorite} from './state.js';
-import {openPOI,closeDetail} from './ui-detail.js';
-export {openPOI} from './ui-detail.js';
+import {openPOI,openPlace,openFieldRecord,openMapFeature,closeDetail} from './ui-detail.js?v=100';
+export {openPOI,openPlace,openFieldRecord,openMapFeature} from './ui-detail.js?v=100';
 
 export function setupUI(){
   const types=[...new Set(S.POIS.map(x=>x.type).filter(Boolean))].sort();
@@ -10,9 +10,12 @@ export function setupUI(){
   const located=S.POIS.filter(x=>x.coordinates).sort((a,b)=>a.name.localeCompare(b.name,'es'));
   $('#fieldPoi').innerHTML='<option value="">Nuevo elemento</option><optgroup label="Pendientes de coordenadas">'+pending.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('')+'</optgroup><optgroup label="Ya localizados (recaptura)">'+located.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('')+'</optgroup>';
   render();renderRoutes();renderPlaces();
-  $('#search').addEventListener('input',render);$('#filter').addEventListener('change',render);
-  $('#nearbyToggle').onclick=()=>emit('nearby');$('#favoritesToggle').onclick=()=>{S.favoritesOnly=!S.favoritesOnly;$('#favoritesToggle').classList.toggle('active',S.favoritesOnly);render();};
-  $('#close').onclick=closeDetail;$('#reloadApp').onclick=()=>location.reload();
+  $('#search').addEventListener('input',()=>{$('#inventoryDetails').open=!!$('#search').value.trim();render();});
+  $('#filter').addEventListener('change',()=>{$('#inventoryDetails').open=true;render();});
+  $('#nearbyToggle').onclick=()=>emit('nearby');
+  $('#favoritesToggle').onclick=()=>{S.favoritesOnly=!S.favoritesOnly;$('#favoritesToggle').classList.toggle('active',S.favoritesOnly);$('#inventoryDetails').open=true;render();};
+  $('#close').onclick=closeDetail;
+  $('#reloadApp').onclick=()=>location.reload();
   $$('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
   window.addEventListener('alm:rerender',()=>{render();renderPlaces();});
   window.addEventListener('alm:field-poi',e=>{setTab('field');$('#fieldPoi').value=e.detail;$('#fieldPoi').dispatchEvent(new Event('change'));});
@@ -27,31 +30,35 @@ export function render(){
   const q=$('#search').value.toLowerCase().trim(),f=$('#filter').value,favs=favorites();
   let rows=S.POIS.filter(x=>(!f||x.type===f)&&(!q||Object.values(x).join(' ').toLowerCase().includes(q))&&(!S.favoritesOnly||favs.has(x.id)));
   if(S.nearbyMode&&S.userPosition)rows=rows.filter(x=>x.coordinates).sort((a,b)=>distanceM(S.userPosition,a.coordinates)-distanceM(S.userPosition,b.coordinates));
-  const geo=rows.filter(x=>x.coordinates).length,photos=rows.filter(x=>x.image_url).length;
-  $('#stats').textContent=`${rows.length} elementos · ${geo} geolocalizados · ${rows.length-geo} pendientes · ${photos} con foto directa${S.nearbyMode&&S.userPosition?' · ordenados por distancia':''}`;
-  $('#cards').innerHTML=rows.map(x=>card(x,favs.has(x.id))).join('');
+  const geo=rows.filter(x=>x.coordinates).length;
+  $('#stats').textContent=`${rows.length} lugares · ${geo} en mapa · ${rows.length-geo} por localizar${S.nearbyMode&&S.userPosition?' · por distancia':''}`;
+  $('#inventoryCount').textContent=rows.length;
+  $('#cards').innerHTML=rows.map(x=>resultRow(x,favs.has(x.id))).join('');
   $$('[data-poi]').forEach(e=>e.onclick=()=>openPOI(e.dataset.poi));
   $$('[data-fav]').forEach(e=>e.onclick=ev=>{ev.stopPropagation();const id=e.dataset.fav;setFavorite(id,!favorites().has(id));});
 }
-function card(x,isFav){
-  const pend=!x.coordinates?'<span class="chip pending">Pendiente de coordenada</span>':'<span class="chip">En el mapa</span>';
-  const ev=x.web_evidence?'<span class="chip">Existencia contrastada</span>':'';
-  const priv=/privad/i.test(x.access||'')?'<span class="chip private">Acceso sensible</span>':'';
-  const dist=(S.userPosition&&x.coordinates)?`<span class="chip">${formatDistance(distanceM(S.userPosition,x.coordinates))}</span>`:'';
-  const photo=x.image_url?`<figure class="card-photo"><img class="poi-thumb" src="${esc(x.image_url)}" alt="${esc(x.name)}" loading="lazy" referrerpolicy="no-referrer"><figcaption>${esc(x.image_credit||'')}${x.image_license?' · '+esc(x.image_license):''}</figcaption></figure>`:'';
-  return `<article class="card" data-poi="${esc(x.id)}">${photo}<button class="favorite-btn ${isFav?'on':''}" data-fav="${esc(x.id)}">${isFav?'★':'☆'}</button><h3>${esc(x.name)}</h3><div class="muted">${esc(x.area)}</div><div class="chips"><span class="chip">${esc(x.subtype)}</span>${pend}${ev}${priv}${dist}</div><div>${esc(x.description)}</div></article>`;
+function resultRow(x,isFav){
+  const dist=(S.userPosition&&x.coordinates)?formatDistance(distanceM(S.userPosition,x.coordinates)):'';
+  return `<article class="result-row" data-poi="${esc(x.id)}">
+    <div class="result-icon">${iconFor(x.type)}</div>
+    <div class="result-copy"><strong>${esc(x.name)}</strong><small>${esc(x.area||'')}${dist?' · '+dist:''}</small></div>
+    <span class="row-status ${x.coordinates?'mapped':'pending'}">${x.coordinates?'●':'○'}</span>
+    <button class="row-fav ${isFav?'on':''}" data-fav="${esc(x.id)}" aria-label="Favorito">${isFav?'★':'☆'}</button>
+  </article>`;
 }
+function iconFor(t=''){const s=t.toLowerCase();if(s.includes('agua')||s.includes('molino'))return'≈';if(s.includes('historia'))return'⌛';if(s.includes('natur'))return'♧';if(s.includes('ruta'))return'↝';if(s.includes('comer'))return'◌';if(s.includes('dormir'))return'⌂';return'◆';}
+
 export function renderRoutes(){
-  $('#routecards').innerHTML=S.ROUTES.map(r=>`<article class="card"><h3>${esc(r['Nombre provisional'])}</h3><div class="chips"><span class="chip">${esc(r['Tipo'])}</span><span class="chip">Base ${esc(r['Base disponible'])}</span></div><p>${esc(r['Paradas candidatas'])}</p>${r['Longitud']?`<p><b>${esc(r['Longitud'])}</b> · ${esc(r['Duración'])} · ${esc(r['Dificultad'])}</p>`:''}<div class="muted"><b>Estado:</b> ${esc(r['Estado'])}<br><b>Siguiente:</b> ${esc(r['Trabajo siguiente'])}</div><div class="card-actions">${r.ID==='R-009'?'<button class="mini-btn" data-show-prg>Ver trazado oficial</button>':''}<button class="mini-btn" data-field-route="${esc(r.ID)}">Levantar en Campo</button></div></article>`).join('');
+  $('#routecards').innerHTML=S.ROUTES.map(r=>`<details class="route-disclosure"><summary><span><b>${esc(r['Nombre provisional'])}</b><small>${esc(r['Tipo'])} · ${esc(r['Estado'])}</small></span><span class="chevron">⌄</span></summary>
+    <div class="route-body"><p>${esc(r['Paradas candidatas'])}</p>${r['Longitud']?`<div class="chips"><span class="chip">${esc(r['Longitud'])}</span><span class="chip">${esc(r['Duración'])}</span><span class="chip">${esc(r['Dificultad'])}</span></div>`:''}<p class="muted compact"><b>Siguiente:</b> ${esc(r['Trabajo siguiente'])}</p><div class="card-actions">${r.ID==='R-009'?'<button class="mini-btn" data-show-prg>Ver trazado oficial</button>':''}<button class="mini-btn" data-field-route="${esc(r.ID)}">Levantar en Campo</button></div></div>
+  </details>`).join('');
   $$('[data-show-prg]').forEach(b=>b.onclick=()=>emit('show-prg'));
   $$('[data-field-route]').forEach(b=>b.onclick=()=>{const r=S.ROUTES.find(x=>x.ID===b.dataset.fieldRoute);emit('prepare-track',r?.['Nombre provisional']||'');});
 }
 export function renderPlaces(){
   $('#placecards').innerHTML=S.PLACES.map(x=>{
     const d=S.userPosition?formatDistance(distanceM(S.userPosition,x.coordinates)):'';
-    const photo=x.image_url?`<figure class="card-photo"><img class="poi-thumb place-thumb" src="${esc(x.image_url)}" alt="${esc(x.name)}" loading="lazy" referrerpolicy="no-referrer"><figcaption>${esc(x.image_credit||'')}${x.image_license?' · '+esc(x.image_license):''}</figcaption></figure>`:'';
-    const media=x.image_page?`<div class="card-actions"><a class="mini-btn link-btn" href="${esc(x.image_page)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(x.image_link_label||'Ver fotografía')}</a></div>`:'';
-    return `<article class="card place" data-place="${esc(x.id)}">${photo}<h3>${esc(x.name)}</h3><div class="chips"><span class="chip">Núcleo oficial</span><span class="chip">PBA</span>${d?`<span class="chip">${d}</span>`:''}</div><div class="muted">${x.coordinates[1].toFixed(6)}, ${x.coordinates[0].toFixed(6)}</div>${media}</article>`;
+    return `<article class="result-row place-row" data-place="${esc(x.id)}"><div class="result-icon">⌂</div><div class="result-copy"><strong>${esc(x.name)}</strong><small>Núcleo oficial · PBA${d?' · '+d:''}</small></div><span class="row-status mapped">●</span></article>`;
   }).join('');
-  $$('[data-place]').forEach(e=>e.onclick=()=>emit('fly',S.PLACES.find(p=>p.id===e.dataset.place)?.coordinates));
+  $$('[data-place]').forEach(e=>e.onclick=()=>openPlace(e.dataset.place));
 }

@@ -1,5 +1,5 @@
 import {S,$,$$,emit,toast,copyText,dbPut,dbGetAll,dbDelete,updateStorageInfo,esc} from './state.js';
-import {captureGPS} from './map.js';
+import {captureGPS} from './map.js?v=100';
 
 export function setupField(){
   $('#fieldPoi').onchange=prefill;$('#captureGpsBtn').onclick=()=>captureGPS(true);$('#pickMapBtn').onclick=()=>emit('pick-map');
@@ -33,7 +33,7 @@ function dataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r
 function image(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
 export async function renderRecords(){
   const rows=(await dbGetAll('records')).sort((a,b)=>b.capturedAt.localeCompare(a.capturedAt));
-  $('#fieldRecords').innerHTML=rows.length?rows.map(r=>`<article class="card"><div class="chips"><span class="chip field-chip">Sin publicar</span><span class="chip">${esc(r.method)}</span></div><h3>${esc(r.name)}</h3><div class="muted">${r.coordinates[1].toFixed(7)}, ${r.coordinates[0].toFixed(7)}${r.accuracy!=null?` · ±${Math.round(r.accuracy)} m`:''}</div>${r.notes?`<p>${esc(r.notes)}</p>`:''}${r.photo?`<img class="thumb" src="${r.photo}" alt="Foto de campo">`:''}<div class="card-actions"><button class="mini-btn" data-field-map="${r.id}">Mapa</button><button class="mini-btn" data-field-delete="${r.id}">Eliminar</button></div></article>`).join(''):'<p class="muted">Aún no hay puntos de campo guardados.</p>';
+  $('#fieldRecords').innerHTML=rows.length?rows.map(r=>`<details class="route-disclosure"><summary><span><b>${esc(r.name)}</b><small>${r.coordinates[1].toFixed(6)}, ${r.coordinates[0].toFixed(6)} · ${esc(r.method)}</small></span><span class="chip field-chip">Sin publicar</span></summary><div class="route-body">${r.notes?`<p>${esc(r.notes)}</p>`:''}${r.photo?`<img class="thumb" src="${r.photo}" alt="Foto de campo">`:''}<div class="card-actions"><button class="mini-btn" data-field-map="${r.id}">Mapa</button><button class="mini-btn" data-field-delete="${r.id}">Eliminar</button></div></div></details>`).join(''):'<p class="muted" style="padding:10px">Aún no hay puntos de campo guardados.</p>';
   $$('[data-field-map]').forEach(b=>b.onclick=async()=>{const r=(await dbGetAll('records')).find(x=>x.id===b.dataset.fieldMap);if(r)emit('fly',r.coordinates);});
   $$('[data-field-delete]').forEach(b=>b.onclick=async()=>{if(confirm('¿Eliminar esta captura de campo?')){await dbDelete('records',b.dataset.fieldDelete);renderRecords();emit('field-updated');updateStorageInfo();}});
 }
