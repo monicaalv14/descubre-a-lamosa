@@ -134,3 +134,20 @@ button,a,input,select,textarea{min-height:44px}
   .drawer.collapsed .searchbox,.drawer.collapsed .chip-scroll,.drawer.collapsed .quick-row,.drawer.collapsed .section-note,.drawer.collapsed .compact-list{display:grid}
   .drawer-subtitle{display:block!important}
 }
+
+
+/* v0.12.1 · simplificación + audioguía */
+.advanced-layers{border-top:1px solid var(--line);margin-top:5px;padding-top:3px}
+.advanced-layers>summary{cursor:pointer;font-size:12px;font-weight:800;padding:7px 0;color:var(--muted)}
+.advanced-layers>label{padding-left:7px!important}
+.audio-settings{gap:10px}
+.audio-settings label{font-size:12px}
+.voice-row label{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
+.voice-row input[type="range"]{grid-column:1/-1;width:100%;accent-color:var(--green2);min-height:32px;padding:0;border:0;background:transparent}
+#voiceRateValue{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700}
+#voiceHint{margin-bottom:0}
+.show-all-btn{border:1px dashed var(--line);background:transparent;color:var(--green2);border-radius:11px;padding:10px 12px;font-weight:800;cursor:pointer}
+.app-footer-note{text-align:center;color:var(--muted);font-size:10px;margin:16px 0 6px}
+#connectionBadge[hidden]{display:none}
+body[data-theme="dark"] .show-all-btn{color:#a8ceb7}
+body[data-theme="dark"] .advanced-layers>summary{color:#a7b4ad}

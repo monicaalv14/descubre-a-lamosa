@@ -1,5 +1,5 @@
 import {S,$,toast,recordError} from './state.js';
-const PACK='a-lamosa-offline-pack-v120';
+const PACK='a-lamosa-offline-pack-v121';
 export function initOffline(){
   $('#offlinePackBtn').onclick=downloadOfflinePack;
   $('#clearCacheBtn').onclick=clearMapCaches;
@@ -15,10 +15,16 @@ async function downloadOfflinePack(){
       try{const r=await fetch(u);if(r.ok||r.type==='opaque'){await cache.put(u,r.clone());ok++;}else fail++;}catch{fail++;}
     }
     for(const p of S.pois){
-      if(!p.image_url)continue;
-      try{const req=new Request(p.image_url,{mode:'no-cors'}),r=await fetch(req);await cache.put(req,r.clone());ok++;}catch{}
+      const urls=[
+        p.image_url,
+        ...(Array.isArray(p.images)?p.images.map(x=>typeof x==='string'?x:x?.url):[]),
+        p.audio_url,p.audio_es,p.audio_gl,p.audio_url_es,p.audio_url_gl
+      ].filter(Boolean);
+      for(const url of [...new Set(urls)]){
+        try{const req=new Request(url,{mode:'no-cors'}),r=await fetch(req);await cache.put(req,r.clone());ok++;}catch{}
+      }
     }
-    localStorage.setItem('aLamosaOfflinePack',JSON.stringify({version:m.version||'0.12',at:new Date().toISOString(),ok,fail}));
+    localStorage.setItem('aLamosaOfflinePack',JSON.stringify({version:m.version||'0.12.1',at:new Date().toISOString(),ok,fail}));
     status.textContent='Paquete listo · '+ok+' recursos'+(fail?' · '+fail+' no disponibles':'');toast('A Lamosa guardada para uso esencial sin conexión');
   }catch(e){recordError(e,'offline-pack');status.textContent='No se pudo completar la descarga.';toast('Error al preparar offline');}
   btn.disabled=false;

@@ -100,5 +100,5 @@ await fs.writeFile(path.join(DIST,'data/generated/build-info.json'),JSON.stringi
 const files=[];
 async function walk(dir,prefix=''){for(const e of await fs.readdir(dir,{withFileTypes:true})){const rel=prefix+e.name;if(e.isDirectory())await walk(path.join(dir,e.name),rel+'/');else if(!rel.startsWith('data/generated/offline-manifest'))files.push('./'+rel);}}
 await walk(DIST);
-await fs.writeFile(path.join(DIST,'data/generated/offline-manifest.json'),JSON.stringify({version:'0.12.0-beta.1',assets:files.filter(x=>!x.includes('/vendor/jszip'))},null,2));
+await fs.writeFile(path.join(DIST,'data/generated/offline-manifest.json'),JSON.stringify({version:'0.12.1-beta.1',assets:files.filter(x=>!x.includes('/vendor/jszip'))},null,2));
 console.log(JSON.stringify(buildInfo));

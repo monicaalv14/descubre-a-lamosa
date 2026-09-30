@@ -33,7 +33,9 @@ async function boot(){
 }
 function connection(){
   const b=$('#connectionBadge');if(!b)return;
-  b.textContent=navigator.onLine?'● Online':'● Offline';b.title=navigator.onLine?'Con conexión':'Sin conexión';
+  b.hidden=navigator.onLine;
+  b.textContent='Sin conexión';
+  b.title='La app está usando datos disponibles sin conexión';
 }
 window.addEventListener('online',connection);window.addEventListener('offline',connection);
 
@@ -58,7 +60,7 @@ function bindPwa(){
   $('#installBtn').onclick=async()=>{if(!prompt)return;prompt.prompt();await prompt.userChoice;prompt=null;$('#installBtn').hidden=true;};
   $('#reloadBtn').onclick=()=>location.reload();
   if('serviceWorker'in navigator){
-    navigator.serviceWorker.register('sw.js?v=120b1',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('sw.js?v=121b1',{updateViaCache:'none'}).then(reg=>{
       reg.addEventListener('updatefound',()=>{const w=reg.installing;w?.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)$('#updateBanner').hidden=false;});});
     }).catch(e=>recordError(e,'service-worker'));
   }

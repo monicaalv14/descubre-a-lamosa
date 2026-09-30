@@ -16,7 +16,7 @@ async function expectReady(page){
 
 test('app carga, navega y dibuja la PR-G 119 local',async({page})=>{
   debug(page);
-  await page.goto('/?v=120b1&mode=research');
+  await page.goto('/?v=121b1&mode=research');
   await expectReady(page);
   await expect(page.locator('.maplibregl-canvas')).toBeVisible();
   await expect(page.locator('[data-nav="explore"]')).toBeVisible();
@@ -39,7 +39,7 @@ test('app carga, navega y dibuja la PR-G 119 local',async({page})=>{
 
 test('visitante oculta herramientas de investigación',async({page})=>{
   debug(page);
-  await page.goto('/?v=120b1');
+  await page.goto('/?v=121b1');
   await expectReady(page);
   await expect(page.locator('[data-nav="field"]')).toBeHidden();
   await page.locator('[data-nav="more"]').click();
@@ -49,7 +49,7 @@ test('visitante oculta herramientas de investigación',async({page})=>{
 
 test('ficha de lugar ofrece acciones principales y enlace profundo',async({page})=>{
   debug(page);
-  await page.goto('/?v=120b1#poi=POI-001');
+  await page.goto('/?v=121b1#poi=POI-001');
   await expectReady(page);
   await expect(page.locator('#poiSheet')).toHaveClass(/open/);
   await expect(page.locator('#poiDirections')).toBeVisible();
@@ -60,7 +60,7 @@ test('ficha de lugar ofrece acciones principales y enlace profundo',async({page}
 
 test('apariencia y filtros funcionan sin romper el mapa',async({page})=>{
   debug(page);
-  await page.goto('/?v=120b1');
+  await page.goto('/?v=121b1');
   await expectReady(page);
   await page.locator('[data-nav="more"]').click();
   await page.locator('#appearanceSelect').selectOption('dark');
@@ -69,4 +69,37 @@ test('apariencia y filtros funcionan sin romper el mapa',async({page})=>{
   await page.locator('#photosBtn').click();
   await expect(page.locator('#photosBtn')).toHaveClass(/active/);
   await expect(page.locator('.maplibregl-canvas')).toBeVisible();
+});
+
+
+test('audioguía muestra controles simples y no rompe sin voces instaladas',async({page})=>{
+  debug(page);
+  await page.goto('/?v=121b1');
+  await expectReady(page);
+  await page.locator('[data-nav="more"]').click();
+  const audio=page.locator('details').filter({hasText:'Audioguía'});
+  await audio.locator('summary').click();
+  await expect(page.locator('#voiceSelect')).toBeVisible();
+  await expect(page.locator('#voiceRate')).toBeVisible();
+  await expect(page.locator('#voiceSampleBtn')).toBeVisible();
+  await page.locator('#voiceRate').evaluate(el=>{el.value='0.90';el.dispatchEvent(new Event('input',{bubbles:true}));});
+  await expect(page.locator('#voiceRateValue')).toHaveText('0.90×');
+});
+
+test('explorar evita listar todo el inventario por defecto',async({page})=>{
+  debug(page);
+  await page.goto('/?v=121b1');
+  await expectReady(page);
+  const count=await page.locator('#exploreList .list-row').count();
+  expect(count).toBeLessThanOrEqual(12);
+  await expect(page.locator('#showAllPlaces')).toBeAttached();
+});
+
+test('capas avanzadas están plegadas',async({page})=>{
+  debug(page);
+  await page.goto('/?v=121b1');
+  await expectReady(page);
+  await page.locator('#layersBtn').click();
+  await expect(page.locator('.advanced-layers')).toBeVisible();
+  await expect(page.locator('.advanced-layers')).not.toHaveAttribute('open','');
 });
