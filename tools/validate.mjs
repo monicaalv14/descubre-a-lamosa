@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';
-const must=['dist/index.html','dist/app.js','dist/vendor/maplibre-gl.mjs','dist/vendor/maplibre-gl.css','dist/data/generated/prg119.geojson','dist/data/generated/osm-network.geojson','dist/data/generated/pois-all.json'];
+const must=['dist/index.html','dist/app.js','dist/vendor/maplibre-gl.mjs','dist/vendor/maplibre-gl-shared.mjs','dist/vendor/maplibre-gl.css','dist/data/generated/prg119.geojson','dist/data/generated/osm-network.geojson','dist/data/generated/pois-all.json'];
 for(const f of must){await fs.access(f);}
 const pois=JSON.parse(await fs.readFile('dist/data/generated/pois-all.json','utf8'));
 if(pois.length<70)throw new Error('Inventario incompleto: '+pois.length);

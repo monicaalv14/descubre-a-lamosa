@@ -53,6 +53,7 @@ await fs.rm(DIST,{recursive:true,force:true}); await copyTree(ROOT,DIST);
 await fs.mkdir(path.join(DIST,'vendor'),{recursive:true});
 await fs.mkdir(path.join(DIST,'data/generated'),{recursive:true});
 await fs.copyFile(path.join(ROOT,'node_modules/maplibre-gl/dist/maplibre-gl.mjs'),path.join(DIST,'vendor/maplibre-gl.mjs'));
+await fs.copyFile(path.join(ROOT,'node_modules/maplibre-gl/dist/maplibre-gl-shared.mjs'),path.join(DIST,'vendor/maplibre-gl-shared.mjs'));
 await fs.copyFile(path.join(ROOT,'node_modules/maplibre-gl/dist/maplibre-gl.css'),path.join(DIST,'vendor/maplibre-gl.css'));
 await fs.copyFile(path.join(ROOT,'node_modules/jszip/dist/jszip.min.js'),path.join(DIST,'vendor/jszip.min.js'));
 
