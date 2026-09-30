@@ -164,3 +164,14 @@ body[data-theme="dark"] .advanced-layers>summary{color:#a7b4ad}
 .story-strip .timeline-item{flex:0 0 min(78vw,300px);scroll-snap-align:start;margin:0;padding:14px;border-radius:16px}
 .story-strip .timeline-item p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:10px}
 .drawer.collapsed .explore-stories{display:none}
+
+/* Fichas POI: jerarquía visual, sin alterar apertura ni arrastre */
+.poi-intro{margin:14px 0 16px;padding:14px 15px;border-radius:16px;background:color-mix(in srgb,var(--panel,#fff) 92%,currentColor 8%)}
+.poi-intro-label{display:block;margin-bottom:6px;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.62}
+.poi-intro .poi-summary{margin:0;line-height:1.55}
+.poi-title h2{line-height:1.08;margin-top:3px}
+.poi-meta{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:6px;font-size:.82rem;opacity:.72}
+.action-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.action-grid .action-card{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:62px;padding:8px 5px;text-align:center}
+.action-grid .action-card>span{font-size:1.1rem}.action-grid .action-card>small{font-size:.7rem;line-height:1.1}
+@media(max-width:390px){.action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
