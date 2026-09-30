@@ -1,0 +1,50 @@
+name: Generar casting de audioguia
+
+on:
+  workflow_dispatch:
+
+jobs:
+  casting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Instalar Kokoro
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng
+          python -m pip install --upgrade pip
+          pip install "kokoro>=0.9.4" soundfile
+      - name: Generar muestras
+        run: |
+          mkdir -p casting
+          cat > /tmp/casting.py <<'PY'
+          from kokoro import KPipeline
+          import numpy as np
+          import soundfile as sf
+
+          text = """Bienvenidos a A Lamosa. Nos acercamos a Ponte Folón, un lugar donde los caminos, el agua y la piedra forman parte de la memoria del paisaje. Detente un momento. Mira a tu alrededor y escucha. A veces, para descubrir la historia de un lugar, solo hay que aprender a observar las huellas que ha dejado el tiempo."""
+          pipe = KPipeline(lang_code='e')
+          for voice in ('em_alex','em_santa'):
+              for speed in (0.88,0.82):
+                  parts=[]
+                  for _,_,audio in pipe(text, voice=voice, speed=speed):
+                      if audio is not None:
+                          parts.append(audio.numpy() if hasattr(audio,'numpy') else np.asarray(audio))
+                  if not parts:
+                      raise RuntimeError(f'Sin audio para {voice}')
+                  out=f'casting/{voice}_{str(speed).replace(".","")}.wav'
+                  sf.write(out,np.concatenate(parts),24000)
+                  print(out)
+          PY
+          python /tmp/casting.py
+      - name: Guardar casting
+        uses: actions/upload-artifact@v4
+        with:
+          name: casting-audioguia-a-lamosa
+          path: casting/*.wav
+          retention-days: 14
