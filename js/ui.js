@@ -32,8 +32,8 @@ function bindNavigation(){
 }
 export function openNav(name){
   closeSheets();
-  $('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));
-  $('.drawer-view').forEach(v=>v.classList.toggle('active',v.dataset.view===name));
+  $$('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));
+  $$('.drawer-view').forEach(v=>v.classList.toggle('active',v.dataset.view===name));
   setDrawer(name==='explore'?'half':'full');
   emit('nav',name);
 }
@@ -151,7 +151,7 @@ export function openPoi(id){
     '<details class="sheet-more"><summary>'+t('info')+'</summary><div class="detail-grid"><b>Tipo</b><span>'+esc(x.subtype||x.type||'')+'</span><b>Acceso</b><span>'+esc(x.access||'Sin comprobar')+'</span><b>Estado</b><span>'+visitorStatus(x)+'</span>'+(S.mode==='research'?'<b>Por comprobar</b><span>'+esc(x.verify||'')+'</span>':'')+'</div></details>'+
     '<details class="sheet-more"><summary>'+t('sources')+'</summary><div class="source-box">'+sourceHtml(x)+'</div></details>';
   openSheet('#poiSheet',html,'half');
-  $('[data-gallery]').forEach(b=>b.onclick=()=>{
+  $$('[data-gallery]').forEach(b=>b.onclick=()=>{
     const p=photos[Number(b.dataset.gallery)];if(!p)return;
     const img=$('#poiSheet .hero-photo img'),cap=$('#poiSheet .hero-photo figcaption');
     if(img){img.src=p.url;img.alt=x.name;}if(cap)cap.textContent=p.credit||'';
