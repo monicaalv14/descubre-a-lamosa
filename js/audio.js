@@ -65,10 +65,15 @@ function scoreVoice(v,locale){
   if(lang===want)score+=120;
   else if(lang.startsWith(base))score+=80;
   else if(base==='gl'&&lang.startsWith('es'))score+=18;
-  if(/natural|neural|premium|enhanced|studio|online/.test(name))score+=45;
+  // Prefer high-quality Spanish voices, then likely feminine voices. Voice names vary by Android engine.
+  if(/natural|neural|premium|enhanced|studio|wavenet/.test(name))score+=55;
   if(/google|microsoft|samsung/.test(name))score+=24;
-  if(/female|mujer|feminina|femenina/.test(name))score+=4;
-  if(v.localService)score+=navigator.onLine?5:25;
+  if(/female|mujer|feminina|femenina|woman/.test(name))score+=28;
+  // Common feminine names exposed by major Android/browser TTS engines.
+  if(/\b(elvira|helena|lucia|lucía|maria|maría|paulina|sabina|sofia|sofía|isabela|dalia|conchita)\b/.test(name))score+=22;
+  if(/\b(pablo|jorge|alvaro|álvaro|diego|enrique)\b/.test(name))score-=18;
+  // For an offline guide, local voices win unless a remote voice is explicitly higher quality.
+  if(v.localService)score+=navigator.onLine?14:32;
   if(v.default)score+=3;
   return score;
 }
