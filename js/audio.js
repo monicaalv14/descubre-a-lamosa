@@ -10,6 +10,8 @@ export function initAudio(){
   window.addEventListener('alm:speak-poi',e=>speakPoi(e.detail));
   window.addEventListener('alm:stop-audio',()=>stopSpeech(false));
   window.addEventListener('alm:lang',()=>{refreshVoices();updateVoiceHint();});
+  window.addEventListener('alm:route-follow-start',()=>stopAuto(false));
+  window.addEventListener('alm:route-follow-stop',()=>{if(localStorage.getItem('aLamosaAutoAudio')==='1')startAuto();});
   setupSettings();
   refreshVoices();
   if('speechSynthesis'in window){
@@ -178,6 +180,6 @@ function startAuto(){
     if(near){S.audioSpoken.add(near.id);speakPoi(near);}
   },e=>recordError(e,'audio-gps'),{enableHighAccuracy:false,maximumAge:8000,timeout:15000});
 }
-function stopAuto(){if(watch!=null)navigator.geolocation.clearWatch(watch);watch=null;stopSpeech(false);}
+function stopAuto(stopVoice=true){if(watch!=null)navigator.geolocation.clearWatch(watch);watch=null;if(stopVoice)stopSpeech(false);}
 function escapeText(s=''){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function escapeAttr(s=''){return escapeText(s).replace(/'/g,'&#39;');}
