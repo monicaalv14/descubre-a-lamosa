@@ -16,9 +16,22 @@ export async function loadOfficialLayers(){
 }
 
 export function showOfficialRoute(){
-  if(!S.prgData){toast('El trazado oficial todavía no está cargado');return;}
-  const c=[];collect(S.prgData,c);if(!c.length)return;
-  const b=new maplibregl.LngLatBounds();c.forEach(x=>b.extend(x));S.map.fitBounds(b,{padding:55});
+  document.querySelector('.mapwrap')?.scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>S.map?.resize(),350);
+  if(!S.prgData){
+    toast('Cargando trazado de la PR-G 119…',3200);
+    window.dispatchEvent(new CustomEvent('alm:show-osm-route',{detail:{relation:3172784,name:'PR-G 119 · Ruta do Xabriña',localOnly:false,color:'#e0b51b'}}));
+    return;
+  }
+  const c=[];collect(S.prgData,c);
+  if(!c.length){
+    window.dispatchEvent(new CustomEvent('alm:show-osm-route',{detail:{relation:3172784,name:'PR-G 119 · Ruta do Xabriña',localOnly:false,color:'#e0b51b'}}));
+    return;
+  }
+  if($('#layerPrg'))$('#layerPrg').checked=true;
+  if(S.map?.getLayer('prg119-line'))S.map.setLayoutProperty('prg119-line','visibility','visible');
+  const b=new maplibregl.LngLatBounds();c.forEach(x=>b.extend(x));
+  setTimeout(()=>{S.map?.resize();S.map?.fitBounds(b,{padding:55,maxZoom:16,duration:900});toast('PR-G 119 · trazado mostrado');},260);
 }
 function collect(o,out){
   if(!o)return;

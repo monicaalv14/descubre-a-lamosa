@@ -24,3 +24,11 @@
 .trail-layer-control small{display:block;font-size:10px;line-height:1.35;color:var(--muted);margin:3px 0 0 21px}
 .osm-note{opacity:.85}.trail-popup{font-size:12px;line-height:1.35}.trail-popup a{color:#315c48;font-weight:700}
 @media(max-width:800px){.trail-metrics{grid-template-columns:1fr 1fr}}
+
+.legend-line{display:inline-block;width:28px;height:0;border-top:3px solid;margin:0 7px 3px 2px;vertical-align:middle}
+.legend-line.track{border-color:#8a6541}
+.legend-line.path{border-color:#c26035;border-top-style:dashed}
+.legend-line.pedestrian{border-color:#55845d;border-top-style:dotted}
+.legend-line.local{border-color:#727f8a}
+.trail-layer-control .subhead{font-size:12px;margin-top:4px;margin-bottom:4px}
+.trail-layer-control label{display:flex;align-items:center;gap:3px}
