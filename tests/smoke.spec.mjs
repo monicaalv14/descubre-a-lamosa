@@ -182,8 +182,10 @@ test('panel inferior tiene agarre táctil amplio y sigue el arrastre',async({pag
   const box=await handle.boundingBox();
   expect(box).toBeTruthy();
   const x=box.x+box.width/2,y=box.y+box.height/2;
+  console.log('[drawer hit]',await page.evaluate(({x,y})=>{const el=document.elementFromPoint(x,y),d=document.querySelector('#drawer');return {hit:el?.className||el?.tagName,handle:!!el?.closest?.('[data-drawer-drag]'),drawerTop:d?.getBoundingClientRect().top,transform:getComputedStyle(d).transform,className:d?.className}}, {x,y}));
   await page.mouse.move(x,y);
   await page.mouse.down();
+  console.log('[drawer after down]',await drawer.evaluate(el=>({className:el.className,top:el.getBoundingClientRect().top,transform:getComputedStyle(el).transform})));
   await page.mouse.move(x,y-120,{steps:6});
   await page.waitForTimeout(50);
   const during=await drawer.evaluate(el=>el.getBoundingClientRect().top);
@@ -201,8 +203,10 @@ test('arrastre táctil real mueve el panel de forma continua',async({page,contex
   expect(box).toBeTruthy();
   const x=box.x+box.width/2,y=box.y+box.height/2;
   const before=await drawer.evaluate(el=>el.getBoundingClientRect().top);
+  console.log('[touch hit]',await page.evaluate(({x,y})=>{const el=document.elementFromPoint(x,y),d=document.querySelector('#drawer');return {hit:el?.className||el?.tagName,handle:!!el?.closest?.('[data-drawer-drag]'),drawerTop:d?.getBoundingClientRect().top,transform:getComputedStyle(d).transform,className:d?.className}}, {x,y}));
   const cdp=await context.newCDPSession(page);
   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1}]});
+  console.log('[touch after start]',await drawer.evaluate(el=>({className:el.className,top:el.getBoundingClientRect().top,transform:getComputedStyle(el).transform})));
   for(let i=1;i<=6;i++){
     await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:y-i*20,id:1}]});
     await page.waitForTimeout(16);
