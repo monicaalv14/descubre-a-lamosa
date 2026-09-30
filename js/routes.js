@@ -86,6 +86,8 @@ function startFollowing(route,geo){
     for(let i=a;i<=z;i++){const d=distanceM(p.coordinates,coords[i]);if(d<routeD){routeD=d;routeIdx=i;}}
     return {p,routeIdx,routeD,along:cum[routeIdx]};
   }).filter(x=>x.routeD<=320).sort((a,b)=>a.along-b.along);
+  const spokenOnRoute=new Set();
+  let joinedRoute=false;
   const watch=navigator.geolocation.watchPosition(pos=>{
     if(Number.isFinite(pos.coords.accuracy)&&pos.coords.accuracy>100){
       $('#routeFollowStatus').textContent='Señal GPS débil';
@@ -97,19 +99,26 @@ function startFollowing(route,geo){
     for(const i of sampleIdx){const d=distanceM(c,coords[i]);if(d<best){best=d;rough=i;}}
     let idx=rough;const a=Math.max(0,rough-sampleStep),z=Math.min(coords.length-1,rough+sampleStep);
     for(let i=a;i<=z;i++){const d=distanceM(c,coords[i]);if(d<best){best=d;idx=i;}}
-    lastNearest=coords[idx];const remaining=Math.max(0,total-cum[idx]),progress=total?cum[idx]/total:0;
-    $('#followDistance').textContent=formatDistance(remaining);$('#routeRemaining').textContent=formatDistance(remaining)+' restantes';$('#followProgressBar').style.width=Math.round(progress*100)+'%';
-    const off=best>80;$('#routeFollowStatus').textContent=off?'Fuera del trazado':'Sobre la ruta';$('#routeDeviation').textContent=off?'⚠ '+Math.round(best)+' m':'✓';$('#returnRouteBtn').hidden=!off;
+    lastNearest=coords[idx];
+    const off=best>80;
+    if(!joinedRoute&&best<=80)joinedRoute=true;
+    const remaining=joinedRoute?Math.max(0,total-cum[idx]):total,progress=joinedRoute&&total?cum[idx]/total:0;
+    $('#followDistance').textContent=formatDistance(remaining);$('#routeRemaining').textContent=(joinedRoute?formatDistance(remaining):formatDistance(total))+(joinedRoute?' restantes':' total');$('#followProgressBar').style.width=Math.round(progress*100)+'%';
+    $('#routeFollowStatus').textContent=off?'Fuera del trazado':'Sobre la ruta';$('#routeDeviation').textContent=off?'⚠ '+Math.round(best)+' m':'✓';$('#returnRouteBtn').hidden=!off;
     if(off&&!lastOff&&navigator.vibrate)navigator.vibrate([120,80,120]);lastOff=off;
     const next=routePois.find(x=>x.along>cum[idx]+25);
     const nextD=next?Math.max(0,next.along-cum[idx]):Infinity;
     $('#followNearestPoi').textContent=next?next.p.name+' · '+formatDistance(nextD):'Final de ruta';
+    if(localStorage.getItem('aLamosaAutoAudio')==='1'&&joinedRoute&&!off){
+      const approaching=routePois.find(x=>!spokenOnRoute.has(x.p.id)&&x.along>=cum[idx]-20&&x.along-cum[idx]<=55&&distanceM(c,x.p.coordinates)<=90);
+      if(approaching){spokenOnRoute.add(approaching.p.id);S.audioSpoken.add(approaching.p.id);window.dispatchEvent(new CustomEvent('alm:speak-poi',{detail:approaching.p}));}
+    }
   },e=>{recordError(e,'route-follow');toast('Se perdió la señal GPS');},{enableHighAccuracy:true,maximumAge:2000,timeout:15000});
-  S.routeFollow={watch,routeId:route.id};$('#routeFollowPanel').hidden=false;$('#activeRouteBar').hidden=true;$('#nearbyStrip').hidden=true;document.body.classList.add('route-following');$('#routeFollowStatus').textContent='Buscando posición…';toast('Seguimiento de ruta iniciado');
+  S.routeFollow={watch,routeId:route.id};window.dispatchEvent(new CustomEvent('alm:route-follow-start'));$('#routeFollowPanel').hidden=false;$('#activeRouteBar').hidden=true;$('#nearbyStrip').hidden=true;document.body.classList.add('route-following');$('#routeFollowStatus').textContent='Buscando posición…';toast('Seguimiento de ruta iniciado');
 }
 export function stopFollowing(){
   if(S.routeFollow?.watch!=null)navigator.geolocation.clearWatch(S.routeFollow.watch);
-  S.routeFollow=null;lastNearest=null;lastOff=false;$('#routeFollowPanel').hidden=true;$('#returnRouteBtn').hidden=true;$('#routeRemaining').textContent='';$('#routeDeviation').textContent='';document.body.classList.remove('route-following');if(selected)$('#activeRouteBar').hidden=false;
+  const wasFollowing=!!S.routeFollow;S.routeFollow=null;lastNearest=null;lastOff=false;$('#routeFollowPanel').hidden=true;$('#returnRouteBtn').hidden=true;$('#routeRemaining').textContent='';$('#routeDeviation').textContent='';document.body.classList.remove('route-following');if(selected)$('#activeRouteBar').hidden=false;if(wasFollowing)window.dispatchEvent(new CustomEvent('alm:route-follow-stop'));
 }
 async function importGpx(e){
   const file=e.target.files?.[0];if(!file)return;
