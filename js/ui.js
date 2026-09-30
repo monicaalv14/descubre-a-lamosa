@@ -1,121 +1,191 @@
-import {S,$,$$,esc,toast,setMode,setLang,favorites,setFavorite,distanceM,formatDistance,dbGetAll,emit} from './state.js';
+import {S,$,$$,esc,toast,setMode,setLang,setAppearance,favorites,setFavorite,distanceM,formatDistance,dbGetAll,emit} from './state.js';
 import {t,applyI18n} from './i18n.js';
 import {visiblePois} from './data.js';
-import {locate,setCategoryFilter,refreshPoiSource,showImportedGeoJSON} from './map.js';
+import {locate,setCategoryFilter,refreshPoiSource,focusPoi} from './map.js';
 
-let selectedCategories=new Set(),favoritesOnly=false,search='';
+let selectedCategories=new Set(),favoritesOnly=false,photosOnly=false,search='';
+const SNAP={collapsed:92,half:48,full:88};
+
 export function initUI(){
   bindNavigation();bindDrawer();bindSheets();bindExplore();bindSettings();renderStories();
-  $('#languageSelect').value=S.lang;$('#modeSelect').value=S.mode;applyMode();applyI18n();renderExplore();
+  $('#languageSelect').value=S.lang;$('#modeSelect').value=S.mode;$('#appearanceSelect').value=S.appearance;
+  applyMode(true);applyAppearance();applyI18n();renderExplore();
   window.addEventListener('alm:viewport-pois',e=>renderViewport(e.detail||[]));
   window.addEventListener('alm:open-poi',e=>openPoi(e.detail));
   window.addEventListener('alm:open-place',e=>openPlace(e.detail));
   window.addEventListener('alm:open-path',e=>openPath(e.detail));
   window.addEventListener('alm:open-field',e=>openField(e.detail));
   window.addEventListener('alm:favorites',renderExplore);
-  window.addEventListener('alm:mode',()=>{applyMode();refreshPoiSource();renderExplore();renderStories();});
+  window.addEventListener('alm:mode',()=>{applyMode(false);refreshPoiSource();renderExplore();renderStories();});
   window.addEventListener('alm:lang',()=>{applyI18n();renderExplore();renderStories();});
+  window.addEventListener('alm:appearance',applyAppearance);
+  window.addEventListener('alm:route-mode',()=>{selectedCategories.clear();setCategoryFilter([]);renderExplore();$('#nearbyStrip').hidden=true;});
+  $('#searchInput').addEventListener('focus',()=>setDrawer('full'));
 }
 function bindNavigation(){
   $$('[data-nav]').forEach(b=>b.onclick=()=>openNav(b.dataset.nav));
-  $('#collapseDrawerBtn').onclick=()=>setDrawer('collapsed');
+  $('#collapseDrawerBtn').onclick=()=>cycleDrawer();
 }
 export function openNav(name){
+  closeSheets();
   $$('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));
   $$('.drawer-view').forEach(v=>v.classList.toggle('active',v.dataset.view===name));
   setDrawer(name==='explore'?'half':'full');
 }
 function setDrawer(size){
-  const d=$('#drawer');d.classList.remove('collapsed','half','full');d.classList.add(size);
+  const d=$('#drawer');d.style.height='';d.classList.remove('collapsed','half','full');d.classList.add(size);d.dataset.snap=size;
+  $('#collapseDrawerBtn')?.setAttribute('aria-expanded',size!=='collapsed'?'true':'false');
+}
+function cycleDrawer(){
+  const d=$('#drawer'),s=d.dataset.snap||'half';setDrawer(s==='full'?'half':s==='half'?'collapsed':'half');
 }
 function bindDrawer(){
-  const h=$('[data-drawer-drag]');if(!h)return;let y=0;
-  h.onpointerdown=e=>{y=e.clientY;h.setPointerCapture(e.pointerId);};
-  h.onpointerup=e=>{const dy=e.clientY-y;if(dy>80)setDrawer('collapsed');else if(dy<-80)setDrawer('full');else setDrawer('half');};
+  const h=$('[data-drawer-drag]');if(!h)return;let startY=0,startH=0,dragging=false;
+  h.onpointerdown=e=>{dragging=true;startY=e.clientY;startH=$('#drawer').getBoundingClientRect().height;h.setPointerCapture(e.pointerId);$('#drawer').classList.add('dragging');};
+  h.onpointermove=e=>{if(!dragging)return;const d=$('#drawer'),max=innerHeight*.88,min=92,next=Math.max(min,Math.min(max,startH+(startY-e.clientY)));d.style.height=next+'px';};
+  h.onpointerup=e=>{if(!dragging)return;dragging=false;const d=$('#drawer');d.classList.remove('dragging');const ratio=d.getBoundingClientRect().height/innerHeight;d.style.height='';setDrawer(ratio<.25?'collapsed':ratio>.68?'full':'half');};
 }
 function bindSheets(){
-  $$('[data-close-sheet]').forEach(b=>b.onclick=closeSheets);
-  $('#sheetBackdrop').onclick=closeSheets;
+  $$('[data-close-sheet]').forEach(b=>b.onclick=closeSheets);$('#sheetBackdrop').onclick=closeSheets;
   $$('[data-sheet-drag]').forEach(h=>{let y=0;h.onpointerdown=e=>{y=e.clientY;h.setPointerCapture(e.pointerId)};h.onpointerup=e=>{const sh=h.closest('.entity-sheet'),dy=e.clientY-y;if(dy>120)closeSheets();else{sh.classList.remove('half','full');sh.classList.add(dy<-70?'full':'half');}};});
 }
 export function openSheet(id,html,mode='half'){
   const el=$(id);if(!el)return;const body=el.querySelector('[id$="Body"]');if(body)body.innerHTML=html;
   $$('.entity-sheet').forEach(x=>{x.classList.remove('open');x.hidden=true;});
-  el.hidden=false;el.classList.remove('half','full');el.classList.add(mode);
-  $('#sheetBackdrop').hidden=false;requestAnimationFrame(()=>el.classList.add('open'));
+  el.hidden=false;el.classList.remove('half','full');el.classList.add(mode);$('#sheetBackdrop').hidden=false;requestAnimationFrame(()=>el.classList.add('open'));
 }
 export function closeSheets(){
-  $$('.entity-sheet').forEach(x=>x.classList.remove('open'));
-  $('#sheetBackdrop').hidden=true;
+  $$('.entity-sheet').forEach(x=>x.classList.remove('open'));$('#sheetBackdrop').hidden=true;
   setTimeout(()=>$$('.entity-sheet').forEach(x=>x.hidden=true),210);
 }
 function bindExplore(){
-  $('#searchInput').oninput=e=>{search=e.target.value.toLowerCase().trim();renderExplore();};
+  $('#searchInput').oninput=e=>{search=normalize(e.target.value.trim());renderExplore();};
   $('#favoritesBtn').onclick=()=>{favoritesOnly=!favoritesOnly;$('#favoritesBtn').classList.toggle('active',favoritesOnly);renderExplore();};
+  $('#photosBtn').onclick=()=>{photosOnly=!photosOnly;$('#photosBtn').classList.toggle('active',photosOnly);renderExplore();};
   $('#nearbyBtn').onclick=async()=>{
-    const pos=await locate(false);if(!pos)return;const rows=visiblePois().filter(x=>x.coordinates).map(x=>({...x,_d:distanceM(pos.coordinates,x.coordinates)})).filter(x=>x._d<=1500).sort((a,b)=>a._d-b._d);
-    renderViewport(rows.slice(0,12),true);toast(rows.length?rows.length+' lugares en 1,5 km':'No hay lugares cercanos en el inventario');};
+    const pos=await locate(false);if(!pos)return;
+    const rows=visiblePois().filter(x=>x.coordinates).map(x=>({...x,_d:distanceM(pos.coordinates,x.coordinates)})).filter(x=>x._d<=1500).sort((a,b)=>a._d-b._d);
+    renderViewport(rows.slice(0,12),true);toast(rows.length?rows.length+' lugares en 1,5 km':'No hay lugares cercanos en el inventario');
+  };
 }
-function applyMode(){document.body.dataset.mode=S.mode;$('#modeSelect').value=S.mode;}
+function applyMode(first=false){
+  document.body.dataset.mode=S.mode;$('#modeSelect').value=S.mode;
+  if(first)setDrawer(S.mode==='visitor'?'collapsed':'half');
+}
+function applyAppearance(){
+  document.body.dataset.theme=S.appearance;$('#appearanceSelect').value=S.appearance;
+  const dark=S.appearance==='dark'||(S.appearance==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#17231d':'#244b3a');
+}
 function bindSettings(){
-  $('#modeSelect').onchange=e=>setMode(e.target.value);
   $('#languageSelect').onchange=e=>setLang(e.target.value);
+  $('#appearanceSelect').onchange=e=>setAppearance(e.target.value);
+  $('#modeSelect').onchange=e=>{
+    if(e.target.value==='research'&&S.mode!=='research'){
+      const ok=confirm('El modo Investigación muestra herramientas de edición, datos pendientes y trabajo de campo. ¿Activarlo?');
+      if(!ok){e.target.value=S.mode;return;}
+    }
+    setMode(e.target.value);
+  };
 }
 export function renderExplore(){
   const rows0=visiblePois(),cats=[...new Set(rows0.map(x=>x.type).filter(Boolean))].sort();
-  $('#categoryChips').innerHTML='<button class="filter-chip '+(!selectedCategories.size?'active':'')+'" data-cat="">Todo</button>'+cats.map(c=>'<button class="filter-chip '+(selectedCategories.has(c)?'active':'')+'" data-cat="'+esc(c)+'">'+icon(c)+' '+esc(c)+'</button>').join('');
+  $('#categoryChips').innerHTML='<button class="filter-chip '+(!selectedCategories.size?'active':'')+'" data-cat="">Todo</button>'+cats.map(c=>'<button class="filter-chip '+(selectedCategories.has(c)?'active':'')+'" data-cat="'+esc(c)+'"><span class="filter-icon">'+icon(c)+'</span>'+esc(shortCat(c))+'</button>').join('');
   $$('[data-cat]').forEach(b=>b.onclick=()=>{const c=b.dataset.cat;if(!c)selectedCategories.clear();else selectedCategories.has(c)?selectedCategories.delete(c):selectedCategories.add(c);setCategoryFilter([...selectedCategories]);renderExplore();});
   const fav=favorites();
-  let rows=rows0.filter(x=>(!selectedCategories.size||selectedCategories.has(x.type))&&(!search||Object.values(x).join(' ').toLowerCase().includes(search))&&(!favoritesOnly||fav.has(x.id)));
+  let rows=rows0.filter(x=>(!selectedCategories.size||selectedCategories.has(x.type))&&(!search||searchText(x).includes(search))&&(!favoritesOnly||fav.has(x.id))&&(!photosOnly||!!x.image_url||(x.images?.length)));
   if(S.userPosition)rows=rows.map(x=>({...x,_d:x.coordinates?distanceM(S.userPosition,x.coordinates):Infinity})).sort((a,b)=>a._d-b._d);
-  $('#exploreSummary').textContent=rows.length+' lugares'+(S.mode==='research'?' · incluyendo pendientes':' verificados');
-  $('#exploreList').innerHTML=rows.slice(0,120).map(x=>row(x,fav.has(x.id))).join('');
-  $$('[data-poi-row]').forEach(e=>e.onclick=()=>openPoi(e.dataset.poiRow));
+  $('#exploreSummary').textContent=rows.length+' lugares'+(S.mode==='research'?' · incluyendo pendientes':' · listos para explorar');
+  $('#exploreList').innerHTML=rows.slice(0,80).map(x=>row(x,fav.has(x.id))).join('')+(rows.length>80?'<p class="section-note">Usa el buscador o los filtros para acotar los resultados.</p>':'');
+  $$('[data-poi-row]').forEach(e=>e.onclick=()=>{const x=S.pois.find(p=>p.id===e.dataset.poiRow);if(x?.coordinates)focusPoi(x);openPoi(e.dataset.poiRow);});
   $$('[data-fav]').forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.fav;setFavorite(id,!favorites().has(id));});
 }
 function row(x,isFav){
-  const d=Number.isFinite(x._d)?' · '+formatDistance(x._d):'';
-  return '<article class="list-row" data-poi-row="'+esc(x.id)+'"><div class="ico">'+icon(x.type)+'</div><div><strong>'+esc(x.name)+'</strong><small>'+esc(x.area||'')+d+'</small></div><div><span class="badge '+(x.coordinates?'':'pending')+'">'+(x.coordinates?'Mapa':t('pending'))+'</span><button class="star-btn" data-fav="'+esc(x.id)+'">'+(isFav?'★':'☆')+'</button></div></article>';
+  const d=Number.isFinite(x._d)?' · '+formatDistance(x._d):'',thumb=x.image_url?'<img class="row-thumb" loading="lazy" decoding="async" src="'+esc(x.image_url)+'" alt="">':'<div class="ico">'+icon(x.type)+'</div>';
+  return '<article class="list-row" data-poi-row="'+esc(x.id)+'">'+thumb+'<div><strong>'+esc(x.name)+'</strong><small>'+esc(x.area||'')+d+'</small></div><div class="row-end"><span class="badge '+(x.coordinates?'':'pending')+'">'+(x.coordinates?'Mapa':t('pending'))+'</span><button class="star-btn" data-fav="'+esc(x.id)+'" aria-label="Favorito">'+(isFav?'★':'☆')+'</button></div></article>';
 }
 function renderViewport(rows,near=false){
   const host=$('#nearbyStrip');if(!rows?.length){host.hidden=true;return;}
-  host.innerHTML=rows.map(x=>{const d=near&&Number.isFinite(x._d)?'<small>'+formatDistance(x._d)+'</small>':'';return '<button class="nearby-card" data-near-poi="'+esc(x.id)+'"><strong>'+esc(x.name)+'</strong>'+d+'</button>';}).join('');
-  host.hidden=false;$$('[data-near-poi]').forEach(b=>b.onclick=()=>openPoi(b.dataset.nearPoi));
+  host.innerHTML=rows.map(x=>{
+    const d=near&&Number.isFinite(x._d)?formatDistance(x._d):(x._mapd?formatDistance(x._mapd):'');
+    const media=x.image_url?'<img loading="lazy" decoding="async" src="'+esc(x.image_url)+'" alt="">':'<span class="nearby-icon">'+icon(x.type)+'</span>';
+    return '<button class="nearby-card" data-near-poi="'+esc(x.id)+'">'+media+'<span class="nearby-copy"><strong>'+esc(x.name)+'</strong><small>'+esc(shortCat(x.type))+(d?' · '+d:'')+'</small></span></button>';
+  }).join('');
+  host.hidden=false;
+  $$('[data-near-poi]').forEach(b=>b.onclick=()=>{const x=S.pois.find(p=>p.id===b.dataset.nearPoi);if(x)focusPoi(x);openPoi(b.dataset.nearPoi);});
 }
 export function openPoi(id){
   const x=S.pois.find(p=>p.id===id);if(!x)return;const fav=favorites().has(id),d=S.userPosition&&x.coordinates?formatDistance(distanceM(S.userPosition,x.coordinates)):'';
-  const photos=[];if(x.image_url)photos.push({url:x.image_url,credit:x.image_credit||''});
-  if(Array.isArray(x.images))photos.push(...x.images);
-  const hero=photos[0]?'<figure class="hero-photo"><img src="'+esc(photos[0].url)+'" alt="'+esc(x.name)+'"><figcaption>'+esc(photos[0].credit||'')+'</figcaption></figure>':'';
-  const gallery=photos.length>1?'<div class="gallery-strip">'+photos.slice(1).map(p=>'<img src="'+esc(p.url)+'" alt="">').join('')+'</div>':'';
-  const research=S.mode==='research'&&!x.coordinates?'<button class="soft-btn" id="poiFieldBtn">Localizar</button>':'';
-  const html='<div class="sheet-title"><span class="eyebrow">'+esc(x.type||'LUGAR')+'</span><h2>'+esc(x.name)+'</h2></div>'+hero+gallery+
-    '<p>'+esc(x.description||'')+'</p><div class="chip-scroll"><span class="badge">'+esc(x.subtype||x.type||'')+'</span>'+(d?'<span class="badge">'+d+'</span>':'')+'<span class="badge '+(x.coordinates?'':'pending')+'">'+(x.coordinates?t('publicData'):t('pending'))+'</span></div>'+
-    '<div class="sheet-actions"><button class="primary-btn" id="poiListenBtn">▶ '+t('listen')+'</button><button class="soft-btn" id="poiFavBtn">'+(fav?'★':'☆')+' '+t('favorites')+'</button>'+research+'</div>'+
-    '<details class="sheet-more"><summary>'+t('info')+' · '+t('sources')+'</summary><div class="detail-grid"><b>Zona</b><span>'+esc(x.area||'')+'</span><b>Acceso</b><span>'+esc(x.access||'')+'</span><b>Estado</b><span>'+esc(x.status||'')+'</span><b>Comprobar</b><span>'+esc(x.verify||'')+'</span><b>Fuente</b><span>'+sourceHtml(x)+'</span></div></details>';
+  const photos=[];if(x.image_url)photos.push({url:x.image_url,credit:x.image_credit||''});if(Array.isArray(x.images))photos.push(...x.images);
+  const hero=photos[0]?'<figure class="hero-photo"><img loading="eager" decoding="async" src="'+esc(photos[0].url)+'" alt="'+esc(x.name)+'"><figcaption>'+esc(photos[0].credit||'')+'</figcaption></figure>':'<div class="poi-cover '+typeClass(x.type)+'"><span>'+icon(x.type)+'</span></div>';
+  const gallery=photos.length>1?'<div class="gallery-strip">'+photos.slice(1).map((p,i)=>'<button class="gallery-thumb" data-gallery="'+i+'"><img loading="lazy" decoding="async" src="'+esc(p.url)+'" alt=""></button>').join('')+'</div>':'';
+  const directions=x.coordinates?'<a class="primary-btn action-card" id="poiDirections" href="'+directionsUrl(x.coordinates,x.name)+'" target="_blank" rel="noopener"><span>➜</span><small>'+t('directions')+'</small></a>':'';
+  const research=S.mode==='research'&&!x.coordinates?'<button class="soft-btn action-card" id="poiFieldBtn"><span>⌖</span><small>Localizar</small></button>':'';
+  const html='<div class="sheet-title poi-title"><div class="category-orb '+typeClass(x.type)+'">'+icon(x.type)+'</div><div><span class="eyebrow">'+esc(shortCat(x.type))+'</span><h2>'+esc(x.name)+'</h2><div class="poi-meta">'+(d?'<span>'+d+'</span>':'')+(x.area?'<span>'+esc(x.area)+'</span>':'')+'</div></div></div>'+hero+gallery+
+    '<p class="poi-summary">'+esc(x.description||'')+'</p>'+
+    '<div class="sheet-actions action-grid">'+directions+'<button class="soft-btn action-card" id="poiListenBtn"><span>▶</span><small>'+t('listen')+'</small></button><button class="soft-btn action-card" id="poiFavBtn"><span>'+(fav?'★':'☆')+'</span><small>'+t('favorites')+'</small></button><button class="soft-btn action-card" id="poiShareBtn"><span>↗</span><small>'+t('share')+'</small></button>'+research+'</div>'+
+    '<details class="sheet-more"><summary>'+t('info')+'</summary><div class="detail-grid"><b>Tipo</b><span>'+esc(x.subtype||x.type||'')+'</span><b>Acceso</b><span>'+esc(x.access||'Sin comprobar')+'</span><b>Estado</b><span>'+visitorStatus(x)+'</span>'+(S.mode==='research'?'<b>Por comprobar</b><span>'+esc(x.verify||'')+'</span>':'')+'</div></details>'+
+    '<details class="sheet-more"><summary>'+t('sources')+'</summary><div class="source-box">'+sourceHtml(x)+'</div></details>';
   openSheet('#poiSheet',html,'half');
   $('#poiListenBtn').onclick=()=>emit('speak-poi',x);
   $('#poiFavBtn').onclick=()=>{setFavorite(id,!favorites().has(id));openPoi(id);};
+  $('#poiShareBtn').onclick=()=>shareLink(x.name,'#poi='+encodeURIComponent(id));
   if($('#poiFieldBtn'))$('#poiFieldBtn').onclick=()=>{closeSheets();openNav('field');emit('field-prefill',x);};
 }
-function sourceHtml(x){const a=x.web_source?'<a href="'+esc(x.web_source)+'" target="_blank" rel="noopener">Abrir fuente</a>':'';return esc(x.source||'')+(a?' · '+a:'');}
+function visitorStatus(x){
+  if(S.mode==='research')return esc(x.status||'');
+  if(!x.coordinates)return t('pending');
+  if(/privad/i.test(x.access||''))return 'Acceso con condiciones';
+  return 'Ubicación verificada';
+}
+function sourceHtml(x){
+  const label=S.mode==='research'?esc(x.source||''):'Documentación del proyecto';
+  const a=x.web_source?'<a href="'+esc(x.web_source)+'" target="_blank" rel="noopener">Consultar fuente</a>':'';
+  return label+(a?' · '+a:'');
+}
 export function openPlace(id){
   const x=S.places.find(p=>p.id===id);if(!x)return;
-  const hero=x.image_url?'<figure class="hero-photo"><img src="'+esc(x.image_url)+'" alt="'+esc(x.name)+'"><figcaption>'+esc(x.image_credit||'')+'</figcaption></figure>':'';
-  openSheet('#poiSheet','<div class="sheet-title"><span class="eyebrow">NÚCLEO OFICIAL</span><h2>'+esc(x.name)+'</h2></div>'+hero+'<p>Plan Básico Autonómico de Galicia.</p><div class="detail-grid"><b>Coordenadas</b><span>'+x.coordinates[1].toFixed(6)+', '+x.coordinates[0].toFixed(6)+'</span></div>','half');
+  const hero=x.image_url?'<figure class="hero-photo"><img loading="eager" decoding="async" src="'+esc(x.image_url)+'" alt="'+esc(x.name)+'"><figcaption>'+esc(x.image_credit||'')+'</figcaption></figure>':'';
+  openSheet('#poiSheet','<div class="sheet-title"><div class="category-orb place">⌂</div><div><span class="eyebrow">NÚCLEO</span><h2>'+esc(x.name)+'</h2></div></div>'+hero+'<p class="poi-summary">Uno de los núcleos de población de la parroquia de A Lamosa.</p><div class="sheet-actions"><button class="primary-btn" id="placeFocus">Ver en mapa</button></div>'+(S.mode==='research'?'<details class="sheet-more"><summary>Datos cartográficos</summary><div class="detail-grid"><b>Coordenadas</b><span>'+x.coordinates[1].toFixed(6)+', '+x.coordinates[0].toFixed(6)+'</span><b>Fuente</b><span>Plan Básico Autonómico de Galicia</span></div></details>':''),'half');
+  $('#placeFocus').onclick=()=>{closeSheets();S.map?.easeTo({center:x.coordinates,zoom:16});};
 }
 export function openPath(p={}){
-  const details=[p.surface&&('Superficie: '+p.surface),p.tracktype&&('Tipo: '+p.tracktype),p.smoothness&&('Regularidad: '+p.smoothness),p.width&&('Anchura: '+p.width),p.access&&('Acceso OSM: '+p.access),p.foot&&('Peatón: '+p.foot),p.sac_scale&&('Dificultad OSM: '+p.sac_scale)].filter(Boolean);
-  openSheet('#poiSheet','<div class="sheet-title"><span class="eyebrow">CAMINO / SENDERO</span><h2>'+esc(p.name||pathLabel(p.highway))+'</h2></div><p>Cartografía colaborativa de OpenStreetMap. No demuestra por sí sola titularidad pública ni transitabilidad actual.</p><div class="detail-grid">'+details.map((d,i)=>'<b>'+(i?'':'Datos')+'</b><span>'+esc(d)+'</span>').join('')+'</div><div class="sheet-actions"><a class="soft-btn" target="_blank" rel="noopener" href="https://www.openstreetmap.org/way/'+encodeURIComponent(p.osm_id||'')+'">OpenStreetMap</a></div>','half');
+  const visitor='<div class="sheet-title"><div class="category-orb path">↝</div><div><span class="eyebrow">CAMINO</span><h2>'+esc(p.name||pathLabel(p.highway))+'</h2></div></div><p class="poi-summary">Tramo cartografiado de la red de caminos y senderos. Comprueba siempre el estado y el acceso sobre el terreno.</p>';
+  const tech=[p.surface&&('Superficie: '+p.surface),p.tracktype&&('Tipo: '+p.tracktype),p.smoothness&&('Regularidad: '+p.smoothness),p.width&&('Anchura: '+p.width),p.access&&('Acceso: '+p.access),p.foot&&('Peatón: '+p.foot),p.sac_scale&&('Dificultad: '+p.sac_scale)].filter(Boolean);
+  const details=tech.length?'<details class="sheet-more"><summary>Características</summary><div class="feature-list">'+tech.map(v=>'<span>'+esc(v)+'</span>').join('')+'</div></details>':'';
+  const source=S.mode==='research'?'<details class="sheet-more"><summary>Fuente cartográfica</summary><p>OpenStreetMap · way '+esc(p.osm_id||'')+'. La cartografía no demuestra titularidad pública ni transitabilidad.</p><a target="_blank" rel="noopener" href="https://www.openstreetmap.org/way/'+encodeURIComponent(p.osm_id||'')+'">Abrir elemento OSM</a></details>':'';
+  openSheet('#poiSheet',visitor+details+source,'half');
 }
 export function openField(r){
-  if(!r)return;const photos=r.photos?.length?r.photos:(r.photo?[r.photo]:[]);
-  const hero=photos[0]?'<figure class="hero-photo"><img src="'+photos[0]+'" alt=""><figcaption>Trabajo de campo · sin publicar</figcaption></figure>':'';
-  openSheet('#poiSheet','<div class="sheet-title"><span class="eyebrow">CAMPO · SIN PUBLICAR</span><h2>'+esc(r.name||r.localName||'Punto')+'</h2></div>'+hero+'<p>'+esc(r.notes||'')+'</p><div class="sheet-actions"><button class="primary-btn" id="editFieldBtn">Editar</button></div><div class="detail-grid"><b>Conservación</b><span>'+esc(r.conservation||'')+'</span><b>Acceso</b><span>'+esc(r.access||'')+'</span><b>Coordenadas</b><span>'+(r.coordinates?.[1]?.toFixed?.(6)||'')+', '+(r.coordinates?.[0]?.toFixed?.(6)||'')+'</span></div>','half');
+  if(!r)return;const photos=r.photos?.length?r.photos:(r.photo?[r.photo]:[]),hero=photos[0]?'<figure class="hero-photo"><img src="'+photos[0]+'" alt=""><figcaption>Trabajo de campo · sin publicar</figcaption></figure>':'';
+  openSheet('#poiSheet','<div class="sheet-title"><div class="category-orb field">✎</div><div><span class="eyebrow">CAMPO · SIN PUBLICAR</span><h2>'+esc(r.name||r.localName||'Punto')+'</h2></div></div>'+hero+'<p>'+esc(r.notes||'')+'</p><div class="sheet-actions"><button class="primary-btn" id="editFieldBtn">Editar</button></div><div class="detail-grid"><b>Conservación</b><span>'+esc(r.conservation||'')+'</span><b>Acceso</b><span>'+esc(r.access||'')+'</span><b>Coordenadas</b><span>'+(r.coordinates?.[1]?.toFixed?.(6)||'')+', '+(r.coordinates?.[0]?.toFixed?.(6)||'')+'</span></div>','half');
   $('#editFieldBtn').onclick=()=>{closeSheets();openNav('field');emit('field-edit',r);};
 }
 function renderStories(){
-  const host=$('#storiesList');if(!host)return;host.innerHTML=S.stories.map(s=>'<article class="timeline-item"><small>'+esc(s.year)+'</small><h3>'+esc(S.lang==='gl'?s.title_gl:s.title_es)+'</h3><p>'+esc(S.lang==='gl'?s.summary_gl:s.summary_es)+'</p></article>').join('');
+  const host=$('#storiesList');if(!host)return;host.innerHTML=S.stories.map(s=>'<article class="timeline-item"><small>'+esc(s.year)+'</small><h3>'+esc(S.lang==='gl'?s.title_gl:s.title_es)+'</h3><p>'+esc(S.lang==='gl'?s.summary_gl:s.summary_es)+'</p><button class="story-map" data-story="'+esc(s.id)+'">Ver lugares</button></article>').join('');
+  $$('[data-story]').forEach(b=>b.onclick=()=>{const st=S.stories.find(x=>x.id===b.dataset.story);if(!st)return;const ids=new Set(st.poi_ids||[]),pois=S.pois.filter(x=>ids.has(x.id)&&x.coordinates);if(pois.length){closeSheets();openNav('explore');selectedCategories.clear();const xs=pois.map(p=>p.coordinates[0]),ys=pois.map(p=>p.coordinates[1]);
+    S.map?.fitBounds([[Math.min(...xs),Math.min(...ys)],[Math.max(...xs),Math.max(...ys)]],{padding:70,maxZoom:16});}});
 }
+function shareLink(title,hash){
+  const url=location.origin+location.pathname+location.search.split('&')[0]+hash;
+  if(navigator.share)return navigator.share({title,text:title,url}).catch(()=>{});
+  navigator.clipboard?.writeText(url).then(()=>toast('Enlace copiado')).catch(()=>toast('No se pudo compartir'));
+}
+function directionsUrl(c,name){return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(c[1]+','+c[0])+'&destination_place_id=&travelmode=walking';}
+function searchText(x){
+  const aliases={
+    'Patrimonio':'iglesia capilla cruceiro cruz peto patrimonio relixioso religioso',
+    'Agua / molinos':'auga agua fonte fuente lavadoiro lavadero muiño muino molino molinos',
+    'Historia':'historia memoria antigo antigua jose gil escola escuela',
+    'Naturaleza':'natureza naturaleza monte bosque fragas',
+    'Ruta / patrimonio':'ruta roteiro camino camiño sendero sendeiro pista',
+    'Comer':'bar comer comida',
+    'Dormir':'alojamiento casa dormir'
+  };
+  return normalize(Object.values(x).join(' ')+' '+(aliases[x.type]||''));
+}
+function normalize(v=''){return v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ñ/g,'n');}
+function shortCat(c=''){return c.replace(' / ',' · ').replace('Patrimonio interior','Patrimonio');}
 function pathLabel(h){return({track:'Pista rural / forestal',path:'Sendero',footway:'Camino peatonal',bridleway:'Camino de herradura',service:'Acceso',unclassified:'Camino local'})[h]||'Camino';}
-function icon(t=''){const s=t.toLowerCase();if(s.includes('agua')||s.includes('molino'))return'≈';if(s.includes('historia'))return'⌛';if(s.includes('natur'))return'♧';if(s.includes('ruta'))return'↝';if(s.includes('comer'))return'◌';if(s.includes('dormir'))return'⌂';if(s.includes('patrimonio'))return'◆';return'•';}
+function icon(t=''){const s=t.toLowerCase();if(s.includes('agua')||s.includes('molino'))return'≈';if(s.includes('historia'))return'⌛';if(s.includes('natur'))return'♧';if(s.includes('ruta'))return'↝';if(s.includes('comer'))return'◉';if(s.includes('dormir'))return'⌂';if(s.includes('cultura'))return'✦';return'◆';}
+function typeClass(t=''){const s=t.toLowerCase();if(s.includes('agua')||s.includes('molino'))return'water';if(s.includes('historia'))return'history';if(s.includes('natur'))return'nature';if(s.includes('ruta'))return'route';if(s.includes('comer'))return'food';if(s.includes('dormir'))return'sleep';if(s.includes('cultura'))return'culture';return'heritage';}

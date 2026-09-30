@@ -10,7 +10,7 @@ async function collect(){
   const cachesList=await caches.keys().catch(()=>[]),est=await navigator.storage?.estimate?.().catch?.(()=>null);
   const [records,tracks,contribs]=await Promise.all([dbGetAll('records').catch(()=>[]),dbGetAll('tracks').catch(()=>[]),dbGetAll('contributions').catch(()=>[])]);
   return {
-    version:'0.11.0-beta.1',time:new Date().toISOString(),online:navigator.onLine,mode:S.mode,lang:S.lang,
+    version:'0.12.0-beta.1',time:new Date().toISOString(),online:navigator.onLine,mode:S.mode,lang:S.lang,
     serviceWorker:{supported:'serviceWorker'in navigator,controlled:!!navigator.serviceWorker?.controller},
     map:{created:!!S.map,loaded:!!S.map?.loaded?.(),style:S.map?.getStyle?.()?.name||null},
     catalog:{pois:S.pois.length,visitor:S.pois.filter(x=>x.visitor_visible).length,places:S.places.length,osmSegments:S.osmNetwork?.features?.length||0},

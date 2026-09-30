@@ -10,23 +10,23 @@
 <meta name="apple-mobile-web-app-title" content="A Lamosa">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="manifest" href="manifest.webmanifest?v=110b1">
+<link rel="manifest" href="manifest.webmanifest?v=120b1">
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="styles.css?v=110b1">
+<link rel="stylesheet" href="styles.css?v=120b1">
 <title>Descubre A Lamosa</title>
 </head>
-<body data-mode="visitor">
+<body data-mode="visitor" data-theme="system">
 <header class="topbar">
   <div class="brand"><small>San Bartolomeu · Covelo</small><strong>Descubre A Lamosa</strong></div>
   <div class="top-actions">
-    <button id="connectionBadge" class="icon-pill">●</button>
+    <button id="connectionBadge" class="icon-pill" aria-label="Estado de conexión">●</button>
     <button id="installBtn" class="icon-pill" hidden>Instalar</button>
   </div>
 </header>
 
 <main class="app-shell">
   <section class="map-stage">
-    <div id="map" aria-label="Mapa de A Lamosa"></div>
+    <div id="map" aria-label="Mapa interactivo de A Lamosa"></div>
 
     <div class="map-top-left">
       <div class="segmented">
@@ -36,54 +36,71 @@
     </div>
 
     <div class="map-top-right">
-      <button id="locateBtn" class="map-fab" title="Mi ubicación">◎</button>
+      <button id="locateBtn" class="map-fab icon-only" aria-label="Centrar en mi ubicación" title="Mi ubicación">◎</button>
       <button id="layersBtn" class="map-fab" data-i18n="layers">Capas</button>
     </div>
 
     <aside id="layersPanel" class="floating-panel" hidden>
-      <div class="panel-title"><strong data-i18n="layers">Capas</strong><button id="layersClose">×</button></div>
+      <div class="panel-title"><strong data-i18n="layers">Capas</strong><button id="layersClose" aria-label="Cerrar capas">×</button></div>
       <label><input type="checkbox" data-layer="pois" checked> Lugares</label>
       <label><input type="checkbox" data-layer="places"> Núcleos</label>
       <label><input type="checkbox" data-layer="paths" checked> Caminos y senderos</label>
-      <label><input type="checkbox" data-layer="parish"> Límite parroquial</label>\n      <label><input type="checkbox" data-layer="hydro"> Hidrografía</label>
+      <label><input type="checkbox" data-layer="parish"> Límite parroquial</label>
+      <label><input type="checkbox" data-layer="hydro"> Hidrografía</label>
       <label class="research-only"><input type="checkbox" data-layer="field" checked> Campo</label>
+      <details class="map-legend">
+        <summary>Leyenda</summary>
+        <div class="legend-grid">
+          <span><i class="legend-dot heritage"></i>Patrimonio</span>
+          <span><i class="legend-dot water"></i>Agua y molinos</span>
+          <span><i class="legend-dot history"></i>Historia</span>
+          <span><i class="legend-dot nature"></i>Naturaleza</span>
+          <span><i class="legend-line track"></i>Pista</span>
+          <span><i class="legend-line path"></i>Sendero</span>
+        </div>
+      </details>
     </aside>
 
-    <div id="nearbyStrip" class="nearby-strip" hidden></div>
+    <div id="nearbyStrip" class="nearby-strip" hidden aria-label="Lugares visibles en el mapa"></div>
 
     <div id="activeRouteBar" class="active-route" hidden>
       <div><small>Ruta activa</small><strong id="activeRouteName"></strong></div>
       <div class="route-live-stats"><span id="routeRemaining"></span><span id="routeDeviation"></span></div>
-      <button id="activeRouteClose">×</button>
+      <button id="activeRouteClose" aria-label="Cerrar ruta">×</button>
     </div>
 
     <div id="routeFollowPanel" class="follow-panel" hidden>
       <div class="follow-progress"><span id="followProgressBar"></span></div>
       <div><strong id="followDistance">—</strong><small>restante</small></div>
-      <div><strong id="followNearestPoi">—</strong><small>lugar próximo</small></div>
+      <div><strong id="followNearestPoi">—</strong><small>próxima parada</small></div>
+      <button id="returnRouteBtn" class="soft-btn compact-btn" hidden>Volver</button>
       <button id="stopFollowingBtn" data-i18n="stopRoute">Finalizar</button>
     </div>
 
     <div class="map-credit"><span id="mapStatus">Preparando mapa…</span></div>
   </section>
 
-  <section id="drawer" class="drawer open half">
-    <div class="drawer-handle" data-drawer-drag></div>
+  <section id="drawer" class="drawer open half" aria-label="Panel de contenido">
+    <div class="drawer-handle" data-drawer-drag aria-label="Arrastrar panel"></div>
 
     <section id="panelExplore" class="drawer-view active" data-view="explore">
-      <div class="drawer-head"><div><span class="eyebrow">A LAMOSA</span><h1 data-i18n="explore">Explorar</h1></div><button id="collapseDrawerBtn" class="circle-btn">⌄</button></div>
-      <div class="searchbox"><span>⌕</span><input id="searchInput" data-i18n-placeholder="search" placeholder="Buscar en A Lamosa…"></div>
+      <div class="drawer-head">
+        <div><span class="eyebrow">A LAMOSA</span><h1 data-i18n="explore">Explorar</h1><p class="drawer-subtitle">Mueve el mapa o busca un lugar.</p></div>
+        <button id="collapseDrawerBtn" class="circle-btn" aria-label="Contraer panel">⌄</button>
+      </div>
+      <div class="searchbox"><span aria-hidden="true">⌕</span><input id="searchInput" data-i18n-placeholder="search" placeholder="Buscar en A Lamosa…" autocomplete="off"></div>
       <div class="chip-scroll" id="categoryChips"></div>
       <div class="quick-row">
         <button id="nearbyBtn" class="soft-btn">◎ <span data-i18n="nearby">Cerca de mí</span></button>
         <button id="favoritesBtn" class="soft-btn">☆ <span data-i18n="favorites">Favoritos</span></button>
+        <button id="photosBtn" class="soft-btn">▧ Con foto</button>
       </div>
       <div id="exploreSummary" class="section-note"></div>
       <div id="exploreList" class="compact-list"></div>
     </section>
 
     <section id="panelRoutes" class="drawer-view" data-view="routes">
-      <div class="drawer-head"><div><span class="eyebrow">CAMINAR</span><h1 data-i18n="routes">Rutas</h1></div></div>
+      <div class="drawer-head"><div><span class="eyebrow">CAMINAR</span><h1 data-i18n="routes">Rutas</h1><p class="drawer-subtitle">Elige una ruta para ver solo lo importante.</p></div></div>
       <div id="routeList" class="accordion-list"></div>
       <div class="secondary-actions">
         <label class="file-btn"><span data-i18n="importGpx">Importar GPX</span><input id="gpxImport" type="file" accept=".gpx,application/gpx+xml" hidden></label>
@@ -91,131 +108,77 @@
     </section>
 
     <section id="panelField" class="drawer-view research-only" data-view="field">
-      <div class="drawer-head"><div><span class="eyebrow">INVESTIGACIÓN</span><h1 data-i18n="field">Campo</h1></div></div>
-      <details open class="accord"><summary>Captura</summary>
-        <div class="accord-body">
-          <div id="fieldFix" class="status-box">Sin posición capturada.</div>
-          <div class="button-grid">
-            <button id="fieldGpsBtn" class="primary-btn">◎ GPS</button>
-            <button id="fieldMapPickBtn" class="soft-btn">⌖ Mapa</button>
-          </div>
-        </div>
-      </details>
-      <details class="accord"><summary>Ficha de campo</summary>
-        <form id="fieldForm" class="accord-body form-stack">
-          <input id="fieldRecordId" type="hidden">
-          <label>Elemento relacionado<select id="fieldPoiSelect"><option value="">Nuevo elemento</option></select></label>
-          <label>Nombre local<input id="fieldLocalName"></label>
-          <label>Nombre / título<input id="fieldName" required></label>
-          <label>Categoría<select id="fieldCategory"></select></label>
-          <label>Conservación<select id="fieldConservation"><option>Sin comprobar</option><option>Buena</option><option>Regular</option><option>Mala</option><option>Ruina</option></select></label>
-          <label>Acceso<select id="fieldAccess"><option>Sin comprobar</option><option>Acceso público aparente</option><option>Acceso dudoso</option><option>Propiedad privada / pedir permiso</option></select></label>
-          <label>Permiso / observaciones de acceso<input id="fieldPermission"></label>
-          <label>Fuente oral / informante<input id="fieldInformant" placeholder="Solo si procede y con consentimiento"></label>
-          <label>Fecha de la información oral<input id="fieldOralDate" type="date"></label>
-          <label>Notas<textarea id="fieldNotes" rows="4"></textarea></label>
-          <label>Fotografías<input id="fieldPhotos" type="file" accept="image/*" capture="environment" multiple></label>
-          <button class="primary-btn" type="submit">Guardar ficha</button>
-        </form>
-      </details>
-      <details class="accord"><summary>Grabar camino</summary>
-        <div class="accord-body form-stack">
-          <label>Nombre<input id="trackName"></label>
-          <div id="trackStats" class="status-box">0 puntos · 0 m</div>
-          <div class="button-grid"><button id="trackStartBtn" class="primary-btn">▶ Iniciar</button><button id="trackStopBtn" class="danger-btn" disabled>■ Detener</button></div>
-        </div>
-      </details>
-      <details class="accord"><summary>Datos guardados</summary>
-        <div class="accord-body">
-          <div class="button-grid">
-            <button id="exportWorkBtn" class="soft-btn" data-i18n="exportWork">Exportar trabajo</button>
-            <label class="soft-btn file-btn">Importar copia<input id="backupImport" type="file" accept=".json,application/json" hidden></label>
-          </div>
-          <h3>Puntos</h3><div id="fieldRecordList" class="compact-list"></div>
-          <h3>Recorridos</h3><div id="trackRecordList" class="compact-list"></div>
-        </div>
-      </details>
+      <div class="drawer-head"><div><span class="eyebrow">INVESTIGACIÓN</span><h1 data-i18n="field">Campo</h1><p class="drawer-subtitle">Capturas locales sin publicar.</p></div></div>
+      <details open class="accord"><summary>Captura</summary><div class="accord-body">
+        <div id="fieldFix" class="status-box">Sin posición capturada.</div>
+        <div class="button-grid"><button id="fieldGpsBtn" class="primary-btn">◎ GPS</button><button id="fieldMapPickBtn" class="soft-btn">⌖ Mapa</button></div>
+      </div></details>
+      <details class="accord"><summary>Ficha de campo</summary><form id="fieldForm" class="accord-body form-stack">
+        <input id="fieldRecordId" type="hidden">
+        <label>Elemento relacionado<select id="fieldPoiSelect"><option value="">Nuevo elemento</option></select></label>
+        <label>Nombre local<input id="fieldLocalName"></label>
+        <label>Nombre / título<input id="fieldName" required></label>
+        <label>Categoría<select id="fieldCategory"></select></label>
+        <label>Conservación<select id="fieldConservation"><option>Sin comprobar</option><option>Buena</option><option>Regular</option><option>Mala</option><option>Ruina</option></select></label>
+        <label>Acceso<select id="fieldAccess"><option>Sin comprobar</option><option>Acceso público aparente</option><option>Acceso dudoso</option><option>Propiedad privada / pedir permiso</option></select></label>
+        <label>Permiso / observaciones de acceso<input id="fieldPermission"></label>
+        <label>Fuente oral / informante<input id="fieldInformant" placeholder="Solo si procede y con consentimiento"></label>
+        <label>Fecha de la información oral<input id="fieldOralDate" type="date"></label>
+        <label>Notas<textarea id="fieldNotes" rows="4"></textarea></label>
+        <label>Fotografías<input id="fieldPhotos" type="file" accept="image/*" capture="environment" multiple></label>
+        <button class="primary-btn" type="submit">Guardar ficha</button>
+      </form></details>
+      <details class="accord"><summary>Grabar camino</summary><div class="accord-body form-stack">
+        <label>Nombre<input id="trackName"></label><div id="trackStats" class="status-box">0 puntos · 0 m</div>
+        <div class="button-grid"><button id="trackStartBtn" class="primary-btn">▶ Iniciar</button><button id="trackStopBtn" class="danger-btn" disabled>■ Detener</button></div>
+      </div></details>
+      <details class="accord"><summary>Datos guardados</summary><div class="accord-body">
+        <div class="button-grid"><button id="exportWorkBtn" class="soft-btn" data-i18n="exportWork">Exportar trabajo</button><label class="soft-btn file-btn">Importar copia<input id="backupImport" type="file" accept=".json,application/json" hidden></label></div>
+        <h3>Puntos</h3><div id="fieldRecordList" class="compact-list"></div>
+        <h3>Recorridos</h3><div id="trackRecordList" class="compact-list"></div>
+      </div></details>
     </section>
 
     <section id="panelMore" class="drawer-view" data-view="more">
       <div class="drawer-head"><div><span class="eyebrow">DESCUBRE</span><h1 data-i18n="more">Más</h1></div></div>
-
-      <details open class="accord"><summary>Ajustes</summary>
-        <div class="accord-body settings-grid">
-          <label><span data-i18n="language">Idioma</span><select id="languageSelect"><option value="es">Castellano</option><option value="gl">Galego</option></select></label>
-          <label><span data-i18n="mode">Modo</span><select id="modeSelect"><option value="visitor">Visitante</option><option value="research">Investigación</option></select></label>
-          <label class="toggle-row"><span>Audioguía automática</span><input id="autoAudioToggle" type="checkbox"></label>
-        </div>
-      </details>
-
-      <details class="accord"><summary data-i18n="stories">Historias</summary>
-        <div id="storiesList" class="accord-body timeline"></div>
-      </details>
-
-      <details class="accord"><summary>Sin conexión</summary>
-        <div class="accord-body">
-          <p class="section-note">Guarda interfaz, inventario, rutas, caminos y fotos abiertas. Sin cobertura se usa un mapa esencial local; la ortofoto y el mapa base completo requieren conexión o caché previa.</p>
-          <button id="offlinePackBtn" class="primary-btn" data-i18n="downloadOffline">Descargar A Lamosa offline</button>
-          <div id="offlineStatus" class="section-note"></div>
-        </div>
-      </details>
-
-      <details class="accord"><summary data-i18n="contributions">Aportar información</summary>
-        <form id="contributionForm" class="accord-body form-stack">
-          <label>Lugar / elemento<input id="contribName" required></label>
-          <label>Tipo<select id="contribType"><option>Corrección</option><option>Historia oral</option><option>Nombre local</option><option>Fotografía</option><option>Nuevo lugar</option></select></label>
-          <label>Aportación<textarea id="contribText" rows="4" required></textarea></label>
-          <label>Foto opcional<input id="contribPhoto" type="file" accept="image/*"></label>
-          <p class="section-note">La aportación queda como pendiente y no modifica el mapa automáticamente.</p>
-          <button class="primary-btn" type="submit">Guardar aportación pendiente</button>
-        </form>
-        <div id="contributionQueue" class="compact-list"></div>
-      </details>
-
-      <details class="accord"><summary>Herramientas</summary>
-        <div class="accord-body button-grid">
-          <button id="diagnosticBtn" class="soft-btn" data-i18n="diagnostic">Diagnóstico</button>
-          <button id="clearCacheBtn" class="soft-btn">Limpiar caché cartográfica</button>
-        </div>
-      </details>
-
-      <details class="accord"><summary>Proyecto</summary>
-        <div class="accord-body">
-          <p>Mapa patrimonial y de caminos de A Lamosa. Las ubicaciones verificadas, las fuentes documentales, la cartografía colaborativa y el trabajo de campo se mantienen diferenciados.</p>
-          <p><b>Versión:</b> 0.11.0-beta.1</p>
-        </div>
-      </details>
+      <details open class="accord"><summary>Ajustes</summary><div class="accord-body settings-grid">
+        <label><span data-i18n="language">Idioma</span><select id="languageSelect"><option value="es">Castellano</option><option value="gl">Galego</option></select></label>
+        <label><span data-i18n="appearance">Apariencia</span><select id="appearanceSelect"><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></label>
+        <label><span data-i18n="mode">Modo</span><select id="modeSelect"><option value="visitor">Visitante</option><option value="research">Investigación</option></select></label>
+        <label class="toggle-row"><span>Audioguía automática</span><input id="autoAudioToggle" type="checkbox"></label>
+      </div></details>
+      <details class="accord"><summary data-i18n="stories">Historias</summary><div id="storiesList" class="accord-body timeline"></div></details>
+      <details class="accord"><summary>Sin conexión</summary><div class="accord-body">
+        <p class="section-note">Descarga la interfaz, inventario, rutas, caminos y fotografías disponibles para consultar A Lamosa con poca o ninguna cobertura.</p>
+        <button id="offlinePackBtn" class="primary-btn" data-i18n="downloadOffline">Descargar A Lamosa offline</button><div id="offlineStatus" class="section-note"></div>
+      </div></details>
+      <details class="accord"><summary data-i18n="contributions">Aportar información</summary><form id="contributionForm" class="accord-body form-stack">
+        <label>Lugar / elemento<input id="contribName" required></label><label>Tipo<select id="contribType"><option>Corrección</option><option>Historia oral</option><option>Nombre local</option><option>Fotografía</option><option>Nuevo lugar</option></select></label>
+        <label>Aportación<textarea id="contribText" rows="4" required></textarea></label><label>Foto opcional<input id="contribPhoto" type="file" accept="image/*"></label>
+        <p class="section-note">La aportación queda pendiente y nunca modifica el mapa automáticamente.</p><button class="primary-btn" type="submit">Guardar aportación pendiente</button>
+      </form><div id="contributionQueue" class="compact-list"></div></details>
+      <details class="accord research-only"><summary>Herramientas avanzadas</summary><div class="accord-body button-grid"><button id="diagnosticBtn" class="soft-btn" data-i18n="diagnostic">Diagnóstico</button><button id="clearCacheBtn" class="soft-btn">Limpiar caché cartográfica</button></div></details>
+      <details class="accord"><summary>Proyecto</summary><div class="accord-body"><p>Mapa patrimonial y de caminos de A Lamosa. Los lugares publicados, la cartografía, las fuentes y el trabajo de campo se mantienen diferenciados.</p><p><b>Versión:</b> 0.12.0-beta.1</p></div></details>
     </section>
   </section>
 </main>
 
 <nav class="bottom-nav" aria-label="Navegación principal">
-  <button class="active" data-nav="explore">⌖<span data-i18n="explore">Explorar</span></button>
-  <button data-nav="routes">↝<span data-i18n="routes">Rutas</span></button>
-  <button data-nav="field" class="research-only">✎<span data-i18n="field">Campo</span></button>
-  <button data-nav="more">•••<span data-i18n="more">Más</span></button>
+  <button class="active" data-nav="explore" aria-label="Explorar"><span class="nav-icon">⌖</span><span data-i18n="explore">Explorar</span></button>
+  <button data-nav="routes" aria-label="Rutas"><span class="nav-icon">↝</span><span data-i18n="routes">Rutas</span></button>
+  <button data-nav="field" class="research-only" aria-label="Campo"><span class="nav-icon">✎</span><span data-i18n="field">Campo</span></button>
+  <button data-nav="more" aria-label="Más"><span class="nav-icon">•••</span><span data-i18n="more">Más</span></button>
 </nav>
 
 <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
-
-<section id="poiSheet" class="entity-sheet" hidden>
-  <div class="sheet-handle" data-sheet-drag></div><button class="sheet-close" data-close-sheet>×</button><div id="poiSheetBody"></div>
-</section>
-
-<section id="routeSheet" class="entity-sheet" hidden>
-  <div class="sheet-handle" data-sheet-drag></div><button class="sheet-close" data-close-sheet>×</button><div id="routeSheetBody"></div>
-</section>
-
-<section id="diagnosticSheet" class="entity-sheet" hidden>
-  <div class="sheet-handle" data-sheet-drag></div><button class="sheet-close" data-close-sheet>×</button>
-  <div class="sheet-title"><span class="eyebrow">SISTEMA</span><h2>Diagnóstico</h2></div>
-  <pre id="diagnosticOutput"></pre><button id="copyDiagnosticBtn" class="primary-btn">Copiar informe</button>
-</section>
+<section id="poiSheet" class="entity-sheet" hidden><div class="sheet-handle" data-sheet-drag></div><button class="sheet-close" data-close-sheet aria-label="Cerrar">×</button><div id="poiSheetBody"></div></section>
+<section id="routeSheet" class="entity-sheet" hidden><div class="sheet-handle" data-sheet-drag></div><button class="sheet-close" data-close-sheet aria-label="Cerrar">×</button><div id="routeSheetBody"></div></section>
+<section id="diagnosticSheet" class="entity-sheet" hidden><div class="sheet-handle" data-sheet-drag></div><button class="sheet-close" data-close-sheet aria-label="Cerrar">×</button><div class="sheet-title"><span class="eyebrow">SISTEMA</span><h2>Diagnóstico</h2></div><pre id="diagnosticOutput"></pre><button id="copyDiagnosticBtn" class="primary-btn">Copiar informe</button></section>
 
 <div id="toast" class="toast" hidden></div>
 <div id="updateBanner" class="update-banner" hidden><span>Nueva versión disponible</span><button id="reloadBtn">Actualizar</button></div>
 
 <script src="vendor/jszip.min.js"></script>
-<script type="module" src="app.js?v=110b1"></script>
+<script type="module" src="app.js?v=120b1"></script>
 </body>
 </html>

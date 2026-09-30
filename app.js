@@ -22,6 +22,7 @@ async function boot(){
     initAudio();
     initContributions();
     initDiagnostics();
+    bindDeepLinks();
     bindPwa();
     connection();
     document.body.dataset.appReady='true';
@@ -36,13 +37,28 @@ function connection(){
 }
 window.addEventListener('online',connection);window.addEventListener('offline',connection);
 
+function bindDeepLinks(){
+  const hash=location.hash||'';
+  if(hash.startsWith('#poi=')){
+    const id=decodeURIComponent(hash.slice(5));
+    setTimeout(()=>window.dispatchEvent(new CustomEvent('alm:open-poi',{detail:id})),250);
+  }else if(hash.startsWith('#route=')){
+    const id=decodeURIComponent(hash.slice(7));
+    setTimeout(()=>window.dispatchEvent(new CustomEvent('alm:open-route',{detail:id})),250);
+  }
+  window.addEventListener('hashchange',()=>{
+    const h=location.hash||'';
+    if(h.startsWith('#poi='))window.dispatchEvent(new CustomEvent('alm:open-poi',{detail:decodeURIComponent(h.slice(5))}));
+    if(h.startsWith('#route='))window.dispatchEvent(new CustomEvent('alm:open-route',{detail:decodeURIComponent(h.slice(7))}));
+  });
+}
 function bindPwa(){
   let prompt=null;
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();prompt=e;$('#installBtn').hidden=false;});
   $('#installBtn').onclick=async()=>{if(!prompt)return;prompt.prompt();await prompt.userChoice;prompt=null;$('#installBtn').hidden=true;};
   $('#reloadBtn').onclick=()=>location.reload();
   if('serviceWorker'in navigator){
-    navigator.serviceWorker.register('sw.js?v=110b1',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('sw.js?v=120b1',{updateViaCache:'none'}).then(reg=>{
       reg.addEventListener('updatefound',()=>{const w=reg.installing;w?.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)$('#updateBanner').hidden=false;});});
     }).catch(e=>recordError(e,'service-worker'));
   }

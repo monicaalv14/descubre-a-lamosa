@@ -1,10 +1,11 @@
-export const VERSION='0.11.0-beta.1';
+export const VERSION='0.12.0-beta.1';
 export const S={
   map:null,pois:[],places:[],trails:[],projectRoutes:[],stories:[],osmNetwork:null,
   mode:localStorage.getItem('aLamosaMode')||'visitor',
   lang:localStorage.getItem('aLamosaLang')||'es',
+  appearance:localStorage.getItem('aLamosaAppearance')||'system',
   userPosition:null,userMarker:null,activeRoute:null,routeFollow:null,
-  mapPickResolver:null,audioWatch:null,audioSpoken:new Set(),errors:[]
+  mapPickResolver:null,audioWatch:null,audioSpoken:new Set(),errors:[],priorityMarkers:[],lastViewportPois:[]
 };
 export const $=s=>document.querySelector(s);
 export const $$=s=>[...document.querySelectorAll(s)];
@@ -15,6 +16,7 @@ export function on(name,fn){window.addEventListener('alm:'+name,e=>fn(e.detail,e
 export function toast(msg,ms=2600){const e=$('#toast');if(!e)return;e.textContent=msg;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,ms);}
 export function setMode(mode){S.mode=mode;localStorage.setItem('aLamosaMode',mode);emit('mode',mode);}
 export function setLang(lang){S.lang=lang;localStorage.setItem('aLamosaLang',lang);emit('lang',lang);}
+export function setAppearance(value){S.appearance=value;localStorage.setItem('aLamosaAppearance',value);emit('appearance',value);}
 export function favorites(){try{return new Set(JSON.parse(localStorage.getItem('aLamosaFavorites')||'[]'));}catch{return new Set();}}
 export function setFavorite(id,on){const f=favorites();on?f.add(id):f.delete(id);localStorage.setItem('aLamosaFavorites',JSON.stringify([...f]));emit('favorites');}
 export function distanceM(a,b){const R=6371000,rad=Math.PI/180,p1=a[1]*rad,p2=b[1]*rad,dp=(b[1]-a[1])*rad,dl=(b[0]-a[0])*rad;const h=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;return 2*R*Math.asin(Math.sqrt(h));}

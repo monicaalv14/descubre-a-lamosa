@@ -1,5 +1,5 @@
 import {S,$,toast,recordError} from './state.js';
-const PACK='a-lamosa-offline-pack-v110';
+const PACK='a-lamosa-offline-pack-v120';
 export function initOffline(){
   $('#offlinePackBtn').onclick=downloadOfflinePack;
   $('#clearCacheBtn').onclick=clearMapCaches;
@@ -18,7 +18,7 @@ async function downloadOfflinePack(){
       if(!p.image_url)continue;
       try{const req=new Request(p.image_url,{mode:'no-cors'}),r=await fetch(req);await cache.put(req,r.clone());ok++;}catch{}
     }
-    localStorage.setItem('aLamosaOfflinePack',JSON.stringify({version:m.version||'0.11',at:new Date().toISOString(),ok,fail}));
+    localStorage.setItem('aLamosaOfflinePack',JSON.stringify({version:m.version||'0.12',at:new Date().toISOString(),ok,fail}));
     status.textContent='Paquete listo · '+ok+' recursos'+(fail?' · '+fail+' no disponibles':'');toast('A Lamosa guardada para uso esencial sin conexión');
   }catch(e){recordError(e,'offline-pack');status.textContent='No se pudo completar la descarga.';toast('Error al preparar offline');}
   btn.disabled=false;

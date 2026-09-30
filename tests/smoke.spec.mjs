@@ -16,7 +16,7 @@ async function expectReady(page){
 
 test('app carga, navega y dibuja la PR-G 119 local',async({page})=>{
   debug(page);
-  await page.goto('/?mode=research');
+  await page.goto('/?v=120b1&mode=research');
   await expectReady(page);
   await expect(page.locator('.maplibregl-canvas')).toBeVisible();
   await expect(page.locator('[data-nav="explore"]')).toBeVisible();
@@ -39,9 +39,34 @@ test('app carga, navega y dibuja la PR-G 119 local',async({page})=>{
 
 test('visitante oculta herramientas de investigación',async({page})=>{
   debug(page);
-  await page.goto('/');
+  await page.goto('/?v=120b1');
   await expectReady(page);
   await expect(page.locator('[data-nav="field"]')).toBeHidden();
   await page.locator('[data-nav="more"]').click();
   await expect(page.locator('#modeSelect')).toHaveValue('visitor');
+});
+
+
+test('ficha de lugar ofrece acciones principales y enlace profundo',async({page})=>{
+  debug(page);
+  await page.goto('/?v=120b1#poi=POI-001');
+  await expectReady(page);
+  await expect(page.locator('#poiSheet')).toHaveClass(/open/);
+  await expect(page.locator('#poiDirections')).toBeVisible();
+  await expect(page.locator('#poiListenBtn')).toBeVisible();
+  await expect(page.locator('#poiFavBtn')).toBeVisible();
+  await expect(page.locator('#poiShareBtn')).toBeVisible();
+});
+
+test('apariencia y filtros funcionan sin romper el mapa',async({page})=>{
+  debug(page);
+  await page.goto('/?v=120b1');
+  await expectReady(page);
+  await page.locator('[data-nav="more"]').click();
+  await page.locator('#appearanceSelect').selectOption('dark');
+  await expect(page.locator('body')).toHaveAttribute('data-theme','dark');
+  await page.locator('[data-nav="explore"]').click();
+  await page.locator('#photosBtn').click();
+  await expect(page.locator('#photosBtn')).toHaveClass(/active/);
+  await expect(page.locator('.maplibregl-canvas')).toBeVisible();
 });

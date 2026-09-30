@@ -8,7 +8,7 @@ const D={
   contributions:'Aportar información',diagnostic:'Diagnóstico',language:'Idioma',mode:'Modo',
   stories:'Historias',timeline:'Línea del tiempo',downloadOffline:'Descargar A Lamosa offline',
   importGpx:'Importar GPX',exportWork:'Exportar trabajo',fieldTools:'Herramientas de campo',
-  publicData:'Contenido público',pending:'Pendiente de verificar'
+  publicData:'Contenido público',pending:'Pendiente de verificar',appearance:'Apariencia',directions:'Cómo llegar',share:'Compartir',withPhoto:'Con foto'
  },
  gl:{
   explore:'Explorar',routes:'Roteiros',field:'Campo',more:'Máis',search:'Buscar na Lamosa…',
@@ -18,7 +18,7 @@ const D={
   contributions:'Achegar información',diagnostic:'Diagnóstico',language:'Idioma',mode:'Modo',
   stories:'Historias',timeline:'Liña do tempo',downloadOffline:'Descargar A Lamosa sen conexión',
   importGpx:'Importar GPX',exportWork:'Exportar traballo',fieldTools:'Ferramentas de campo',
-  publicData:'Contido público',pending:'Pendente de verificar'
+  publicData:'Contido público',pending:'Pendente de verificar',appearance:'Aparencia',directions:'Como chegar',share:'Compartir',withPhoto:'Con foto'
  }
 };
 export const t=k=>D[S.lang]?.[k]||D.es[k]||k;
