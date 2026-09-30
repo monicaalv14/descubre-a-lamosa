@@ -1,13 +1,13 @@
 {
-  "version": "0.12.5-beta.1",
+  "version": "0.12.6-beta.1",
   "published": "2026-09-30",
   "branch": "beta",
-  "focus": "bottom sheet táctil con transform GPU",
+  "focus": "arrastre táctil sin salto inicial",
   "fixes": [
-    "el panel ya no cambia su altura durante el gesto: se desplaza con transform GPU",
-    "arrastre 1:1 con el dedo mediante Pointer Events y requestAnimationFrame",
-    "zona táctil del asa ampliada a 52 px",
-    "prueba automatizada con eventos táctiles reales de Chromium",
-    "despliegue Pages desacoplado de la instalación de Chromium para publicar más rápido"
+    "la posición inicial del panel se lee de la matriz transform ya renderizada",
+    "el cambio de porcentaje CSS a píxeles ya no provoca saltos al tocar el asa",
+    "movimiento del panel mediante translate3d acelerado por GPU",
+    "pruebas de ratón y eventos táctiles reales verifican seguimiento del gesto",
+    "service worker y recursos unificados en la revisión 126b1"
   ]
 }
