@@ -62,7 +62,7 @@ function bindPwa(){
   $('#installBtn').onclick=async()=>{if(!prompt)return;prompt.prompt();await prompt.userChoice;prompt=null;$('#installBtn').hidden=true;};
   $('#reloadBtn').onclick=()=>location.reload();
   if('serviceWorker'in navigator){
-    navigator.serviceWorker.register('sw.js?v=126b1',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('sw.js?v=127b1',{updateViaCache:'none'}).then(reg=>{
       reg.addEventListener('updatefound',()=>{const w=reg.installing;w?.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)$('#updateBanner').hidden=false;});});
     }).catch(e=>recordError(e,'service-worker'));
   }
