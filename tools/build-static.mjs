@@ -11,15 +11,21 @@ async function copyTree(src,dst){
     if(e.isDirectory())await copyTree(a,b);else await fs.copyFile(a,b);
   }
 }
-async function fetchText(url,required=false){
-  try{
-    const r=await fetch(url,{signal:AbortSignal.timeout(25000),headers:{'user-agent':'Descubre-A-Lamosa-build/1.0'}});
-    if(!r.ok)throw new Error(`${r.status} ${r.statusText}`);
-    return await r.text();
-  }catch(e){
-    if(required)throw new Error(`No se pudo descargar ${url}: ${e.message}`);
-    console.warn('WARN fetch',url,e.message);return null;
+async function fetchText(url,required=false,{timeout=25000,attempts=1}={}){
+  let last=null;
+  for(let attempt=1;attempt<=attempts;attempt++){
+    try{
+      const r=await fetch(url,{signal:AbortSignal.timeout(timeout),headers:{'user-agent':'Descubre-A-Lamosa-build/1.0'}});
+      if(!r.ok)throw new Error(`${r.status} ${r.statusText}`);
+      return await r.text();
+    }catch(e){
+      last=e;
+      console.warn('WARN fetch',attempt+'/'+attempts,url,e.message);
+      if(attempt<attempts)await new Promise(r=>setTimeout(r,700*attempt));
+    }
   }
+  if(required)throw new Error(`No se pudo descargar ${url}: ${last?.message||'error'}`);
+  return null;
 }
 function escXml(s=''){return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');}
 function parseGpx(xml){
@@ -44,6 +50,63 @@ function parseOsmRelation(xml){
   }
   return {type:'FeatureCollection',features};
 }
+function attr(tag,name){const m=tag.match(new RegExp('\\b'+name+'=["\\\']([^"\\\']+)["\\\']','i'));return m?.[1]??null;}
+function parseOsmNetworkXml(xml){
+  const nodes=new Map();
+  for(const m of xml.matchAll(/<node\b([^>]*)>/gi)){
+    const id=attr(m[1],'id'),lat=Number(attr(m[1],'lat')),lon=Number(attr(m[1],'lon'));
+    if(id&&Number.isFinite(lat)&&Number.isFinite(lon))nodes.set(id,[lon,lat]);
+  }
+  const allowed=new Set(['track','path','footway','bridleway','unclassified','service']);
+  const features=[];
+  for(const m of xml.matchAll(/<way\b([^>]*)>([\s\S]*?)<\/way>/gi)){
+    const id=attr(m[1],'id'),body=m[2],tags={};
+    for(const t of body.matchAll(/<tag\b([^>]*)\/>/gi)){const k=attr(t[1],'k'),v=attr(t[1],'v');if(k)tags[k]=v??'';}
+    if(!allowed.has(tags.highway))continue;
+    const coords=[...body.matchAll(/<nd\b([^>]*)\/>/gi)].map(x=>nodes.get(attr(x[1],'ref'))).filter(Boolean);
+    if(coords.length>1)features.push({type:'Feature',properties:{osm_id:id,...tags},geometry:{type:'LineString',coordinates:coords}});
+  }
+  return {type:'FeatureCollection',features};
+}
+function mergeNetworks(networks){
+  const byId=new Map();
+  for(const net of networks)for(const f of net?.features||[])byId.set(String(f.properties?.osm_id??Math.random()),f);
+  return {type:'FeatureCollection',features:[...byId.values()]};
+}
+async function fetchOsmNetwork(){
+  const left=-8.410,bottom=42.175,right=-8.300,top=42.240;
+  const mapUrl=(l,b,r,t)=>'https://api.openstreetmap.org/api/0.6/map?bbox='+[l,b,r,t].join(',');
+  const full=await fetchText(mapUrl(left,bottom,right,top),false,{timeout:60000,attempts:2});
+  if(full){
+    const net=parseOsmNetworkXml(full);
+    if(net.features.length>=20)return {net,source:'osm-api-full'};
+  }
+  const mx=(left+right)/2,my=(bottom+top)/2;
+  const boxes=[[left,bottom,mx,my],[mx,bottom,right,my],[left,my,mx,top],[mx,my,right,top]];
+  const parts=[];
+  for(const box of boxes){
+    const xml=await fetchText(mapUrl(...box),false,{timeout:45000,attempts:2});
+    if(xml)parts.push(parseOsmNetworkXml(xml));
+  }
+  let net=mergeNetworks(parts);
+  if(net.features.length>=20)return {net,source:'osm-api-tiles'};
+
+  const endpoints=['https://overpass.kumi.systems/api/interpreter','https://overpass-api.de/api/interpreter'];
+  const over=[];
+  for(let i=0;i<boxes.length;i++){
+    const [l,b,r,t]=boxes[i],bbox=`${b},${l},${t},${r}`;
+    const q='[out:json][timeout:50];way["highway"~"^(track|path|footway|bridleway|unclassified|service)$"]('+bbox+');out geom;';
+    const txt=await fetchText(endpoints[i%endpoints.length]+'?data='+encodeURIComponent(q),false,{timeout:60000,attempts:1});
+    if(!txt)continue;
+    try{
+      const osm=JSON.parse(txt);
+      over.push({type:'FeatureCollection',features:(osm.elements||[]).filter(e=>e.type==='way'&&e.geometry?.length>1).map(e=>({type:'Feature',properties:{osm_id:e.id,...(e.tags||{})},geometry:{type:'LineString',coordinates:e.geometry.map(p=>[p.lon,p.lat])}}))});
+    }catch{}
+  }
+  net=mergeNetworks(over);
+  if(net.features.length>=20)return {net,source:'overpass-tiles'};
+  throw new Error('No se pudo generar una red OSM suficiente: '+net.features.length+' tramos');
+}
 function hav(a,b){const R=6371000,p1=a[1]*Math.PI/180,p2=b[1]*Math.PI/180,dp=(b[1]-a[1])*Math.PI/180,dl=(b[0]-a[0])*Math.PI/180;const q=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;return 2*R*Math.asin(Math.sqrt(q));}
 function length(coords){let d=0;for(let i=1;i<coords.length;i++)d+=hav(coords[i-1],coords[i]);return d;}
 function elevation(coords){let up=0,down=0,min=Infinity,max=-Infinity;for(let i=0;i<coords.length;i++){const z=coords[i][2];if(Number.isFinite(z)){min=Math.min(min,z);max=Math.max(max,z);if(i&&Number.isFinite(coords[i-1][2])){const d=z-coords[i-1][2];if(d>0)up+=d;else down-=d;}}}return {up,down,min:Number.isFinite(min)?min:null,max:Number.isFinite(max)?max:null};}
@@ -59,22 +122,16 @@ await fs.copyFile(path.join(ROOT,'node_modules/maplibre-gl/dist/maplibre-gl.css'
 await fs.copyFile(path.join(ROOT,'node_modules/jszip/dist/jszip.min.js'),path.join(DIST,'vendor/jszip.min.js'));
 
 const prgUrl='https://www.concellodecovelo.es/archivos_editor/file/nuevos-GPX/roteiro_xabrina_prg119-rmr-covelo-pontevedra.gpx';
-const prgXml=await fetchText(prgUrl,true),prgCoords=parseGpx(prgXml);
+const prgXml=await fetchText(prgUrl,true,{timeout:45000,attempts:2}),prgCoords=parseGpx(prgXml);
 const prg={type:'FeatureCollection',features:[lineFeature(prgCoords,{id:'TR-OF-001',name:'PR-G 119 · Ruta do Xabriña',source:'Concello de Covelo',source_url:prgUrl,official:true})]};
 await fs.writeFile(path.join(DIST,'data/generated/prg119.geojson'),JSON.stringify(prg));
 
-const viaXml=await fetchText('https://api.openstreetmap.org/api/0.6/relation/11075472/full');
+const viaXml=await fetchText('https://api.openstreetmap.org/api/0.6/relation/11075472/full',false,{timeout:60000,attempts:2});
 const via=viaXml?parseOsmRelation(viaXml):{type:'FeatureCollection',features:[]};
 await fs.writeFile(path.join(DIST,'data/generated/via-mariana.geojson'),JSON.stringify(via));
 
-const bbox='42.175,-8.410,42.240,-8.300';
-const query='[out:json][timeout:35];way["highway"~"^(track|path|footway|bridleway|unclassified|service)$"]('+bbox+');out geom;';
-let osm=null;
-for(const ep of ['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter']){
-  const txt=await fetchText(ep+'?data='+encodeURIComponent(query));
-  if(txt){try{osm=JSON.parse(txt);break;}catch{}}
-}
-const net={type:'FeatureCollection',features:(osm?.elements||[]).filter(e=>e.type==='way'&&e.geometry?.length>1).map(e=>({type:'Feature',properties:{osm_id:e.id,...(e.tags||{})},geometry:{type:'LineString',coordinates:e.geometry.map(p=>[p.lon,p.lat])}}))};
+const osmResult=await fetchOsmNetwork();
+const net=osmResult.net;
 await fs.writeFile(path.join(DIST,'data/generated/osm-network.geojson'),JSON.stringify(net));
 
 const media=JSON.parse(await fs.readFile(path.join(ROOT,'data/media.json'),'utf8'));
@@ -94,11 +151,11 @@ const parishUrl="https://ideg.xunta.gal/servizos/rest/services/LimitesAdministra
 const parishTxt=await fetchText(parishUrl);if(parishTxt)await fs.writeFile(path.join(DIST,'data/generated/parish.geojson'),parishTxt);else await fs.writeFile(path.join(DIST,'data/generated/parish.geojson'),JSON.stringify({type:'FeatureCollection',features:[]}));
 const hydroUrl="https://ideg.xunta.gal/servizos/rest/services/Hidrografia/Hidrografia/MapServer/0/query?where=1%3D1&geometry=-8.410%2C42.175%2C-8.300%2C42.240&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&f=geojson";
 const hydroTxt=await fetchText(hydroUrl);if(hydroTxt)await fs.writeFile(path.join(DIST,'data/generated/hydro.geojson'),hydroTxt);else await fs.writeFile(path.join(DIST,'data/generated/hydro.geojson'),JSON.stringify({type:'FeatureCollection',features:[]}));
-const buildInfo={built_at:new Date().toISOString(),maplibre:'6.11.2',prg119_points:prgCoords.length,osm_segments:net.features.length,via_mariana_segments:via.features.length,parish_local:true,hydro_local:true};
+const buildInfo={built_at:new Date().toISOString(),maplibre:'6.11.2',prg119_points:prgCoords.length,osm_segments:net.features.length,osm_source:osmResult.source,via_mariana_segments:via.features.length,parish_local:true,hydro_local:true};
 await fs.writeFile(path.join(DIST,'data/generated/build-info.json'),JSON.stringify(buildInfo,null,2));
 
 const files=[];
 async function walk(dir,prefix=''){for(const e of await fs.readdir(dir,{withFileTypes:true})){const rel=prefix+e.name;if(e.isDirectory())await walk(path.join(dir,e.name),rel+'/');else if(!rel.startsWith('data/generated/offline-manifest'))files.push('./'+rel);}}
 await walk(DIST);
-await fs.writeFile(path.join(DIST,'data/generated/offline-manifest.json'),JSON.stringify({version:'0.12.1-beta.1',assets:files.filter(x=>!x.includes('/vendor/jszip'))},null,2));
+await fs.writeFile(path.join(DIST,'data/generated/offline-manifest.json'),JSON.stringify({version:'0.12.2-beta.1',assets:files.filter(x=>!x.includes('/vendor/jszip'))},null,2));
 console.log(JSON.stringify(buildInfo));

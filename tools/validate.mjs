@@ -5,8 +5,11 @@ const pois=JSON.parse(await fs.readFile('dist/data/generated/pois-all.json','utf
 if(pois.length<70)throw new Error('Inventario incompleto: '+pois.length);
 const prg=JSON.parse(await fs.readFile('dist/data/generated/prg119.geojson','utf8'));
 if(!prg.features?.[0]?.geometry?.coordinates?.length)throw new Error('PR-G 119 sin geometría');
+const network=JSON.parse(await fs.readFile('dist/data/generated/osm-network.geojson','utf8'));
+if((network.features?.length||0)<20)throw new Error('Red OSM insuficiente: '+(network.features?.length||0)+' tramos');
 const info=JSON.parse(await fs.readFile('dist/data/generated/build-info.json','utf8'));
-console.log('VALID',JSON.stringify({pois:pois.length,prg_points:info.prg119_points,osm:info.osm_segments}));
+if(info.osm_segments!==network.features.length)throw new Error('build-info no coincide con la red OSM');
+console.log('VALID',JSON.stringify({pois:pois.length,prg_points:info.prg119_points,osm:info.osm_segments,osm_source:info.osm_source}));
 
 
 const jsFiles=['dist/app.js','dist/js/ui.js','dist/js/routes.js','dist/js/field.js','dist/js/map.js','dist/js/audio.js','dist/js/contributions.js'];

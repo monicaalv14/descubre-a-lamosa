@@ -16,7 +16,7 @@ async function expectReady(page){
 
 test('app carga, navega y dibuja la PR-G 119 local',async({page})=>{
   debug(page);
-  await page.goto('/?v=121b1&mode=research');
+  await page.goto('/?v=122b1&mode=research');
   await expectReady(page);
   await expect(page.locator('.maplibregl-canvas')).toBeVisible();
   await expect(page.locator('[data-nav="explore"]')).toBeVisible();
@@ -39,7 +39,7 @@ test('app carga, navega y dibuja la PR-G 119 local',async({page})=>{
 
 test('visitante oculta herramientas de investigación',async({page})=>{
   debug(page);
-  await page.goto('/?v=121b1');
+  await page.goto('/?v=122b1');
   await expectReady(page);
   await expect(page.locator('[data-nav="field"]')).toBeHidden();
   await page.locator('[data-nav="more"]').click();
@@ -49,7 +49,7 @@ test('visitante oculta herramientas de investigación',async({page})=>{
 
 test('ficha de lugar ofrece acciones principales y enlace profundo',async({page})=>{
   debug(page);
-  await page.goto('/?v=121b1#poi=POI-001');
+  await page.goto('/?v=122b1#poi=POI-001');
   await expectReady(page);
   await expect(page.locator('#poiSheet')).toHaveClass(/open/);
   await expect(page.locator('#poiDirections')).toBeVisible();
@@ -60,7 +60,7 @@ test('ficha de lugar ofrece acciones principales y enlace profundo',async({page}
 
 test('apariencia y filtros funcionan sin romper el mapa',async({page})=>{
   debug(page);
-  await page.goto('/?v=121b1');
+  await page.goto('/?v=122b1');
   await expectReady(page);
   await page.locator('[data-nav="more"]').click();
   await page.locator('#appearanceSelect').selectOption('dark');
@@ -74,7 +74,7 @@ test('apariencia y filtros funcionan sin romper el mapa',async({page})=>{
 
 test('audioguía muestra controles simples y no rompe sin voces instaladas',async({page})=>{
   debug(page);
-  await page.goto('/?v=121b1');
+  await page.goto('/?v=122b1');
   await expectReady(page);
   await page.locator('[data-nav="more"]').click();
   const audio=page.locator('details').filter({hasText:'Audioguía'});
@@ -88,7 +88,7 @@ test('audioguía muestra controles simples y no rompe sin voces instaladas',asyn
 
 test('explorar evita listar todo el inventario por defecto',async({page})=>{
   debug(page);
-  await page.goto('/?v=121b1');
+  await page.goto('/?v=122b1');
   await expectReady(page);
   const count=await page.locator('#exploreList .list-row').count();
   expect(count).toBeLessThanOrEqual(12);
@@ -97,9 +97,60 @@ test('explorar evita listar todo el inventario por defecto',async({page})=>{
 
 test('capas avanzadas están plegadas',async({page})=>{
   debug(page);
-  await page.goto('/?v=121b1');
+  await page.goto('/?v=122b1');
   await expectReady(page);
   await page.locator('#layersBtn').click();
   await expect(page.locator('.advanced-layers')).toBeVisible();
   await expect(page.locator('.advanced-layers')).not.toHaveAttribute('open','');
+});
+
+
+test('la red OSM generada contiene caminos reales',async({request})=>{
+  const r=await request.get('/data/generated/osm-network.geojson');
+  expect(r.ok()).toBeTruthy();
+  const data=await r.json();
+  expect(data.features?.length||0).toBeGreaterThanOrEqual(20);
+});
+
+test('la red de caminos no bloquea el arranque inicial',async({page})=>{
+  debug(page);
+  await page.route('**/data/generated/osm-network.geojson',async route=>{
+    const response=await route.fetch();
+    await new Promise(r=>setTimeout(r,2500));
+    await route.fulfill({response});
+  });
+  const start=Date.now();
+  await page.goto('/?v=122b1');
+  await expectReady(page);
+  const elapsed=Date.now()-start;
+  expect(elapsed).toBeLessThan(2400);
+  await expect(page.locator('.maplibregl-canvas')).toBeVisible();
+});
+
+test('una recarga offline arranca desde caché',async({page,context})=>{
+  debug(page);
+  await page.goto('/?v=122b1');
+  await expectReady(page);
+  await page.evaluate(async()=>{
+    if('serviceWorker'in navigator){
+      await navigator.serviceWorker.ready;
+      if(!navigator.serviceWorker.controller)await new Promise(resolve=>{
+        navigator.serviceWorker.addEventListener('controllerchange',()=>resolve(),{once:true});
+        setTimeout(resolve,3000);
+      });
+    }
+  });
+  await context.setOffline(true);
+  const start=Date.now();
+  await page.reload({waitUntil:'domcontentloaded'});
+  await expectReady(page);
+  expect(Date.now()-start).toBeLessThan(5000);
+  await context.setOffline(false);
+});
+
+test('JSZip no se carga durante el arranque normal',async({page})=>{
+  debug(page);
+  await page.goto('/?v=122b1');
+  await expectReady(page);
+  await expect(page.locator('script[src*="jszip"]')).toHaveCount(0);
 });

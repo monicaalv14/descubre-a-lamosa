@@ -13,8 +13,8 @@ export function initAudio(){
   setupSettings();
   refreshVoices();
   if('speechSynthesis'in window){
-    speechSynthesis.addEventListener?.('voiceschanged',refreshVoices);
-    speechSynthesis.onvoiceschanged=refreshVoices;
+    if(speechSynthesis.addEventListener)speechSynthesis.addEventListener('voiceschanged',refreshVoices);
+    else speechSynthesis.onvoiceschanged=refreshVoices;
   }
   const auto=localStorage.getItem('aLamosaAutoAudio')==='1';
   $('#autoAudioToggle').checked=auto;

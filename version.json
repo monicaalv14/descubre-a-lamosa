@@ -1,28 +1,36 @@
 {
-  "version": "0.12.1-beta.1",
+  "version": "0.12.2-beta.1",
   "published": "2026-09-30",
   "branch": "beta",
-  "focus": "audioguía natural y reducción de redundancias",
+  "focus": "saneamiento, estabilidad y rendimiento",
   "inventory_elements": 76,
-  "features": [
-    "selección automática de la voz más natural disponible en el dispositivo",
-    "selector manual de voz y velocidad de narración",
-    "muestra de voz y elección recomendada",
-    "narración segmentada por frases con pausas naturales",
-    "soporte para audio pregrabado por POI con TTS como respaldo",
-    "audioguía automática opcional por proximidad",
-    "inventario reducido a lugares visibles o destacados por defecto",
-    "inventario completo solo bajo petición, búsqueda o filtros",
-    "capas principales simplificadas y capas avanzadas plegadas",
-    "indicador de conexión visible solo cuando falta conexión",
-    "sección Proyecto eliminada de la navegación",
-    "pantalla Más reorganizada con Audioguía independiente",
-    "caché offline preparada para audios además de fotos",
-    "pruebas móviles automáticas"
+  "fixes": [
+    "la red de caminos OSM deja de poder publicarse vacía",
+    "generación OSM con API principal, división por zonas y fallback Overpass",
+    "red de caminos cargada en segundo plano para no bloquear el arranque",
+    "capas secundarias e IndexedDB dejan de bloquear el mapa inicial",
+    "service worker con respuesta rápida desde caché cuando la red es lenta",
+    "routes.json y estilo online añadidos a la precarga offline",
+    "conexión IndexedDB reutilizada",
+    "descarga offline paralelizada con límite de concurrencia",
+    "seguimiento de ruta optimizado y filtrado de GPS poco preciso",
+    "grabación de Campo deja de recalcular toda la distancia en cada punto",
+    "grabación de Campo deja de reajustar el mapa en cada actualización",
+    "JSZip se carga solo al exportar trabajo de campo",
+    "aportaciones y Campo se hidratan solo cuando se usan",
+    "galerías cambian correctamente la foto principal",
+    "enlaces compartidos conservan la versión activa",
+    "portapapeles degrada sin excepción cuando no está disponible",
+    "peticiones JSON tienen tiempo máximo de espera"
   ],
-  "limitations": [
-    "La calidad de TTS depende de las voces instaladas por Android/navegador.",
-    "Los audios neurales pregrabados requieren incorporar archivos de audio concretos a cada ficha.",
-    "La navegación Cómo llegar abre un servicio de mapas externo."
+  "tests": [
+    "validación de red OSM con mínimo de tramos",
+    "arranque móvil",
+    "rutas y PR-G 119",
+    "modo visitante/investigación",
+    "audioguía",
+    "offline",
+    "arranque con red de caminos retrasada",
+    "regresión de selectores DOM"
   ]
 }

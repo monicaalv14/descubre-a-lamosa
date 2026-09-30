@@ -32,9 +32,10 @@ function bindNavigation(){
 }
 export function openNav(name){
   closeSheets();
-  $$('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));
-  $$('.drawer-view').forEach(v=>v.classList.toggle('active',v.dataset.view===name));
+  $('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));
+  $('.drawer-view').forEach(v=>v.classList.toggle('active',v.dataset.view===name));
   setDrawer(name==='explore'?'half':'full');
+  emit('nav',name);
 }
 function setDrawer(size){
   const d=$('#drawer');d.style.height='';d.classList.remove('collapsed','half','full');d.classList.add(size);d.dataset.snap=size;
@@ -141,7 +142,7 @@ export function openPoi(id){
   const x=S.pois.find(p=>p.id===id);if(!x)return;const fav=favorites().has(id),d=S.userPosition&&x.coordinates?formatDistance(distanceM(S.userPosition,x.coordinates)):'';
   const photos=[];if(x.image_url)photos.push({url:x.image_url,credit:x.image_credit||''});if(Array.isArray(x.images))photos.push(...x.images);
   const hero=photos[0]?'<figure class="hero-photo"><img loading="eager" decoding="async" src="'+esc(photos[0].url)+'" alt="'+esc(x.name)+'"><figcaption>'+esc(photos[0].credit||'')+'</figcaption></figure>':'<div class="poi-cover '+typeClass(x.type)+'"><span>'+icon(x.type)+'</span></div>';
-  const gallery=photos.length>1?'<div class="gallery-strip">'+photos.slice(1).map((p,i)=>'<button class="gallery-thumb" data-gallery="'+i+'"><img loading="lazy" decoding="async" src="'+esc(p.url)+'" alt=""></button>').join('')+'</div>':'';
+  const gallery=photos.length>1?'<div class="gallery-strip">'+photos.slice(1).map((p,i)=>'<button class="gallery-thumb" data-gallery="'+(i+1)+'"><img loading="lazy" decoding="async" src="'+esc(p.url)+'" alt=""></button>').join('')+'</div>':'';
   const directions=x.coordinates?'<a class="primary-btn action-card" id="poiDirections" href="'+directionsUrl(x.coordinates,x.name)+'" target="_blank" rel="noopener"><span>➜</span><small>'+t('directions')+'</small></a>':'';
   const research=S.mode==='research'&&!x.coordinates?'<button class="soft-btn action-card" id="poiFieldBtn"><span>⌖</span><small>Localizar</small></button>':'';
   const html='<div class="sheet-title poi-title"><div class="category-orb '+typeClass(x.type)+'">'+icon(x.type)+'</div><div><span class="eyebrow">'+esc(shortCat(x.type))+'</span><h2>'+esc(x.name)+'</h2><div class="poi-meta">'+(d?'<span>'+d+'</span>':'')+(x.area?'<span>'+esc(x.area)+'</span>':'')+'</div></div></div>'+hero+gallery+
@@ -150,6 +151,11 @@ export function openPoi(id){
     '<details class="sheet-more"><summary>'+t('info')+'</summary><div class="detail-grid"><b>Tipo</b><span>'+esc(x.subtype||x.type||'')+'</span><b>Acceso</b><span>'+esc(x.access||'Sin comprobar')+'</span><b>Estado</b><span>'+visitorStatus(x)+'</span>'+(S.mode==='research'?'<b>Por comprobar</b><span>'+esc(x.verify||'')+'</span>':'')+'</div></details>'+
     '<details class="sheet-more"><summary>'+t('sources')+'</summary><div class="source-box">'+sourceHtml(x)+'</div></details>';
   openSheet('#poiSheet',html,'half');
+  $('[data-gallery]').forEach(b=>b.onclick=()=>{
+    const p=photos[Number(b.dataset.gallery)];if(!p)return;
+    const img=$('#poiSheet .hero-photo img'),cap=$('#poiSheet .hero-photo figcaption');
+    if(img){img.src=p.url;img.alt=x.name;}if(cap)cap.textContent=p.credit||'';
+  });
   $('#poiListenBtn').dataset.poiId=id;
   $('#poiListenBtn').onclick=()=>{
     if($('#poiListenBtn').dataset.playing==='1')emit('stop-audio');
@@ -201,7 +207,9 @@ function renderStories(){
     S.map?.fitBounds([[Math.min(...xs),Math.min(...ys)],[Math.max(...xs),Math.max(...ys)]],{padding:70,maxZoom:16});}});
 }
 function shareLink(title,hash){
-  const url=location.origin+location.pathname+location.search.split('&')[0]+hash;
+  const u=new URL(location.origin+location.pathname),v=new URLSearchParams(location.search).get('v');
+  if(v)u.searchParams.set('v',v);u.hash=hash.replace(/^#/,'');
+  const url=u.toString();
   if(navigator.share)return navigator.share({title,text:title,url}).catch(()=>{});
   navigator.clipboard?.writeText(url).then(()=>toast('Enlace copiado')).catch(()=>toast('No se pudo compartir'));
 }

@@ -74,16 +74,28 @@ function profileSvg(geo){
 }
 function startFollowing(route,geo){
   if(!navigator.geolocation){toast('GPS no disponible');return;}stopFollowing();
-  const coords=flatten(geo);if(coords.length<2)return;const cum=[0];for(let i=1;i<coords.length;i++)cum[i]=cum[i-1]+distanceM(coords[i-1],coords[i]);const total=cum.at(-1);
+  const coords=flatten(geo);if(coords.length<2)return;
+  const cum=[0];for(let i=1;i<coords.length;i++)cum[i]=cum[i-1]+distanceM(coords[i-1],coords[i]);const total=cum.at(-1);
+  const sampleStep=Math.max(1,Math.ceil(coords.length/450));
+  const sampleIdx=[];for(let i=0;i<coords.length;i+=sampleStep)sampleIdx.push(i);if(sampleIdx.at(-1)!==coords.length-1)sampleIdx.push(coords.length-1);
   const watch=navigator.geolocation.watchPosition(pos=>{
+    if(Number.isFinite(pos.coords.accuracy)&&pos.coords.accuracy>100){
+      $('#routeDeviation').textContent='GPS ±'+Math.round(pos.coords.accuracy)+' m';
+      $('#routeDeviation').style.color='#ffd27a';
+      return;
+    }
     const c=[pos.coords.longitude,pos.coords.latitude];S.userPosition=c;updateUserMarker(c);
-    let idx=0,best=Infinity;for(let i=0;i<coords.length;i++){const d=distanceM(c,coords[i]);if(d<best){best=d;idx=i;}}
+    let rough=0,best=Infinity;
+    for(const i of sampleIdx){const d=distanceM(c,coords[i]);if(d<best){best=d;rough=i;}}
+    let idx=rough;const a=Math.max(0,rough-sampleStep),z=Math.min(coords.length-1,rough+sampleStep);
+    for(let i=a;i<=z;i++){const d=distanceM(c,coords[i]);if(d<best){best=d;idx=i;}}
     lastNearest=coords[idx];const remaining=Math.max(0,total-cum[idx]),progress=total?cum[idx]/total:0;
     $('#followDistance').textContent=formatDistance(remaining);$('#routeRemaining').textContent=formatDistance(remaining)+' restantes';$('#followProgressBar').style.width=Math.round(progress*100)+'%';
     const off=best>80;$('#routeDeviation').textContent=off?'⚠ '+Math.round(best)+' m fuera':'✓ sobre ruta';$('#routeDeviation').style.color=off?'#ffd27a':'#bce4c8';$('#returnRouteBtn').hidden=!off;
     if(off&&!lastOff&&navigator.vibrate)navigator.vibrate([120,80,120]);lastOff=off;
-    const nearest=S.pois.filter(x=>x.coordinates&&x.visitor_visible).map(x=>({...x,_d:distanceM(c,x.coordinates)})).sort((a,b)=>a._d-b._d)[0];
-    $('#followNearestPoi').textContent=nearest&&nearest._d<1200?nearest.name+' · '+formatDistance(nearest._d):'—';
+    let nearest=null,nearestD=Infinity;
+    for(const p of S.pois){if(!p.coordinates||!p.visitor_visible)continue;const d=distanceM(c,p.coordinates);if(d<nearestD){nearest=p;nearestD=d;}}
+    $('#followNearestPoi').textContent=nearest&&nearestD<1200?nearest.name+' · '+formatDistance(nearestD):'—';
   },e=>{recordError(e,'route-follow');toast('Se perdió la señal GPS');},{enableHighAccuracy:true,maximumAge:2000,timeout:15000});
   S.routeFollow={watch,routeId:route.id};$('#routeFollowPanel').hidden=false;toast('Seguimiento de ruta iniciado');
 }
@@ -100,7 +112,9 @@ async function importGpx(e){
   }catch(err){recordError(err,'gpx-import');toast('No se pudo importar el GPX');}e.target.value='';
 }
 function shareRoute(r){
-  const url=location.origin+location.pathname+'?v=120b1#route='+encodeURIComponent(r.id);
+  const u=new URL(location.origin+location.pathname),v=new URLSearchParams(location.search).get('v');
+  if(v)u.searchParams.set('v',v);u.hash='route='+encodeURIComponent(r.id);
+  const url=u.toString();
   if(navigator.share)return navigator.share({title:r.name,text:'Ruta en Descubre A Lamosa',url}).catch(()=>{});
   navigator.clipboard?.writeText(url).then(()=>toast('Enlace copiado')).catch(()=>toast('No se pudo compartir'));
 }

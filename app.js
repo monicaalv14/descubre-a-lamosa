@@ -10,6 +10,7 @@ import {initContributions} from './js/contributions.js';
 import {initDiagnostics} from './js/diagnostics.js';
 
 async function boot(){
+  const started=performance.now();
   try{
     const params=new URLSearchParams(location.search);
     if(params.get('mode')==='research'||params.get('mode')==='visitor')setMode(params.get('mode'));
@@ -26,8 +27,9 @@ async function boot(){
     bindPwa();
     connection();
     document.body.dataset.appReady='true';
+    document.body.dataset.bootMs=String(Math.round(performance.now()-started));
   }catch(e){
-    recordError(e,'boot');document.body.dataset.appReady='error';
+    recordError(e,'boot');document.body.dataset.appReady='error';document.body.dataset.bootMs=String(Math.round(performance.now()-started));
     const s=document.querySelector('#mapStatus');if(s)s.textContent='Error de arranque: '+e.message;
   }
 }
@@ -60,7 +62,7 @@ function bindPwa(){
   $('#installBtn').onclick=async()=>{if(!prompt)return;prompt.prompt();await prompt.userChoice;prompt=null;$('#installBtn').hidden=true;};
   $('#reloadBtn').onclick=()=>location.reload();
   if('serviceWorker'in navigator){
-    navigator.serviceWorker.register('sw.js?v=121b1',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('sw.js?v=122b1',{updateViaCache:'none'}).then(reg=>{
       reg.addEventListener('updatefound',()=>{const w=reg.installing;w?.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)$('#updateBanner').hidden=false;});});
     }).catch(e=>recordError(e,'service-worker'));
   }

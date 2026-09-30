@@ -1,8 +1,9 @@
 import {S,$,$$,esc,toast,dbGetAll,dbPut,dbDelete,downloadBlob,recordError} from './state.js';
+let rendered=false;
 export function initContributions(){
   $('#contributionForm').onsubmit=save;
-  render();
-  window.addEventListener('alm:mode',render);
+  window.addEventListener('alm:nav',e=>{if(e.detail==='more'){rendered=true;render();}});
+  window.addEventListener('alm:mode',()=>{if(rendered)render();});
 }
 async function save(e){
   e.preventDefault();

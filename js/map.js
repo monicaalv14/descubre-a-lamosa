@@ -1,6 +1,6 @@
 import * as maplibregl from '../vendor/maplibre-gl.mjs';
 import {S,$,$$,emit,toast,distanceM,recordError,dbGetAll} from './state.js';
-import {visiblePois} from './data.js';
+import {visiblePois,loadOsmNetwork} from './data.js';
 
 const COLORS={
   'Patrimonio':'#86532f','Patrimonio interior':'#86532f','Historia':'#806946',
@@ -8,7 +8,7 @@ const COLORS={
   'Ruta / patrimonio':'#b26138','Comer':'#b06c2d','Dormir':'#536f8e'
 };
 const PATHS={track:'#876846',path:'#bd653c',foot:'#5a855f',local:'#77838b'};
-let fieldVisible=true,pathVisible=true,placeVisible=false,poiVisible=true;
+let fieldVisible=true,pathVisible=true,placeVisible=false,poiVisible=true,parishVisible=false,hydroVisible=false;
 let categoryFilter=[],routeRelatedIds=null;
 
 export async function initMap(){
@@ -17,11 +17,22 @@ export async function initMap(){
   S.map.addControl(new maplibregl.NavigationControl({showCompass:true}),'top-right');
   S.map.on('error',e=>recordError(e?.error||e,'map'));
   await new Promise(resolve=>S.map.once('load',resolve));
-  await setupSources();bindMapEvents();fitInitial();$('#mapStatus').textContent='Mapa listo';
+  setupCoreSources();bindMapEvents();fitInitial();$('#mapStatus').textContent='Mapa listo';
+  queueDeferredMapWork();
   return S.map;
 }
-async function setupSources(){
-  addPnoa();addPoiSource();renderPriorityMarkers();addPlaces();addPaths();addOfficialContext();await updateFieldLayer();addRouteSource();addImportedSource();
+function setupCoreSources(){
+  addPnoa();addPoiSource();renderPriorityMarkers();addPlaces();addPaths();addRouteSource();addImportedSource();
+}
+function queueDeferredMapWork(){
+  const run=async()=>{
+    const jobs=[loadPathsNetwork(),addOfficialContext()];
+    if(S.mode==='research')jobs.push(updateFieldLayer());
+    await Promise.allSettled(jobs);
+    emit('map-enriched');
+  };
+  if('requestIdleCallback'in window)requestIdleCallback(()=>run(),{timeout:1200});
+  else setTimeout(run,80);
 }
 function addPnoa(){
   if(S.map.getSource('pnoa'))return;
@@ -68,9 +79,11 @@ function addPlaces(){
   S.map.addLayer({id:'places',type:'circle',source:'places',layout:{visibility:'none'},paint:{'circle-radius':7,'circle-color':'#fff','circle-stroke-color':'#244b3a','circle-stroke-width':3}});
 }
 function pathKind(p){const h=p.highway;return h==='track'?'track':h==='path'?'path':(h==='footway'||h==='bridleway')?'foot':'local';}
+function pathGeo(network=S.osmNetwork){
+  return {type:'FeatureCollection',features:(network?.features||[]).map(f=>({...f,properties:{...f.properties,kind:pathKind(f.properties||{})}}))};
+}
 function addPaths(){
-  const data={type:'FeatureCollection',features:(S.osmNetwork?.features||[]).map(f=>({...f,properties:{...f.properties,kind:pathKind(f.properties||{})}}))};
-  S.map.addSource('paths',{type:'geojson',data});
+  S.map.addSource('paths',{type:'geojson',data:pathGeo()});
   for(const [kind,color] of Object.entries(PATHS)){
     S.map.addLayer({id:'paths-'+kind,type:'line',source:'paths',filter:['==',['get','kind'],kind],paint:{
       'line-color':color,'line-width':['interpolate',['linear'],['zoom'],11,.8,15,2.2,18,4],'line-opacity':.8,
@@ -78,15 +91,21 @@ function addPaths(){
     }});
   }
 }
+async function loadPathsNetwork(){
+  const net=await loadOsmNetwork();
+  if(S.map?.getSource('paths'))S.map.getSource('paths').setData(pathGeo(net));
+  if(!net?.features?.length)recordError(new Error('Red de caminos vacía'),'osm-network-empty');
+  return net;
+}
 async function addOfficialContext(){
   for(const [name,file,color] of [['parish','data/generated/parish.geojson','#315c48'],['hydro','data/generated/hydro.geojson','#4d8dad']]){
     try{
       const r=await fetch(file);if(!r.ok)continue;const data=await r.json();
       S.map.addSource(name,{type:'geojson',data});
       if(name==='parish'){
-        S.map.addLayer({id:'parish-fill',type:'fill',source:name,layout:{visibility:'none'},paint:{'fill-color':color,'fill-opacity':.05}});
-        S.map.addLayer({id:'parish-line',type:'line',source:name,layout:{visibility:'none'},paint:{'line-color':color,'line-width':2,'line-dasharray':[2,2]}});
-      }else S.map.addLayer({id:'hydro-line',type:'line',source:name,layout:{visibility:'none'},paint:{'line-color':color,'line-width':1.4,'line-opacity':.75}});
+        S.map.addLayer({id:'parish-fill',type:'fill',source:name,layout:{visibility:parishVisible?'visible':'none'},paint:{'fill-color':color,'fill-opacity':.05}});
+        S.map.addLayer({id:'parish-line',type:'line',source:name,layout:{visibility:parishVisible?'visible':'none'},paint:{'line-color':color,'line-width':2,'line-dasharray':[2,2]}});
+      }else S.map.addLayer({id:'hydro-line',type:'line',source:name,layout:{visibility:hydroVisible?'visible':'none'},paint:{'line-color':color,'line-width':1.4,'line-opacity':.75}});
     }catch(e){recordError(e,'official-context');}
   }
 }
@@ -132,10 +151,10 @@ function emitViewport(){
 function toggleLayer(name,on){
   if(name==='pois'){poiVisible=on;for(const id of ['poi-clusters','poi-points'])vis(id,on);S.priorityMarkers.forEach(m=>m.getElement().style.display=on?'':'none');}
   if(name==='places'){placeVisible=on;vis('places',on);}
-  if(name==='paths'){pathVisible=on;for(const id of ['paths-track','paths-path','paths-foot','paths-local'])vis(id,on);}
-  if(name==='field'){fieldVisible=on;vis('field',on);}
-  if(name==='hydro')vis('hydro-line',on);
-  if(name==='parish'){vis('parish-fill',on);vis('parish-line',on);}
+  if(name==='paths'){pathVisible=on;for(const id of ['paths-track','paths-path','paths-foot','paths-local'])vis(id,on);if(on&&!S.osmNetwork)loadPathsNetwork();}
+  if(name==='field'){fieldVisible=on;if(on)updateFieldLayer();vis('field',on);}
+  if(name==='hydro'){hydroVisible=on;vis('hydro-line',on);}
+  if(name==='parish'){parishVisible=on;vis('parish-fill',on);vis('parish-line',on);}
 }
 function vis(id,on){if(S.map?.getLayer(id))S.map.setLayoutProperty(id,'visibility',on?'visible':'none');}
 export function refreshPoiSource(){S.map?.getSource('pois')?.setData(normalGeo());renderPriorityMarkers();emitViewport();}
@@ -166,7 +185,7 @@ export function showRouteGeoJSON(geo,opts={}){
 export function clearRouteGeoJSON(){
   S.map?.getSource('active-route')?.setData({type:'FeatureCollection',features:[]});S.activeRoute=null;routeRelatedIds=null;emit('route-mode-clear');refreshPoiSource();$('#activeRouteBar').hidden=true;$('#routeFollowPanel').hidden=true;
 }
-export function showImportedGeoJSON(geo){S.map?.getSource('imported-route')?.setData(geo);fitGeo(geo);}
+export function showImportedGeoJSON(geo,{fit=true}={}){S.map?.getSource('imported-route')?.setData(geo);if(fit)fitGeo(geo);}
 export function clearImported(){S.map?.getSource('imported-route')?.setData({type:'FeatureCollection',features:[]});}
 function fitGeo(geo){const b=new maplibregl.LngLatBounds();let n=0;walk(geo,c=>{b.extend(c);n++});if(n)S.map.fitBounds(b,{padding:{top:80,bottom:145,left:55,right:55},maxZoom:16,duration:800});}
 function walk(o,fn){if(!o)return;if(Array.isArray(o)&&typeof o[0]==='number'){fn(o);return}if(Array.isArray(o)){o.forEach(x=>walk(x,fn));return}if(o.type==='FeatureCollection')o.features?.forEach(x=>walk(x,fn));else if(o.type==='Feature')walk(o.geometry,fn);else if(o.coordinates)walk(o.coordinates,fn);}
