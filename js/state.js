@@ -39,7 +39,7 @@ export function recordError(error,context='runtime'){const item={at:new Date().t
 window.addEventListener('error',e=>recordError(e.error||e.message,'window'));
 window.addEventListener('unhandledrejection',e=>recordError(e.reason,'promise'));
 
-const DB_NAME='a-lamosa-field',DB_VERSION=3;
+const DB_NAME='a-lamosa-field',DB_VERSION=2;
 let dbPromise=null;
 export function openDB(){
   if(dbPromise)return dbPromise;
@@ -49,7 +49,6 @@ export function openDB(){
       if(!db.objectStoreNames.contains('records'))db.createObjectStore('records',{keyPath:'id'});
       if(!db.objectStoreNames.contains('tracks'))db.createObjectStore('tracks',{keyPath:'id'});
       if(!db.objectStoreNames.contains('contributions'))db.createObjectStore('contributions',{keyPath:'id'});
-      if(!db.objectStoreNames.contains('poiPhotos'))db.createObjectStore('poiPhotos',{keyPath:'id'});
     };
     r.onsuccess=()=>{
       const db=r.result;
