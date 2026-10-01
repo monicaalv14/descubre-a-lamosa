@@ -222,3 +222,13 @@ body.route-following .drawer-handle{height:52px;margin:0;display:block}
 body.route-following .drawer-view{display:none!important}
 body.route-following .bottom-nav{opacity:.28;pointer-events:none}
 @media(min-width:900px){body.route-following .drawer{height:100%!important;min-height:0!important;max-height:none!important}body.route-following .drawer-view{display:block!important}body.route-following .bottom-nav{opacity:1;pointer-events:auto}}
+
+/* Marcadores y gestión fotográfica */
+.priority-marker{position:relative;width:40px;height:40px;border-radius:14px 14px 14px 4px;transform:rotate(-45deg);border:3px solid rgba(255,255,255,.96);box-shadow:0 5px 14px rgba(25,31,28,.28)}
+.priority-marker .priority-icon{transform:rotate(45deg);display:grid;place-items:center}
+.priority-marker:hover,.priority-marker:focus{transform:rotate(-45deg) scale(1.09)}
+.photo-manager-body{padding:4px 0 8px}.photo-add-btn{display:flex!important;justify-content:center;cursor:pointer;margin:8px 0 12px}
+.managed-photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.managed-photo{overflow:hidden;border:1px solid #ded8cc;border-radius:13px;background:#fff}.managed-photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.managed-photo>div{display:grid;gap:5px;padding:7px}.managed-photo button{font-size:.72rem;padding:7px}
+.photo-delete{border:0;background:transparent;color:#8a3d35;font-weight:700}
