@@ -53,12 +53,19 @@ function addPoiSource(){
   S.map.addSource('pois',{type:'geojson',data:normalGeo(),cluster:true,clusterMaxZoom:15,clusterRadius:46});
   S.map.addLayer({id:'poi-clusters',type:'circle',source:'pois',filter:['has','point_count'],paint:{
     'circle-color':'#244b3a','circle-radius':['step',['get','point_count'],16,8,20,20,24,40,28],
-    'circle-stroke-color':'#fff','circle-stroke-width':2,'circle-opacity':.92
+    'circle-stroke-color':'#fff','circle-stroke-width':3,'circle-opacity':.94,'circle-blur':.03
   }});
+  S.map.addLayer({id:'poi-cluster-count',type:'symbol',source:'pois',filter:['has','point_count'],layout:{
+    'text-field':['get','point_count_abbreviated'],'text-size':12,'text-font':['Noto Sans Regular']
+  },paint:{'text-color':'#fff'}});
   S.map.addLayer({id:'poi-points',type:'circle',source:'pois',filter:['!',['has','point_count']],paint:{
-    'circle-color':['get','color'],'circle-radius':['interpolate',['linear'],['zoom'],11,5,15,7.5,18,9],
-    'circle-stroke-color':'#fff','circle-stroke-width':2
+    'circle-color':['get','color'],'circle-radius':['interpolate',['linear'],['zoom'],11,7,15,10,18,12],
+    'circle-stroke-color':'#fff','circle-stroke-width':3,'circle-opacity':.97
   }});
+  S.map.addLayer({id:'poi-symbols',type:'symbol',source:'pois',filter:['!',['has','point_count']],layout:{
+    'text-field':['match',['get','type'],'Naturaleza','♧','Agua / molinos','≈','Historia','⌛','Ruta / patrimonio','↝','Comer','●','Dormir','⌂','Cultura / comunidad','✦','◆'],
+    'text-size':['interpolate',['linear'],['zoom'],11,9,16,13],'text-allow-overlap':true
+  },paint:{'text-color':'#fff'});
 }
 function renderPriorityMarkers(){
   S.priorityMarkers.forEach(m=>m.remove());S.priorityMarkers=[];
@@ -149,7 +156,7 @@ function emitViewport(){
   S.lastViewportPois=rows;emit('viewport-pois',rows);
 }
 function toggleLayer(name,on){
-  if(name==='pois'){poiVisible=on;for(const id of ['poi-clusters','poi-points'])vis(id,on);S.priorityMarkers.forEach(m=>m.getElement().style.display=on?'':'none');}
+  if(name==='pois'){poiVisible=on;for(const id of ['poi-clusters','poi-cluster-count','poi-points','poi-symbols'])vis(id,on);S.priorityMarkers.forEach(m=>m.getElement().style.display=on?'':'none');}
   if(name==='places'){placeVisible=on;vis('places',on);}
   if(name==='paths'){pathVisible=on;for(const id of ['paths-track','paths-path','paths-foot','paths-local'])vis(id,on);if(on&&!S.osmNetwork)loadPathsNetwork();}
   if(name==='field'){fieldVisible=on;if(on)updateFieldLayer();vis('field',on);}
