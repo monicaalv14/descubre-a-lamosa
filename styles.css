@@ -222,3 +222,8 @@ body.route-following .drawer-handle{height:52px;margin:0;display:block}
 body.route-following .drawer-view{display:none!important}
 body.route-following .bottom-nav{opacity:.28;pointer-events:none}
 @media(min-width:900px){body.route-following .drawer{height:100%!important;min-height:0!important;max-height:none!important}body.route-following .drawer-view{display:block!important}body.route-following .bottom-nav{opacity:1;pointer-events:auto}}
+
+/* Marcadores refinados: conserva la lógica estable y mejora solo su presentación */
+.priority-marker{width:39px;height:39px;border-radius:50% 50% 50% 12px;transform:rotate(-45deg);border:3px solid rgba(255,255,255,.98);box-shadow:0 5px 14px rgba(20,30,25,.3);isolation:isolate}
+.priority-marker .priority-icon{transform:rotate(45deg);display:grid;place-items:center;font-size:16px;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.priority-marker:hover,.priority-marker:focus-visible{transform:rotate(-45deg) scale(1.1);outline:3px solid rgba(255,255,255,.55);outline-offset:2px}
