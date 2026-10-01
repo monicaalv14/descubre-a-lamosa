@@ -77,7 +77,7 @@ test('audioguía muestra controles simples y no rompe sin voces instaladas',asyn
   await page.goto('/?v=127b1');
   await expectReady(page);
   await page.locator('[data-nav="more"]').click();
-  const audio=page.locator('details').filter({hasText:'Audioguía'});
+  const audio=page.locator('details').filter({has:page.locator('summary',{hasText:'Audioguía'})}).first();
   await audio.locator('summary').click();
   await expect(page.locator('#voiceSelect')).toBeVisible();
   await expect(page.locator('#voiceRate')).toBeVisible();
