@@ -53,11 +53,11 @@ function addPoiSource(){
   S.map.addSource('pois',{type:'geojson',data:normalGeo(),cluster:true,clusterMaxZoom:15,clusterRadius:46});
   S.map.addLayer({id:'poi-clusters',type:'circle',source:'pois',filter:['has','point_count'],paint:{
     'circle-color':'#244b3a','circle-radius':['step',['get','point_count'],16,8,20,20,24,40,28],
-    'circle-stroke-color':'#fff','circle-stroke-width':2,'circle-opacity':.92
+    'circle-stroke-color':'#fff','circle-stroke-width':3,'circle-opacity':.94
   }});
   S.map.addLayer({id:'poi-points',type:'circle',source:'pois',filter:['!',['has','point_count']],paint:{
-    'circle-color':['get','color'],'circle-radius':['interpolate',['linear'],['zoom'],11,5,15,7.5,18,9],
-    'circle-stroke-color':'#fff','circle-stroke-width':2
+    'circle-color':['get','color'],'circle-radius':['interpolate',['linear'],['zoom'],11,6,15,8.5,18,10],
+    'circle-stroke-color':'#fff','circle-stroke-width':2.5
   }});
 }
 function renderPriorityMarkers(){
