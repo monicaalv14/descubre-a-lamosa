@@ -78,7 +78,7 @@ test('audioguía muestra controles simples y no rompe sin voces instaladas',asyn
   await expectReady(page);
   await page.locator('[data-nav="more"]').click();
   const audio=page.locator('details').filter({has:page.locator('summary',{hasText:'Audioguía'})}).first();
-  await audio.locator('summary').click();
+  await audio.locator(':scope > summary').click();
   await expect(page.locator('#voiceSelect')).toBeVisible();
   await expect(page.locator('#voiceRate')).toBeVisible();
   await expect(page.locator('#voiceSampleBtn')).toBeVisible();
