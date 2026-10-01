@@ -214,7 +214,7 @@ export function openPoi(id){
     '<section class="poi-intro"><span class="poi-intro-label">En pocas palabras</span><p class="poi-summary">'+esc(x.description||'')+'</p></section>'+
     '<div class="sheet-actions action-grid">'+directions+'<button class="soft-btn action-card" id="poiListenBtn"><span>▶</span><small>'+t('listen')+'</small></button><button class="soft-btn action-card" id="poiFavBtn"><span>'+(fav?'★':'☆')+'</span><small>'+t('favorites')+'</small></button><button class="soft-btn action-card" id="poiShareBtn"><span>↗</span><small>'+t('share')+'</small></button>'+research+'</div>'+
     '<details class="sheet-more"><summary>'+t('info')+'</summary><div class="detail-grid"><b>Tipo</b><span>'+esc(x.subtype||x.type||'')+'</span><b>Acceso</b><span>'+esc(x.access||'Sin comprobar')+'</span><b>Estado</b><span>'+visitorStatus(x)+'</span>'+(S.mode==='research'?'<b>Por comprobar</b><span>'+esc(x.verify||'')+'</span>':'')+'</div></details>'+
-    '<details class="sheet-more"><summary>Mis fotografías</summary><div class="poi-photo-tools"><p class="section-note">Fotos guardadas solo en este dispositivo.</p><label class="soft-btn file-btn">＋ Añadir foto<input id="poiPhotoAdd" type="file" accept="image/*" capture="environment" hidden></label><div id="poiLocalPhotos" class="local-photo-grid"></div></div></details>'+
+    '<details class="sheet-more"><summary>Mis fotografías</summary><div class="poi-photo-tools"><p class="section-note">Fotos guardadas solo en este dispositivo.</p><div class="photo-source-actions"><label class="soft-btn file-btn">▧ Elegir de la galería<input id="poiPhotoAdd" type="file" accept="image/*" multiple hidden></label><label class="soft-btn file-btn">◉ Hacer foto<input id="poiPhotoCamera" type="file" accept="image/*" capture="environment" hidden></label></div><div id="poiLocalPhotos" class="local-photo-grid"></div></div></details>'+
     '<details class="sheet-more"><summary>'+t('sources')+'</summary><div class="source-box">'+sourceHtml(x)+'</div></details>';
   openSheet('#poiSheet',html,'half');
   $$('[data-gallery]').forEach(b=>b.onclick=()=>{
@@ -233,14 +233,16 @@ export function openPoi(id){
   if($('#poiFieldBtn'))$('#poiFieldBtn').onclick=()=>{closeSheets();openNav('field');emit('field-prefill',x);};
 }
 function bindPoiLocalPhotos(id){
-  const input=$('#poiPhotoAdd'),host=$('#poiLocalPhotos');if(!input||!host)return;
+  const input=$('#poiPhotoAdd'),camera=$('#poiPhotoCamera'),host=$('#poiLocalPhotos');if(!input||!host)return;
   const render=()=>dbGetAll('poiPhotos').then(rows=>{
     const row=rows.find(r=>r.id===id),photos=row?.photos||[];
     host.innerHTML=photos.map((p,i)=>'<article class="local-photo-card"><img src="'+esc(p.data)+'" alt=""><div><button class="soft-btn compact-btn" data-local-cover="'+i+'">'+(i===0?'★ Portada':'Hacer portada')+'</button><button class="photo-remove" data-local-remove="'+i+'">Eliminar</button></div></article>').join('')||( '<p class="section-note">No has añadido fotos a este lugar.</p>');
     $$('[data-local-cover]').forEach(b=>b.onclick=async()=>{const rows=await dbGetAll('poiPhotos'),row=rows.find(r=>r.id===id);if(!row)return;const i=Number(b.dataset.localCover),p=row.photos.splice(i,1)[0];row.photos.unshift(p);await dbPut('poiPhotos',row);render();});
     $$('[data-local-remove]').forEach(b=>b.onclick=async()=>{const rows=await dbGetAll('poiPhotos'),row=rows.find(r=>r.id===id);if(!row)return;row.photos.splice(Number(b.dataset.localRemove),1);row.photos.length?await dbPut('poiPhotos',row):await dbDelete('poiPhotos',id);render();});
   }).catch(()=>{host.innerHTML='<p class="section-note">No se pudieron cargar las fotos locales.</p>';});
-  input.onchange=()=>{const file=input.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=async()=>{const rows=await dbGetAll('poiPhotos'),row=rows.find(r=>r.id===id)||{id,photos:[]};row.photos.push({data:String(reader.result),name:file.name,at:new Date().toISOString()});await dbPut('poiPhotos',row);toast('Foto añadida');input.value='';render();};reader.readAsDataURL(file);};
+  const addFiles=async(files,source)=>{let added=0;for(const file of [...files||[]]){if(!file.type.startsWith('image/'))continue;const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=reject;reader.readAsDataURL(file);});const rows=await dbGetAll('poiPhotos'),row=rows.find(r=>r.id===id)||{id,photos:[]};row.photos.push({data,name:file.name,at:new Date().toISOString()});await dbPut('poiPhotos',row);added++;}if(added){toast(added===1?'Foto añadida':added+' fotos añadidas');render();}source.value='';};
+  input.onchange=()=>addFiles(input.files,input);
+  if(camera)camera.onchange=()=>addFiles(camera.files,camera);
   render();
 }
 function updateAudioButton(detail){
