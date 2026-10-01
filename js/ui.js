@@ -1,4 +1,4 @@
-import {S,$,$$,esc,toast,setMode,setLang,setAppearance,favorites,setFavorite,distanceM,formatDistance,dbGetAll,emit} from './state.js';
+import {S,$,$$,esc,toast,setMode,setLang,setAppearance,favorites,setFavorite,distanceM,formatDistance,dbGetAll,dbPut,dbDelete,emit} from './state.js';
 import {t,applyI18n} from './i18n.js';
 import {visiblePois} from './data.js';
 import {locate,setCategoryFilter,refreshPoiSource,focusPoi} from './map.js';
@@ -203,9 +203,11 @@ function renderViewport(rows,near=false){
   host.hidden=($('#drawer')?.dataset.snap||'half')!=='collapsed';
   $$('[data-near-poi]').forEach(b=>b.onclick=()=>{const x=S.pois.find(p=>p.id===b.dataset.nearPoi);if(x)focusPoi(x);openPoi(b.dataset.nearPoi);});
 }
-export function openPoi(id){
+export async function openPoi(id){
   const x=S.pois.find(p=>p.id===id);if(!x)return;const fav=favorites().has(id),d=S.userPosition&&x.coordinates?formatDistance(distanceM(S.userPosition,x.coordinates)):'';
-  const photos=[];if(x.image_url)photos.push({url:x.image_url,credit:x.image_credit||''});if(Array.isArray(x.images))photos.push(...x.images);
+  const custom=await loadPoiPhotos(id);
+  const originals=[];if(x.image_url)originals.push({url:x.image_url,credit:x.image_credit||'',original:true});if(Array.isArray(x.images))originals.push(...x.images.map(p=>({...p,original:true})));
+  const photos=[...(custom?.photos||[]),...originals];
   const hero=photos[0]?'<figure class="hero-photo"><img loading="eager" decoding="async" src="'+esc(photos[0].url)+'" alt="'+esc(x.name)+'"><figcaption>'+esc(photos[0].credit||'')+'</figcaption></figure>':'<div class="poi-cover '+typeClass(x.type)+'"><span>'+icon(x.type)+'</span></div>';
   const gallery=photos.length>1?'<div class="gallery-strip">'+photos.slice(1).map((p,i)=>'<button class="gallery-thumb" data-gallery="'+(i+1)+'"><img loading="lazy" decoding="async" src="'+esc(p.url)+'" alt=""></button>').join('')+'</div>':'';
   const directions=x.coordinates?'<a class="primary-btn action-card" id="poiDirections" href="'+directionsUrl(x.coordinates,x.name)+'" target="_blank" rel="noopener"><span>➜</span><small>'+t('directions')+'</small></a>':'';
@@ -214,6 +216,7 @@ export function openPoi(id){
     '<section class="poi-intro"><span class="poi-intro-label">En pocas palabras</span><p class="poi-summary">'+esc(x.description||'')+'</p></section>'+
     '<div class="sheet-actions action-grid">'+directions+'<button class="soft-btn action-card" id="poiListenBtn"><span>▶</span><small>'+t('listen')+'</small></button><button class="soft-btn action-card" id="poiFavBtn"><span>'+(fav?'★':'☆')+'</span><small>'+t('favorites')+'</small></button><button class="soft-btn action-card" id="poiShareBtn"><span>↗</span><small>'+t('share')+'</small></button>'+research+'</div>'+
     '<details class="sheet-more"><summary>'+t('info')+'</summary><div class="detail-grid"><b>Tipo</b><span>'+esc(x.subtype||x.type||'')+'</span><b>Acceso</b><span>'+esc(x.access||'Sin comprobar')+'</span><b>Estado</b><span>'+visitorStatus(x)+'</span>'+(S.mode==='research'?'<b>Por comprobar</b><span>'+esc(x.verify||'')+'</span>':'')+'</div></details>'+
+    '<details class="sheet-more photo-manager"><summary>Fotografías</summary><div class="photo-manager-body"><p class="section-note">Añade fotos desde el móvil. La primera foto añadida será la portada; puedes cambiarla o eliminarla cuando quieras. Se guardan en este dispositivo y funcionan sin conexión.</p><label class="primary-btn photo-add-btn">＋ Añadir fotos<input id="poiPhotoInput" type="file" accept="image/*" capture="environment" multiple hidden></label><div id="poiPhotoManager"></div></div></details>'+
     '<details class="sheet-more"><summary>'+t('sources')+'</summary><div class="source-box">'+sourceHtml(x)+'</div></details>';
   openSheet('#poiSheet',html,'half');
   $$('[data-gallery]').forEach(b=>b.onclick=()=>{
@@ -221,6 +224,14 @@ export function openPoi(id){
     const img=$('#poiSheet .hero-photo img'),cap=$('#poiSheet .hero-photo figcaption');
     if(img){img.src=p.url;img.alt=x.name;}if(cap)cap.textContent=p.credit||'';
   });
+  renderPoiPhotoManager(id,custom);
+  $('#poiPhotoInput').onchange=async e=>{
+    const files=[...e.target.files||[]];if(!files.length)return;
+    const current=await loadPoiPhotos(id),added=[];
+    for(const file of files){try{added.push({id:crypto.randomUUID?.()||Date.now()+'-'+Math.random(),url:await imageFileToDataUrl(file),credit:'Foto añadida desde la app'});}catch{}}
+    await savePoiPhotos(id,[...added,...(current?.photos||[])]);
+    toast(added.length+' foto'+(added.length===1?' añadida':'s añadidas'));openPoi(id);renderExplore();
+  };
   $('#poiListenBtn').dataset.poiId=id;
   $('#poiListenBtn').onclick=()=>{
     if($('#poiListenBtn').dataset.playing==='1')emit('stop-audio');
@@ -229,6 +240,19 @@ export function openPoi(id){
   $('#poiFavBtn').onclick=()=>{setFavorite(id,!favorites().has(id));openPoi(id);};
   $('#poiShareBtn').onclick=()=>shareLink(x.name,'#poi='+encodeURIComponent(id));
   if($('#poiFieldBtn'))$('#poiFieldBtn').onclick=()=>{closeSheets();openNav('field');emit('field-prefill',x);};
+}
+async function loadPoiPhotos(id){return (await dbGetAll('poiPhotos')).find(x=>x.id===id)||{id,photos:[]};}
+async function savePoiPhotos(id,photos){if(photos.length)await dbPut('poiPhotos',{id,photos});else await dbDelete('poiPhotos',id);}
+function imageFileToDataUrl(file){
+  return new Promise((resolve,reject)=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{
+    try{const max=1600,scale=Math.min(1,max/Math.max(img.width,img.height)),canvas=document.createElement('canvas');canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);URL.revokeObjectURL(u);resolve(canvas.toDataURL('image/jpeg',.84));}catch(e){URL.revokeObjectURL(u);reject(e);}
+  };img.onerror=()=>{URL.revokeObjectURL(u);reject(new Error('Imagen no válida'));};img.src=u;});
+}
+function renderPoiPhotoManager(id,custom){
+  const host=$('#poiPhotoManager');if(!host)return;const photos=custom?.photos||[];
+  host.innerHTML=photos.length?'<div class="managed-photo-grid">'+photos.map((p,i)=>'<div class="managed-photo"><img src="'+esc(p.url)+'" alt=""><div><button class="soft-btn" data-photo-cover="'+esc(p.id)+'">'+(i===0?'★ Portada':'Hacer portada')+'</button><button class="photo-delete" data-photo-delete="'+esc(p.id)+'">Eliminar</button></div></div>').join('')+'</div>':'<p class="section-note">Todavía no has añadido fotografías propias a esta ficha.</p>';
+  $$('[data-photo-cover]').forEach(b=>b.onclick=async()=>{const cur=await loadPoiPhotos(id),i=cur.photos.findIndex(p=>p.id===b.dataset.photoCover);if(i>0){const [p]=cur.photos.splice(i,1);cur.photos.unshift(p);await savePoiPhotos(id,cur.photos);openPoi(id);renderExplore();}});
+  $$('[data-photo-delete]').forEach(b=>b.onclick=async()=>{const cur=await loadPoiPhotos(id);await savePoiPhotos(id,cur.photos.filter(p=>p.id!==b.dataset.photoDelete));toast('Foto eliminada');openPoi(id);renderExplore();});
 }
 function updateAudioButton(detail){
   const b=$('#poiListenBtn');if(!b)return;
