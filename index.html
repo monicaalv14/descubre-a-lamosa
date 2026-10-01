@@ -10,9 +10,9 @@
 <meta name="apple-mobile-web-app-title" content="A Lamosa">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="manifest" href="manifest.webmanifest?v=127b1">
+<link rel="manifest" href="manifest.webmanifest?v=129santa">
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="styles.css?v=127b1">
+<link rel="stylesheet" href="styles.css?v=129santa">
 <title>Descubre A Lamosa</title>
 </head>
 <body data-mode="visitor" data-theme="system">
@@ -155,15 +155,18 @@
       </div></details>
 
       <details class="accord"><summary>Audioguía</summary><div class="accord-body form-stack audio-settings">
-        <label>Voz<select id="voiceSelect"><option value="">Voz del dispositivo</option></select></label>
-        <div class="voice-row">
-          <label>Ritmo <span id="voiceRateValue">0.94×</span><input id="voiceRate" type="range" min="0.78" max="1.08" step="0.01" value="0.94"></label>
-        </div>
+        <p class="section-note"><strong>Narración principal: Santa · 0,76×</strong><br>Los lugares con audioguía grabada reproducen los WAV de Santa, también sin conexión.</p>
         <div class="button-grid">
-          <button id="voiceSampleBtn" class="primary-btn" type="button">▶ Escuchar muestra</button>
-          <button id="voiceAutoBtn" class="soft-btn" type="button">Elegir recomendada</button>
+          <button id="voiceSampleBtn" class="primary-btn" type="button">▶ Escuchar Santa</button>
         </div>
-        <p id="voiceHint" class="section-note">La app elegirá la mejor voz disponible en este dispositivo.</p>
+        <details class="sheet-more"><summary>Voz de respaldo</summary>
+          <div class="form-stack">
+            <label>Voz del dispositivo<select id="voiceSelect"><option value="">Voz del dispositivo</option></select></label>
+            <div class="voice-row"><label>Ritmo TTS <span id="voiceRateValue">0.94×</span><input id="voiceRate" type="range" min="0.78" max="1.08" step="0.01" value="0.94"></label></div>
+            <button id="voiceAutoBtn" class="soft-btn" type="button">Elegir voz de respaldo</button>
+            <p id="voiceHint" class="section-note">Solo se usa si un lugar no dispone todavía de audio grabado.</p>
+          </div>
+        </details>
         <label class="toggle-row"><span>Audioguía automática al acercarme</span><input id="autoAudioToggle" type="checkbox"></label>
       </div></details>
 
@@ -197,6 +200,6 @@
 <div id="toast" class="toast" hidden></div>
 <div id="updateBanner" class="update-banner" hidden><span>Nueva versión disponible</span><button id="reloadBtn">Actualizar</button></div>
 
-<script type="module" src="app.js?v=127b1"></script>
+<script type="module" src="app.js?v=129santa"></script>
 </body>
 </html>
