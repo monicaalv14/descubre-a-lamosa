@@ -1,5 +1,8 @@
 name: Generar audioguia Santa 0.76
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
   push:
@@ -60,3 +63,39 @@ jobs:
           name: audioguia-santa-076
           path: audio/es/*
           retention-days: 14
+
+      - name: Integrar audios en la app
+        run: |
+          python - <<'PY'
+          import json, glob, pathlib, re
+          manifest=json.load(open('audio/es/manifest.json',encoding='utf-8'))
+          audio={x['id']:x['audio_es'] for x in manifest}
+          for fn in sorted(glob.glob('data/pois-*.json')):
+              with open(fn,encoding='utf-8') as f: data=json.load(f)
+              changed=False
+              for p in data:
+                  if p.get('id') in audio:
+                      p['audio_es']=audio[p['id']]
+                      changed=True
+              if changed:
+                  with open(fn,'w',encoding='utf-8') as f:
+                      json.dump(data,f,ensure_ascii=False,indent=2)
+                      f.write('\n')
+          sw=pathlib.Path('sw.js')
+          s=sw.read_text(encoding='utf-8')
+          audios=["./"+x['audio_es'] for x in manifest]
+          marker="  './icons/icon-192.png','./icons/icon-512.png'"
+          audio_lines="  "+",".join(repr(x) for x in audios)+",\n"
+          if audios[0] not in s:
+              s=s.replace(marker,audio_lines+marker)
+          s=re.sub(r"a-lamosa-shell-v[0-9A-Za-z.-]+","a-lamosa-shell-v128-audio",s)
+          s=re.sub(r"a-lamosa-runtime-v[0-9A-Za-z.-]+","a-lamosa-runtime-v128-audio",s)
+          sw.write_text(s,encoding='utf-8')
+          PY
+      - name: Publicar audioguia integrada
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audio/es data/pois-*.json sw.js
+          git commit -m "audio: integrar audioguia Santa 0.76 offline"
+          git push
