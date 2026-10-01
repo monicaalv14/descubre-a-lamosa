@@ -1,6 +1,7 @@
-name: Generar audioguia Santa 0.76
+name: Integrar audioguia Santa 0.76
 
 permissions:
+  actions: read
   contents: write
 
 on:
@@ -10,84 +11,45 @@ on:
       - '.github/workflows/audioguide-produccion.yml'
 
 jobs:
-  narraciones:
+  integrar:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Instalar Kokoro
+      - name: Descargar artefacto Santa 0.76 ya generado
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq espeak-ng
-          python -m pip install --upgrade pip
-          pip install "kokoro>=0.9.4" soundfile
-      - name: Generar audios
-        run: |
-          mkdir -p audio/es
-          cat > /tmp/generar.py <<'PY'
-          from kokoro import KPipeline
-          import numpy as np, soundfile as sf, json, glob, os, re
-
-          ponte = """Estás junto a Ponte Folón, uno de los elementos destacados de la Ruta do Xabriña. Este puente de piedra forma parte de un paisaje marcado por el río, los caminos y el paso de quienes recorrieron este territorio. La documentación municipal lo relaciona con un camino histórico, y hoy la ruta P R G ciento diecinueve nos permite acercarnos de nuevo a este lugar. Antes de continuar, detente un momento. Observa la piedra, escucha el agua y mira cómo el camino se integra en el paisaje. En lugares como este, la historia de A Lamosa no se encuentra solamente en los documentos. También permanece en los caminos."""
-          pois=[]
-          for fn in sorted(glob.glob('data/pois-*.json')):
-              with open(fn,encoding='utf-8') as f: pois.extend(json.load(f))
-          pois=[p for p in pois if p.get('coordinates')]
-          pipe=KPipeline(lang_code='e')
-          manifest=[]
-          for p in pois:
-              if p['id']=='POI-057':
-                  texto=ponte
-              else:
-                  desc=(p.get('description') or '').strip().replace(';', '.')
-                  texto=f"Estás junto a {p['name']}. {desc}"
-              partes=[]
-              for _,_,audio in pipe(texto,voice='em_santa',speed=0.76):
-                  if audio is not None:
-                      partes.append(audio.numpy() if hasattr(audio,'numpy') else np.asarray(audio))
-              if not partes: raise RuntimeError('Sin audio para '+p['id'])
-              out=f"audio/es/{p['id'].lower()}.wav"
-              sf.write(out,np.concatenate(partes),24000)
-              manifest.append({'id':p['id'],'name':p['name'],'audio_es':out,'voice':'em_santa','speed':0.76,'text':texto})
-          with open('audio/es/manifest.json','w',encoding='utf-8') as f:
-              json.dump(manifest,f,ensure_ascii=False,indent=2)
-          print(f"Generados {len(manifest)} audios")
-          PY
-          python /tmp/generar.py
-      - name: Guardar audioguia
-        uses: actions/upload-artifact@v4
-        with:
-          name: audioguia-santa-076
-          path: audio/es/*
-          retention-days: 14
-
-      - name: Integrar audios en la app
+          mkdir -p audio/es /tmp/santa076
+          gh api repos/${{ github.repository }}/actions/artifacts/11133390974/zip > /tmp/santa076.zip
+          unzip -o /tmp/santa076.zip -d /tmp/santa076
+          cp /tmp/santa076/*.wav audio/es/
+          cp /tmp/santa076/manifest.json audio/es/manifest.json
+          test "$(find audio/es -maxdepth 1 -name '*.wav' | wc -l)" -eq 16
+      - name: Asignar audio_es y cache offline
         run: |
           python - <<'PY'
           import json, glob, pathlib, re
           manifest=json.load(open('audio/es/manifest.json',encoding='utf-8'))
+          assert len(manifest)==16
           audio={x['id']:x['audio_es'] for x in manifest}
+          found=set()
           for fn in sorted(glob.glob('data/pois-*.json')):
               with open(fn,encoding='utf-8') as f: data=json.load(f)
               changed=False
               for p in data:
                   if p.get('id') in audio:
                       p['audio_es']=audio[p['id']]
-                      changed=True
+                      found.add(p['id']); changed=True
               if changed:
                   with open(fn,'w',encoding='utf-8') as f:
-                      json.dump(data,f,ensure_ascii=False,indent=2)
-                      f.write('\n')
-          sw=pathlib.Path('sw.js')
-          s=sw.read_text(encoding='utf-8')
+                      json.dump(data,f,ensure_ascii=False,indent=2); f.write('\n')
+          assert found==set(audio), (set(audio)-found)
+          sw=pathlib.Path('sw.js'); s=sw.read_text(encoding='utf-8')
           audios=["./"+x['audio_es'] for x in manifest]
           marker="  './icons/icon-192.png','./icons/icon-512.png'"
-          audio_lines="  "+",".join(repr(x) for x in audios)+",\n"
-          if audios[0] not in s:
-              s=s.replace(marker,audio_lines+marker)
+          block="  "+",".join(repr(x) for x in audios)+",\n"
+          if audios[0] not in s: s=s.replace(marker,block+marker)
           s=re.sub(r"a-lamosa-shell-v[0-9A-Za-z.-]+","a-lamosa-shell-v128-audio",s)
           s=re.sub(r"a-lamosa-runtime-v[0-9A-Za-z.-]+","a-lamosa-runtime-v128-audio",s)
           sw.write_text(s,encoding='utf-8')
