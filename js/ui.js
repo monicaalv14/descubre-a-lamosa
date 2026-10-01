@@ -1,4 +1,4 @@
-import {S,$,$$,esc,toast,setMode,setLang,setAppearance,favorites,setFavorite,distanceM,formatDistance,dbGetAll,emit} from './state.js';
+import {S,$,$$,esc,toast,setMode,setLang,setAppearance,favorites,setFavorite,distanceM,formatDistance,dbGetAll,dbPut,dbDelete,emit} from './state.js';
 import {t,applyI18n} from './i18n.js';
 import {visiblePois} from './data.js';
 import {locate,setCategoryFilter,refreshPoiSource,focusPoi} from './map.js';
@@ -214,6 +214,7 @@ export function openPoi(id){
     '<section class="poi-intro"><span class="poi-intro-label">En pocas palabras</span><p class="poi-summary">'+esc(x.description||'')+'</p></section>'+
     '<div class="sheet-actions action-grid">'+directions+'<button class="soft-btn action-card" id="poiListenBtn"><span>▶</span><small>'+t('listen')+'</small></button><button class="soft-btn action-card" id="poiFavBtn"><span>'+(fav?'★':'☆')+'</span><small>'+t('favorites')+'</small></button><button class="soft-btn action-card" id="poiShareBtn"><span>↗</span><small>'+t('share')+'</small></button>'+research+'</div>'+
     '<details class="sheet-more"><summary>'+t('info')+'</summary><div class="detail-grid"><b>Tipo</b><span>'+esc(x.subtype||x.type||'')+'</span><b>Acceso</b><span>'+esc(x.access||'Sin comprobar')+'</span><b>Estado</b><span>'+visitorStatus(x)+'</span>'+(S.mode==='research'?'<b>Por comprobar</b><span>'+esc(x.verify||'')+'</span>':'')+'</div></details>'+
+    '<details class="sheet-more"><summary>Mis fotografías</summary><div class="poi-photo-tools"><p class="section-note">Fotos guardadas solo en este dispositivo.</p><label class="soft-btn file-btn">＋ Añadir foto<input id="poiPhotoAdd" type="file" accept="image/*" capture="environment" hidden></label><div id="poiLocalPhotos" class="local-photo-grid"></div></div></details>'+
     '<details class="sheet-more"><summary>'+t('sources')+'</summary><div class="source-box">'+sourceHtml(x)+'</div></details>';
   openSheet('#poiSheet',html,'half');
   $$('[data-gallery]').forEach(b=>b.onclick=()=>{
@@ -221,6 +222,7 @@ export function openPoi(id){
     const img=$('#poiSheet .hero-photo img'),cap=$('#poiSheet .hero-photo figcaption');
     if(img){img.src=p.url;img.alt=x.name;}if(cap)cap.textContent=p.credit||'';
   });
+  bindPoiLocalPhotos(id);
   $('#poiListenBtn').dataset.poiId=id;
   $('#poiListenBtn').onclick=()=>{
     if($('#poiListenBtn').dataset.playing==='1')emit('stop-audio');
@@ -229,6 +231,17 @@ export function openPoi(id){
   $('#poiFavBtn').onclick=()=>{setFavorite(id,!favorites().has(id));openPoi(id);};
   $('#poiShareBtn').onclick=()=>shareLink(x.name,'#poi='+encodeURIComponent(id));
   if($('#poiFieldBtn'))$('#poiFieldBtn').onclick=()=>{closeSheets();openNav('field');emit('field-prefill',x);};
+}
+function bindPoiLocalPhotos(id){
+  const input=$('#poiPhotoAdd'),host=$('#poiLocalPhotos');if(!input||!host)return;
+  const render=()=>dbGetAll('poiPhotos').then(rows=>{
+    const row=rows.find(r=>r.id===id),photos=row?.photos||[];
+    host.innerHTML=photos.map((p,i)=>'<article class="local-photo-card"><img src="'+esc(p.data)+'" alt=""><div><button class="soft-btn compact-btn" data-local-cover="'+i+'">'+(i===0?'★ Portada':'Hacer portada')+'</button><button class="photo-remove" data-local-remove="'+i+'">Eliminar</button></div></article>').join('')||( '<p class="section-note">No has añadido fotos a este lugar.</p>');
+    $$('[data-local-cover]').forEach(b=>b.onclick=async()=>{const rows=await dbGetAll('poiPhotos'),row=rows.find(r=>r.id===id);if(!row)return;const i=Number(b.dataset.localCover),p=row.photos.splice(i,1)[0];row.photos.unshift(p);await dbPut('poiPhotos',row);render();});
+    $$('[data-local-remove]').forEach(b=>b.onclick=async()=>{const rows=await dbGetAll('poiPhotos'),row=rows.find(r=>r.id===id);if(!row)return;row.photos.splice(Number(b.dataset.localRemove),1);row.photos.length?await dbPut('poiPhotos',row):await dbDelete('poiPhotos',id);render();});
+  }).catch(()=>{host.innerHTML='<p class="section-note">No se pudieron cargar las fotos locales.</p>';});
+  input.onchange=()=>{const file=input.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=async()=>{const rows=await dbGetAll('poiPhotos'),row=rows.find(r=>r.id===id)||{id,photos:[]};row.photos.push({data:String(reader.result),name:file.name,at:new Date().toISOString()});await dbPut('poiPhotos',row);toast('Foto añadida');input.value='';render();};reader.readAsDataURL(file);};
+  render();
 }
 function updateAudioButton(detail){
   const b=$('#poiListenBtn');if(!b)return;
