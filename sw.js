@@ -1,5 +1,5 @@
-const SHELL='a-lamosa-shell-v127b1';
-const RUNTIME='a-lamosa-runtime-v127b1';
+const SHELL='a-lamosa-shell-v128-audio';
+const RUNTIME='a-lamosa-runtime-v128-audio';
 const CORE=[
   './','./index.html','./styles.css?v=127b1','./app.js?v=127b1','./manifest.webmanifest?v=127b1',
   './vendor/maplibre-gl.mjs','./vendor/maplibre-gl-shared.mjs','./vendor/maplibre-gl-worker.mjs','./vendor/maplibre-gl.css','./vendor/jszip.min.js',
@@ -8,6 +8,7 @@ const CORE=[
   './data/offline-style.json','./data/generated/online-style.json','./data/trails.json','./data/routes.json','./data/stories.json',
   './data/generated/pois-all.json','./data/generated/places-all.json','./data/generated/prg119.geojson',
   './data/generated/via-mariana.geojson','./data/generated/osm-network.geojson','./data/generated/parish.geojson','./data/generated/hydro.geojson','./data/generated/build-info.json',
+  './audio/es/poi-001.wav','./audio/es/poi-005.wav','./audio/es/poi-006.wav','./audio/es/poi-007.wav','./audio/es/poi-008.wav','./audio/es/poi-009.wav','./audio/es/poi-010.wav','./audio/es/poi-011.wav','./audio/es/poi-012.wav','./audio/es/poi-013.wav','./audio/es/poi-014.wav','./audio/es/poi-015.wav','./audio/es/poi-016.wav','./audio/es/poi-017.wav','./audio/es/poi-053.wav','./audio/es/poi-057.wav',
   './icons/icon-192.png','./icons/icon-512.png'
 ];
 

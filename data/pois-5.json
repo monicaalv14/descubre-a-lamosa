@@ -17,7 +17,8 @@
       42.2094659396
     ],
     "web_source": "https://patrimoniogalego.net/index.php/102540/2019/05/via-crucis-da-igrexa-parroquial-de-san-bartolomeu-da-lamosa/",
-    "web_source_label": "Patrimonio Galego"
+    "web_source_label": "Patrimonio Galego",
+    "audio_es": "audio/es/poi-053.wav"
   },
   {
     "id": "POI-054",
@@ -90,7 +91,8 @@
     ],
     "web_source": "https://www.turismo.gal/recurso/-/detalle/277249660/pr-g-119-ruta-do-xabrina?langId=es_ES",
     "web_source_label": "Turismo de Galicia",
-    "web_evidence": "Waypoint público: 42.20237, -8.358248; debe verificarse con GPS propio."
+    "web_evidence": "Waypoint público: 42.20237, -8.358248; debe verificarse con GPS propio.",
+    "audio_es": "audio/es/poi-057.wav"
   },
   {
     "id": "POI-058",

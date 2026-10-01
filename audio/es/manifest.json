@@ -1,0 +1,130 @@
+[
+  {
+    "id": "POI-001",
+    "name": "Iglesia parroquial de San Bartolomeu",
+    "audio_es": "audio/es/poi-001.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Iglesia parroquial de San Bartolomeu. Antigua ermita documentada desde 1644. iglesia parroquial desarrollada en fases sucesivas."
+  },
+  {
+    "id": "POI-005",
+    "name": "Cruceiro esmoleiro de Nosa Señora do Libramento",
+    "audio_es": "audio/es/poi-005.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Cruceiro esmoleiro de Nosa Señora do Libramento. Cruceiro de comienzos del siglo XX atribuido a Quinteiro, con Adán y Eva, San Bartolomeu y la Virgen del Libramiento."
+  },
+  {
+    "id": "POI-006",
+    "name": "Peto del atrio de San Bartolomeu",
+    "audio_es": "audio/es/poi-006.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Peto del atrio de San Bartolomeu. Peto con hornacina enrejada, azulejo y cajón de limosnas."
+  },
+  {
+    "id": "POI-007",
+    "name": "Palco de música",
+    "audio_es": "audio/es/poi-007.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Palco de música. Palco hexagonal de granito junto a la iglesia. plaza renovada en 2020."
+  },
+  {
+    "id": "POI-008",
+    "name": "Capilla de San Miguel de Corzós",
+    "audio_es": "audio/es/poi-008.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Capilla de San Miguel de Corzós. Fundación inscrita en 1697. reconstrucción casi total en 1957 y reformas posteriores."
+  },
+  {
+    "id": "POI-009",
+    "name": "Cruceiro de Corzós",
+    "audio_es": "audio/es/poi-009.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Cruceiro de Corzós. Cruceiro actual erigido en 2002 tras romperse la antigua cruz en 1992."
+  },
+  {
+    "id": "POI-010",
+    "name": "Peto de San Miguel de Corzós",
+    "audio_es": "audio/es/poi-010.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Peto de San Miguel de Corzós. Peto junto a la capilla con retablo policromado de San Miguel y cajón de limosnas."
+  },
+  {
+    "id": "POI-011",
+    "name": "Cruz cubierta de A Congostra",
+    "audio_es": "audio/es/poi-011.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Cruz cubierta de A Congostra. Cruz latina de piedra con Cristo pintado bajo resguardo de granito, situada junto a un antiguo lagar de cera."
+  },
+  {
+    "id": "POI-012",
+    "name": "Peto en muro de vivienda",
+    "audio_es": "audio/es/poi-012.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Peto en muro de vivienda. Hornacina arqueada con imagen mariana y flores observadas en 2019."
+  },
+  {
+    "id": "POI-013",
+    "name": "Peto del cruce Congostra–Val de Paredes",
+    "audio_es": "audio/es/poi-013.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Peto del cruce Congostra–Val de Paredes. Peto de hornacina rectangular, vacío en 2019, posiblemente trasladado al ensanchar el camino."
+  },
+  {
+    "id": "POI-014",
+    "name": "Esmoleiro de la Virgen de A Franqueira",
+    "audio_es": "audio/es/poi-014.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Esmoleiro de la Virgen de A Franqueira. Esmoleiro con retablo de azulejo y caja de limosnas."
+  },
+  {
+    "id": "POI-015",
+    "name": "Peto de María Auxiliadora",
+    "audio_es": "audio/es/poi-015.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Peto de María Auxiliadora. Hornacina enrejada sobre cierre de vivienda con talla reciente."
+  },
+  {
+    "id": "POI-016",
+    "name": "Peto esmoleiro de Currelos",
+    "audio_es": "audio/es/poi-016.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Peto esmoleiro de Currelos. Hornacina con Sagrado Corazón y San Antonio con el Niño, caja de limosnas y cruz."
+  },
+  {
+    "id": "POI-017",
+    "name": "Lagar de cera de A Lamosa",
+    "audio_es": "audio/es/poi-017.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Lagar de cera de A Lamosa. Lagar hidráulico de cera descrito con viga de 6,10 m, contrapeso de granito y pías de separación. visitado en estado ruinoso en 2026."
+  },
+  {
+    "id": "POI-053",
+    "name": "Vía Crucis da igrexa parroquial de San Bartolomeu",
+    "audio_es": "audio/es/poi-053.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Vía Crucis da igrexa parroquial de San Bartolomeu. Restos del vía crucis dispuestos en el muro de cierre de la iglesia. La ficha de 2019 registraba una cruz completa, otra incompleta y los huecos de otras piezas. ese estado debe comprobarse hoy."
+  },
+  {
+    "id": "POI-057",
+    "name": "Ponte Folón",
+    "audio_es": "audio/es/poi-057.wav",
+    "voice": "em_santa",
+    "speed": 0.76,
+    "text": "Estás junto a Ponte Folón, uno de los elementos destacados de la Ruta do Xabriña. Este puente de piedra forma parte de un paisaje marcado por el río, los caminos y el paso de quienes recorrieron este territorio. La documentación municipal lo relaciona con un camino histórico, y hoy la ruta P R G ciento diecinueve nos permite acercarnos de nuevo a este lugar. Antes de continuar, detente un momento. Observa la piedra, escucha el agua y mira cómo el camino se integra en el paisaje. En lugares como este, la historia de A Lamosa no se encuentra solamente en los documentos. También permanece en los caminos."
+  }
+]
