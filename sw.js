@@ -1,8 +1,8 @@
 // Audioguia Santa 0.76 integrada: 16 WAV precargados para uso offline.
-const SHELL='a-lamosa-shell-v132-pois-fix';
-const RUNTIME='a-lamosa-runtime-v132-pois-fix';
+const SHELL='a-lamosa-shell-v133-markers-photos';
+const RUNTIME='a-lamosa-runtime-v133-markers-photos';
 const CORE=[
-  './','./index.html','./styles.css?v=127b1','./app.js?v=127b1','./manifest.webmanifest?v=127b1',
+  './','./index.html','./styles.css?v=133markers','./app.js?v=133markers','./manifest.webmanifest?v=133markers',
   './vendor/maplibre-gl.mjs','./vendor/maplibre-gl-shared.mjs','./vendor/maplibre-gl-worker.mjs','./vendor/maplibre-gl.css','./vendor/jszip.min.js',
   './js/state.js','./js/i18n.js','./js/data.js','./js/map.js','./js/ui.js','./js/routes.js','./js/field.js',
   './js/offline.js','./js/audio.js','./js/contributions.js','./js/diagnostics.js',
