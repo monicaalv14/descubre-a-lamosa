@@ -167,11 +167,15 @@ export function stopSpeech(showToast=false){
   if(showToast)toast('Audioguía detenida');
   emitAudioState('idle');
 }
-function speakSample(){
-  const sample=S.lang==='gl'
-    ?'Benvida á Lamosa. A nosa historia vive nos camiños, nas fontes e na memoria da súa xente.'
-    :'Bienvenida a A Lamosa. Nuestra historia vive en los caminos, las fuentes y la memoria de su gente.';
-  speakWithDeviceVoice({id:'sample',name:'',description:sample});
+async function speakSample(){
+  stopSpeech(false);
+  const sample='audio/es/poi-001.wav';
+  try{
+    activeAudio=new Audio(sample);activeAudio.preload='auto';
+    activeAudio.onended=()=>emitAudioState('idle');
+    activeAudio.onerror=()=>{activeAudio=null;toast('No se pudo reproducir la muestra de Santa');};
+    await activeAudio.play();
+  }catch(e){recordError(e,'santa-sample');activeAudio=null;toast('No se pudo reproducir la muestra de Santa');}
 }
 function emitAudioState(state,p=null,source=null){
   window.dispatchEvent(new CustomEvent('alm:audio-state',{detail:{state,poiId:p?.id||null,source}}));
