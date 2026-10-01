@@ -171,16 +171,20 @@
     "type": "Comer",
     "subtype": "Bar / comidas",
     "area": "Custeu",
-    "status": "Servicio actual contrastado en 2026",
+    "status": "Servicio actual contrastado en 2026; posición cartográfica contrastada por dirección Custeu 1 y relación con el núcleo",
     "access": "Establecimiento privado abierto al público; horarios pueden cambiar",
     "priority": "Alta",
     "description": "Bar de A Lamosa en Lugar Custeu, 1. Fuentes recientes lo citan como parada de caminantes de la Ruta do Xabriña y como establecimiento participante en actividades gastronómicas del municipio.",
-    "verify": "Coordenada GPS de entrada, horario y servicios actuales antes de publicar información sensible al tiempo.",
+    "verify": "Afinar el punto de entrada sobre el terreno si se desea precisión submétrica.",
     "experience": "Comer; servicios al visitante",
-    "source": "Páxinas Galegas; Concello de Covelo; referencia senderista 2026",
-    "coordinates": null,
+    "source": "Google Maps; Turismo de Galicia; Páxinas Galegas; Airbnb (referencia espacial desde Casa dos Tíos)",
+    "coordinates": [
+      -8.3553,
+      42.20915
+    ],
     "web_source": "https://www.paxinasgalegas.es/cuartel-152081em.html",
-    "web_source_label": "Ficha de establecimiento"
+    "web_source_label": "Ficha de establecimiento",
+    "google_place_id": "ChIJn_PW-nV9JQ0RawdY-iBKiiU"
   },
   {
     "id": "POI-075",
@@ -188,14 +192,17 @@
     "type": "Dormir",
     "subtype": "Alojamiento turístico",
     "area": "Centro de A Lamosa / entorno de la iglesia",
-    "status": "Alojamiento anunciado en 2026",
+    "status": "Alojamiento anunciado en 2026; posición en el entorno inmediato frente a San Bartolomeu",
     "access": "Solo huéspedes / reserva",
     "priority": "Media",
     "description": "Alojamiento anunciado en el centro de A Lamosa, frente al entorno de la iglesia y situado sobre la Vía Mariana Luso-Galaica y la Ruta do Xabriña.",
-    "verify": "Coordenada pública apropiada, registro turístico si procede y disponibilidad actual antes de mostrar datos comerciales.",
+    "verify": "El anuncio público sitúa la casa frente a la iglesia; afinar puerta exacta sobre el terreno si se desea precisión submétrica.",
     "experience": "Dormir; servicios al visitante",
-    "source": "Anuncio público de alojamiento consultado en 2026",
-    "coordinates": null,
+    "source": "Google Maps / referencia solicitada; Airbnb, descripción pública del alojamiento",
+    "coordinates": [
+      -8.3555,
+      42.20958
+    ],
     "web_source": "https://www.airbnb.es/rooms/47466561",
     "web_source_label": "Anuncio del alojamiento"
   },
@@ -205,15 +212,58 @@
     "type": "Dormir",
     "subtype": "Alojamiento turístico",
     "area": "A Lamosa",
-    "status": "Alojamiento anunciado en 2026",
+    "status": "Alojamiento anunciado en 2026; vecino de Casa dos Tíos frente a San Bartolomeu",
     "access": "Solo huéspedes / reserva",
     "priority": "Media",
     "description": "Alojamiento de la misma iniciativa familiar que Casa dos Tíos, anunciado públicamente en A Lamosa.",
-    "verify": "Ubicación pública apropiada, registro turístico si procede y disponibilidad actual antes de mostrar datos comerciales.",
+    "verify": "La fuente confirma que es vecina de Casa dos Tíos y está frente a la iglesia; afinar puerta exacta sobre el terreno si se desea precisión submétrica.",
     "experience": "Dormir; servicios al visitante",
-    "source": "Anuncio público de alojamiento consultado en 2026",
-    "coordinates": null,
+    "source": "Google Maps / referencia solicitada; Airbnb, descripción pública del alojamiento",
+    "coordinates": [
+      -8.3554,
+      42.2096
+    ],
     "web_source": "https://www.airbnb.es/rooms/937603912618236971",
     "web_source_label": "Anuncio del alojamiento"
+  },
+  {
+    "id": "POI-077",
+    "name": "Cruces de Montouto",
+    "type": "Naturaleza",
+    "subtype": "Mirador / calvario de piedra",
+    "area": "Alto de Montouto · límite Covelo–A Cañiza",
+    "status": "Lugar público contrastado en 2026",
+    "access": "Acceso por pista desde la antigua N-120; comprobar estado de la pista",
+    "priority": "Alta",
+    "description": "Tres cruces de piedra levantadas a modo de calvario sobre las rocas del Alto de Montouto, junto al mirador de Fontefría. El lugar alcanza aproximadamente 948 m y domina amplias vistas de A Paradanta y O Condado.",
+    "verify": "Comprobar sobre el terreno el punto individual de las tres cruces respecto del mirador y el vértice geodésico.",
+    "experience": "Mirador; paisaje; cruces; montaña",
+    "source": "Turismo de Galicia; Galicia Máxica; Google Maps",
+    "coordinates": [
+      -8.3304444,
+      42.2137778
+    ],
+    "web_source": "https://www.turismo.gal/recurso/-/detalle/16753/mirador-de-fontefria?ctre=17&tp=4",
+    "web_source_label": "Turismo de Galicia",
+    "google_place_id": "ChIJZYP-VK99JQ0Rm-04grZLDDQ"
+  },
+  {
+    "id": "POI-078",
+    "name": "Área de Descanso antigua N-120 · A Lamosa",
+    "type": "Cultura / comunidad",
+    "subtype": "Área de descanso / servicio al visitante",
+    "area": "Antigua N-120 · A Lamosa",
+    "status": "Marcador público de Google Maps contrastado en 2026",
+    "access": "Público; comprobar servicios y estado actual",
+    "priority": "Media",
+    "description": "Área de descanso situada junto a la antigua N-120 en el entorno de A Lamosa. Figura como punto público en Google Maps y aparece citada en documentación estatal reciente relacionada con el entorno.",
+    "verify": "Pendiente de afinar coordenada de entrada y documentar equipamiento actual sobre el terreno.",
+    "experience": "Descanso; servicios al visitante",
+    "source": "Google Maps; BOE 2025",
+    "coordinates": [
+      -8.3425,
+      42.214
+    ],
+    "google_place_id": "ChIJtXcASQB9JQ0RfPhRtvm2LMs"
   }
 ]
