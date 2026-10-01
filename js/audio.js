@@ -2,6 +2,7 @@ import {S,$,toast,distanceM,recordError} from './state.js';
 
 let watch=null;
 let activeAudio=null;
+let activeAudioUrl=null;
 let speakingToken=0;
 let voices=[];
 const DEFAULT_RATE=.94;
@@ -107,10 +108,9 @@ export async function speakPoi(p){
   const recorded=recordedAudioFor(p);
   if(recorded){
     try{
-      activeAudio=new Audio(recorded);
-      activeAudio.preload='auto';
-      activeAudio.onended=()=>emitAudioState('idle',p);
-      activeAudio.onerror=()=>{activeAudio=null;speakWithDeviceVoice(p);};
+      activeAudio=await audioFromCachedFile(recorded);
+      activeAudio.onended=()=>{releaseActiveAudioUrl();emitAudioState('idle',p);};
+      activeAudio.onerror=()=>{releaseActiveAudioUrl();activeAudio=null;speakWithDeviceVoice(p);};
       await activeAudio.play();
       emitAudioState('playing',p,'recorded');
       return;
@@ -163,7 +163,7 @@ function recordedAudioFor(p){
 export function stopSpeech(showToast=false){
   speakingToken++;
   try{speechSynthesis?.cancel?.();}catch{}
-  if(activeAudio){try{activeAudio.pause();activeAudio.currentTime=0;}catch{}activeAudio=null;}
+  if(activeAudio){try{activeAudio.pause();activeAudio.currentTime=0;}catch{}activeAudio=null;}releaseActiveAudioUrl();
   if(showToast)toast('Audioguía detenida');
   emitAudioState('idle');
 }
@@ -171,12 +171,23 @@ async function speakSample(){
   stopSpeech(false);
   const sample='audio/es/poi-001.wav';
   try{
-    activeAudio=new Audio(sample);activeAudio.preload='auto';
-    activeAudio.onended=()=>emitAudioState('idle');
-    activeAudio.onerror=()=>{activeAudio=null;toast('No se pudo reproducir la muestra de Santa');};
+    activeAudio=await audioFromCachedFile('audio/es/poi-001.wav');
+    activeAudio.onended=()=>{releaseActiveAudioUrl();emitAudioState('idle');};
+    activeAudio.onerror=()=>{releaseActiveAudioUrl();activeAudio=null;toast('No se pudo reproducir la muestra de Santa');};
     await activeAudio.play();
   }catch(e){recordError(e,'santa-sample');activeAudio=null;toast('No se pudo reproducir la muestra de Santa');}
 }
+async function audioFromCachedFile(path){
+  const response=await fetch(path,{cache:'force-cache'});
+  if(!response.ok)throw new Error('Audio HTTP '+response.status);
+  const blob=await response.blob();
+  if(!blob.size)throw new Error('Audio vacío');
+  releaseActiveAudioUrl();
+  activeAudioUrl=URL.createObjectURL(blob);
+  const audio=new Audio(activeAudioUrl);audio.preload='auto';
+  return audio;
+}
+function releaseActiveAudioUrl(){if(activeAudioUrl){try{URL.revokeObjectURL(activeAudioUrl);}catch{}activeAudioUrl=null;}}
 function emitAudioState(state,p=null,source=null){
   window.dispatchEvent(new CustomEvent('alm:audio-state',{detail:{state,poiId:p?.id||null,source}}));
 }
