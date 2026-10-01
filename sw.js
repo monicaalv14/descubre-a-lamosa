@@ -1,3 +1,4 @@
+// Audioguia Santa 0.76 integrada: 16 WAV precargados para uso offline.
 const SHELL='a-lamosa-shell-v128-audio';
 const RUNTIME='a-lamosa-runtime-v128-audio';
 const CORE=[
