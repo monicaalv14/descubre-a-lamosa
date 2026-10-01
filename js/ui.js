@@ -203,9 +203,10 @@ function renderViewport(rows,near=false){
   host.hidden=($('#drawer')?.dataset.snap||'half')!=='collapsed';
   $$('[data-near-poi]').forEach(b=>b.onclick=()=>{const x=S.pois.find(p=>p.id===b.dataset.nearPoi);if(x)focusPoi(x);openPoi(b.dataset.nearPoi);});
 }
-export function openPoi(id){
+export async function openPoi(id){
   const x=S.pois.find(p=>p.id===id);if(!x)return;const fav=favorites().has(id),d=S.userPosition&&x.coordinates?formatDistance(distanceM(S.userPosition,x.coordinates)):'';
-  const photos=[];if(x.image_url)photos.push({url:x.image_url,credit:x.image_credit||''});if(Array.isArray(x.images))photos.push(...x.images);
+  const localRows=await dbGetAll('poiPhotos').catch(()=>[]),localRow=localRows.find(r=>r.id===id),localCover=localRow?.photos?.[0];
+  const photos=[];if(localCover)photos.push({url:localCover.data,credit:'Foto local · portada'});if(x.image_url)photos.push({url:x.image_url,credit:x.image_credit||''});if(Array.isArray(x.images))photos.push(...x.images);
   const hero=photos[0]?'<figure class="hero-photo"><img loading="eager" decoding="async" src="'+esc(photos[0].url)+'" alt="'+esc(x.name)+'"><figcaption>'+esc(photos[0].credit||'')+'</figcaption></figure>':'<div class="poi-cover '+typeClass(x.type)+'"><span>'+icon(x.type)+'</span></div>';
   const gallery=photos.length>1?'<div class="gallery-strip">'+photos.slice(1).map((p,i)=>'<button class="gallery-thumb" data-gallery="'+(i+1)+'"><img loading="lazy" decoding="async" src="'+esc(p.url)+'" alt=""></button>').join('')+'</div>':'';
   const directions=x.coordinates?'<a class="primary-btn action-card" id="poiDirections" href="'+directionsUrl(x.coordinates,x.name)+'" target="_blank" rel="noopener"><span>➜</span><small>'+t('directions')+'</small></a>':'';
