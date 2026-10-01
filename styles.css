@@ -227,3 +227,7 @@ body.route-following .bottom-nav{opacity:.28;pointer-events:none}
 .priority-marker{width:39px;height:39px;border-radius:50% 50% 50% 12px;transform:rotate(-45deg);border:3px solid rgba(255,255,255,.98);box-shadow:0 5px 14px rgba(20,30,25,.3);isolation:isolate}
 .priority-marker .priority-icon{transform:rotate(45deg);display:grid;place-items:center;font-size:16px;text-shadow:0 1px 2px rgba(0,0,0,.25)}
 .priority-marker:hover,.priority-marker:focus-visible{transform:rotate(-45deg) scale(1.1);outline:3px solid rgba(255,255,255,.55);outline-offset:2px}
+
+.poi-photo-tools{padding:2px 0 8px}.local-photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
+.local-photo-card{border:1px solid #ded8cc;border-radius:12px;overflow:hidden;background:#fff}.local-photo-card img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.local-photo-card>div{display:grid;gap:4px;padding:6px}.local-photo-card button{font-size:.7rem;padding:6px}.photo-remove{border:0;background:transparent;color:#8a3d35;font-weight:750}
