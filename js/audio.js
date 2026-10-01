@@ -157,7 +157,7 @@ function splitLong(s){
 }
 function pauseFor(s){if(/[!?…]\s*$/.test(s))return 260;if(/[.;:]\s*$/.test(s))return 190;return 120;}
 function recordedAudioFor(p){
-  if(S.lang==='gl')return p.audio_gl||p.audio_url_gl||p.audio_url||null;
+  if(S.lang==='gl')return p.audio_gl||p.audio_url_gl||p.audio_es||p.audio_url_es||p.audio_url||null;
   return p.audio_es||p.audio_url_es||p.audio_url||null;
 }
 export function stopSpeech(showToast=false){
