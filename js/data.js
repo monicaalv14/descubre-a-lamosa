@@ -1,15 +1,16 @@
 import {S,getJSON,recordError} from './state.js';
 
 export async function loadData(){
-  const [pois,places,trails,projectRoutes,stories,build]=await Promise.all([
+  const [pois,places,trails,projectRoutes,stories,audioGuides,build]=await Promise.all([
     getJSON('data/generated/pois-all.json'),
     getJSON('data/generated/places-all.json'),
     getJSON('data/trails.json'),
     getJSON('data/routes.json'),
     getJSON('data/stories.json'),
+    getJSON('data/audio-guides.json').catch(()=>({guides:{}})),
     getJSON('data/generated/build-info.json').catch(()=>({}))
   ]);
-  S.pois=pois;S.places=places;S.trails=trails;S.projectRoutes=projectRoutes;S.stories=stories;S.buildInfo=build;
+  S.pois=pois;S.places=places;S.trails=trails;S.projectRoutes=projectRoutes;S.stories=stories;S.audioGuides=audioGuides?.guides||{};S.buildInfo=build;
 }
 export async function loadOsmNetwork(){
   if(S.osmNetwork)return S.osmNetwork;
