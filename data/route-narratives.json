@@ -29,7 +29,8 @@
         }
       ],
       "transition_es": "Entre una parada y otra, piensa en el proceso completo: obtener la cera era solo el principio; había que prensarla, purificarla, blanquearla y prepararla para su venta.",
-      "requires_geolocation_review": true
+      "requires_geolocation_review": true,
+      "outro_es": "Has terminado este recorrido por la memoria de la cera. Lagares, eiras y curadoiros muestran que el paisaje de A Lamosa también fue un paisaje de trabajo especializado y de intercambio."
     },
     "R-002": {
       "title": "Camiño dos arrieiros",
@@ -50,7 +51,8 @@
         }
       ],
       "transition_es": "En estos tramos el propio camino es parte del relato. Antes de las carreteras modernas, desplazarse significaba conocer pasos, pendientes, puentes y lugares de descanso.",
-      "requires_geolocation_review": true
+      "requires_geolocation_review": true,
+      "outro_es": "Aquí termina el recorrido narrado por los caminos de arrieros. Los trazados que hoy parecen senderos fueron durante siglos conexiones esenciales entre aldeas, mercados y territorios."
     },
     "R-003": {
       "title": "Auga e muíños",
@@ -80,7 +82,8 @@
         }
       ],
       "transition_es": "Sigue el agua. La posición de cada molino dependía de conducirla y aprovechar el desnivel antes de devolverla al cauce.",
-      "requires_geolocation_review": true
+      "requires_geolocation_review": true,
+      "outro_es": "Has completado las paradas narradas de Auga e muíños. El Xabriña queda atrás, pero su agua ayuda a explicar molinos, caminos, fuentes y una parte importante de la vida cotidiana de estas aldeas."
     },
     "R-004": {
       "title": "Cruceiros, petos e devoción",
@@ -113,7 +116,8 @@
         }
       ],
       "transition_es": "Mientras caminas, fíjate en dónde aparece cada pieza: la ubicación junto a un camino, una casa o una encrucijada ayuda a explicar su función.",
-      "requires_geolocation_review": true
+      "requires_geolocation_review": true,
+      "outro_es": "Termina aquí el recorrido por cruceiros, petos y devoción. Estas pequeñas construcciones muestran cómo las creencias acompañaban a las personas mucho más allá de las paredes de la iglesia."
     },
     "R-005": {
       "title": "Corzós: memoria dun lugar",
@@ -137,7 +141,8 @@
         }
       ],
       "transition_es": "Las distancias son pequeñas, pero cada elemento cumple una función distinta. Léelos como un conjunto y no como piezas aisladas.",
-      "requires_geolocation_review": true
+      "requires_geolocation_review": true,
+      "outro_es": "Has terminado el recorrido por Corzós. Capilla, cruceiro, peto y agua forman juntos una pequeña memoria del lugar construida y reconstruida durante generaciones."
     },
     "R-008": {
       "title": "Historia de San Bartolomeu",
@@ -178,7 +183,8 @@
         }
       ],
       "transition_es": "No estás visitando un edificio construido de una vez. Cada parada corresponde a una ampliación, una práctica o una necesidad de otra época.",
-      "requires_geolocation_review": false
+      "requires_geolocation_review": false,
+      "outro_es": "Con esto termina el recorrido por la historia de San Bartolomeu. En un espacio muy reducido has pasado por varios siglos de transformaciones religiosas, comunitarias y arquitectónicas de A Lamosa."
     }
   }
 }
