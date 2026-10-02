@@ -7,14 +7,15 @@ let speakingToken=0;
 let voices=[];
 let activeNarratedRoute=null;
 let routeStopState=new Map();
+let routeNarrationState={routeId:null,started:false,nextAnnounced:null,lastTransitionAt:0,finished:false};
 const DEFAULT_RATE=.94;
 
 export function initAudio(){
   window.addEventListener('alm:speak-poi',e=>speakPoi(e.detail));
   window.addEventListener('alm:stop-audio',()=>stopSpeech(false));
   window.addEventListener('alm:lang',()=>{refreshVoices();updateVoiceHint();});
-  window.addEventListener('alm:route-follow-start',e=>{activeNarratedRoute=e.detail?.routeId||e.detail?.id||null;routeStopState.clear();stopAuto(false);if(localStorage.getItem('aLamosaAutoAudio')==='1')startAuto();});
-  window.addEventListener('alm:route-follow-stop',()=>{activeNarratedRoute=null;routeStopState.clear();if(localStorage.getItem('aLamosaAutoAudio')==='1')startAuto();});
+  window.addEventListener('alm:route-follow-start',e=>{activeNarratedRoute=e.detail?.routeId||e.detail?.id||null;routeStopState.clear();routeNarrationState={routeId:activeNarratedRoute,started:false,nextAnnounced:null,lastTransitionAt:0,finished:false};stopAuto(false);if(localStorage.getItem('aLamosaAutoAudio')==='1'){speakRouteIntro(activeNarratedRoute);startAuto();}});
+  window.addEventListener('alm:route-follow-stop',()=>{activeNarratedRoute=null;routeStopState.clear();routeNarrationState={routeId:null,started:false,nextAnnounced:null,lastTransitionAt:0,finished:false};if(localStorage.getItem('aLamosaAutoAudio')==='1')startAuto();});
   setupSettings();
   refreshVoices();
   if('speechSynthesis'in window){
@@ -202,12 +203,39 @@ function startAuto(){
   watch=navigator.geolocation.watchPosition(pos=>{
     const c=[pos.coords.longitude,pos.coords.latitude];
     const routeNear=activeNarratedRoute?nextRouteStop(c,activeNarratedRoute):null;
-    if(routeNear){speakPoi(routeNear);return;}
+    if(routeNear){speakPoi(routeNear);announceUpcomingAfter(routeNear.id,activeNarratedRoute);return;}
+    if(activeNarratedRoute){updateRouteNarration(c,activeNarratedRoute);}
     if(activeNarratedRoute)return;
     const near=S.pois.filter(p=>p.coordinates&&!S.audioSpoken.has(p.id))
       .map(p=>({...p,_d:distanceM(c,p.coordinates)})).filter(p=>p._d<=45).sort((a,b)=>a._d-b._d)[0];
     if(near){S.audioSpoken.add(near.id);speakPoi(near);}
   },e=>recordError(e,'audio-gps'),{enableHighAccuracy:false,maximumAge:8000,timeout:15000});
+}
+function speakNarrationText(text,label='Ruta'){
+  if(!text||!('speechSynthesis'in window))return;
+  stopSpeech(false);const token=++speakingToken,chunks=segmentText(text),p={id:'route-narration',name:label};
+  emitAudioState('playing',p,'route-tts');speakChunks(chunks,p,token,0);
+}
+function speakRouteIntro(routeId){
+  const route=S.routeNarratives?.[routeId];if(!route||routeNarrationState.started)return;
+  const intro=S.lang==='gl'?(route.intro_gl||route.intro_es):route.intro_es;
+  if(intro){routeNarrationState.started=true;speakNarrationText(intro,route.title||'Ruta');}
+}
+function orderedRoutePois(routeId){
+  const route=S.routeNarratives?.[routeId];return (route?.stops||[]).map(s=>({stop:s,poi:S.pois.find(p=>p.id===s.poi_id)})).filter(x=>x.poi);
+}
+function announceUpcomingAfter(poiId,routeId){
+  const items=orderedRoutePois(routeId),i=items.findIndex(x=>x.poi.id===poiId),next=items.slice(i+1).find(x=>!x.stop.manual_only&&x.poi.coordinates);
+  if(!next||routeNarrationState.nextAnnounced===next.poi.id)return;
+  routeNarrationState.nextAnnounced=next.poi.id;
+  setTimeout(()=>{if(activeNarratedRoute!==routeId)return;const route=S.routeNarratives?.[routeId],transition=S.lang==='gl'?(route?.transition_gl||route?.transition_es):route?.transition_es;const text=[transition,'La próxima parada es '+next.poi.name+'.'].filter(Boolean).join(' ');speakNarrationText(text,route?.title||'Ruta');routeNarrationState.lastTransitionAt=Date.now();},1200);
+}
+function updateRouteNarration(c,routeId){
+  const route=S.routeNarratives?.[routeId],items=orderedRoutePois(routeId).filter(x=>!x.stop.manual_only&&x.poi.coordinates);if(!route||!items.length)return;
+  const remaining=items.filter(x=>!routeStopState.get(x.poi.id)?.playedAt);
+  if(!remaining.length&&!routeNarrationState.finished){routeNarrationState.finished=true;const end=S.lang==='gl'?(route.outro_gl||route.outro_es):route.outro_es;speakNarrationText(end||('Has completado las paradas narradas de '+(route.title||'esta ruta')+'.'),route.title||'Ruta');return;}
+  const next=remaining.map(x=>({...x,d:distanceM(c,x.poi.coordinates)})).sort((a,b)=>a.d-b.d)[0];
+  if(next&&next.d<=180&&next.d>60&&routeNarrationState.nextAnnounced!==next.poi.id&&Date.now()-routeNarrationState.lastTransitionAt>90000){routeNarrationState.nextAnnounced=next.poi.id;speakNarrationText('Te estás acercando a '+next.poi.name+'.',route.title||'Ruta');routeNarrationState.lastTransitionAt=Date.now();}
 }
 function nextRouteStop(c,routeId){
   const route=S.routeNarratives?.[routeId];if(!route)return null;
