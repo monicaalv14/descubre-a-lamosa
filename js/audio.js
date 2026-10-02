@@ -105,7 +105,8 @@ function updateVoiceHint(){
 export async function speakPoi(p){
   if(!p)return;
   stopSpeech(false);
-  const recorded=recordedAudioFor(p);
+  const guide=guideFor(p);
+  const recorded=guide?null:recordedAudioFor(p);
   if(recorded){
     try{
       activeAudio=await audioFromCachedFile(recorded);
@@ -134,7 +135,10 @@ function speakChunks(chunks,p,token,index){
   u.onerror=e=>{if(e.error!=='interrupted'&&e.error!=='canceled')recordError(e,'speech');if(token===speakingToken)emitAudioState('idle',p);};
   speechSynthesis.speak(u);
 }
+function guideFor(p){return S.audioGuides?.[p?.id]||null;}
 function buildText(p){
+  const g=guideFor(p);
+  if(g){const suffix=S.lang==='gl'?'_gl':'_es';const title=g['title'+suffix]||g.title_es||p.name,intro=g['intro'+suffix]||g.intro_es,narration=g['narration'+suffix]||g.narration_es,look=g['look_for'+suffix]||g.look_for_es;return [title,intro,narration,look].filter(Boolean).join('. ');}
   const desc=S.lang==='gl'?(p.description_gl||p.description):(p.description_es||p.description);
   const exp=S.lang==='gl'?(p.experience_gl||p.experience):(p.experience_es||p.experience);
   return [p.name,desc,exp].filter(Boolean).join('. ');
