@@ -72,6 +72,152 @@
       "route_ids": [
         "R-005"
       ]
+    },
+    "POI-009": {
+      "title_es": "El cruceiro de Corzós y una cruz perdida",
+      "intro_es": "Este cruceiro parece antiguo, pero la pieza actual cuenta una historia muy reciente.",
+      "narration_es": "La cruz anterior fue rota accidentalmente por un camión en 1992 mientras daba marcha atrás. Tras varios intentos de reparación o sustitución, Domingos Conde Lamela ofreció un nuevo cruceiro a San Miguel. El que hoy vemos fue erigido en 2002. La historia muestra cómo el patrimonio de una aldea no pertenece únicamente al pasado remoto: también se pierde, se reconstruye y vuelve a adquirir significado mediante decisiones de la propia comunidad.",
+      "look_for_es": "Observa el capitel y la escena de Cristo crucificado; recuerda que el conjunto actual nació para sustituir una cruz desaparecida.",
+      "route_ids": [
+        "R-004",
+        "R-005"
+      ]
+    },
+    "POI-010": {
+      "title_es": "El peto de San Miguel",
+      "intro_es": "Junto a la capilla y el cruceiro, este peto completa un pequeño paisaje de devoción en Corzós.",
+      "narration_es": "El peto conserva un retablo policromado dedicado a San Miguel y un cajón para las limosnas. Estas pequeñas construcciones acercaban la práctica religiosa a los caminos y lugares de paso. Aquí su proximidad a la capilla permite leer varios elementos juntos: templo, cruceiro y peto formaban parte de una misma geografía religiosa cotidiana.",
+      "look_for_es": "Fíjate en el retablo de San Miguel y en el espacio destinado a recibir las limosnas.",
+      "route_ids": [
+        "R-004",
+        "R-005"
+      ]
+    },
+    "POI-012": {
+      "title_es": "Un pequeño peto en A Congostra",
+      "intro_es": "Integrado en el muro de una vivienda, este elemento puede pasar desapercibido.",
+      "narration_es": "La ficha patrimonial de 2019 describe una hornacina arqueada situada en el muro de una vivienda privada. En aquel momento contenía una imagen mariana reciente y flores. Su escala y su integración en la arquitectura doméstica recuerdan que la devoción popular no se concentraba solamente en grandes iglesias o capillas: también aparecía literalmente al borde del camino y junto a las casas.",
+      "look_for_es": "Obsérvalo desde el espacio público y respeta la vivienda privada en la que se integra.",
+      "route_ids": [
+        "R-004"
+      ]
+    },
+    "POI-014": {
+      "title_es": "Camino de A Franqueira",
+      "intro_es": "La posición de este esmoleiro en una encrucijada ayuda a entender su función.",
+      "narration_es": "El conjunto está situado en dirección al santuario de la Virxe da Franqueira. Está construido con granito, posee una hornacina protegida por reja y conserva un retablo de azulejo dedicado a la Virgen. En la parte inferior existe un cajón para las limosnas. Su ubicación enlaza devoción y desplazamiento: quien recorría estos caminos encontraba imágenes religiosas y lugares donde dejar una ofrenda durante el trayecto.",
+      "look_for_es": "Fíjate en el azulejo de la Virxe da Franqueira, la reja y el antiguo cajón de limosnas.",
+      "route_ids": [
+        "R-004",
+        "R-002"
+      ]
+    },
+    "POI-015": {
+      "title_es": "María Auxiliadora junto al camino",
+      "intro_es": "Este peto está colocado sobre el cierre de una vivienda y conserva una imagen de factura reciente.",
+      "narration_es": "La hornacina, protegida por una reja metálica, alberga una imagen de María Auxiliadora. La ficha patrimonial registrada en 2019 describe a la Virgen pisando una serpiente y una inscripción devocional. El conjunto termina en un pequeño tejado a dos aguas. Como otros petos de A Congostra, muestra la continuidad entre espacio doméstico, camino y práctica religiosa.",
+      "look_for_es": "Observa la hornacina y su pequeño remate a dos aguas sin invadir la propiedad privada.",
+      "route_ids": [
+        "R-004"
+      ]
+    },
+    "POI-016": {
+      "title_es": "Currelos y el antiguo Camino Real",
+      "intro_es": "Este peto tiene especial interés porque no solo habla de devoción: también señala un camino histórico.",
+      "narration_es": "El peto de Currelos se encuentra en el antiguo Camino Real en dirección a A Franqueira. Su hornacina enrejada contiene imágenes del Sagrado Corazón y de San Antonio de Padua con el Niño, y conserva un cajón para las limosnas. Termina en una cruz latina. Situarlo sobre el Camino Real permite imaginar un paisaje de viajeros, arrieros y vecinos en el que estos pequeños monumentos acompañaban el desplazamiento y daban significado a determinados puntos del recorrido.",
+      "look_for_es": "Además del peto, mira el propio camino: en esta parada el trazado histórico es parte del patrimonio.",
+      "story_ids": [
+        "story-arrieria"
+      ],
+      "route_ids": [
+        "R-002",
+        "R-004"
+      ]
+    },
+    "POI-017": {
+      "title_es": "La cera: una industria escondida en A Lamosa",
+      "intro_es": "Estas ruinas pertenecen a una actividad que llegó a ser una parte importante de la economía local.",
+      "narration_es": "El antiguo lagar de cera conserva la memoria material de un proceso especializado. La documentación describe una gran viga de más de seis metros, un contrapeso de granito y pías utilizadas durante la separación y tratamiento de la cera. El lagar no funcionaba de forma aislada: formaba parte de un paisaje productivo con colmenas, eiras de blanqueo, curadoiros y familias dedicadas al oficio. Los estudios locales señalan que la cerería tuvo una presencia notable en A Lamosa y conectó el pueblo con circuitos comerciales más amplios. El estado ruinoso del conjunto hace especialmente importante documentarlo sin alterar sus restos.",
+      "look_for_es": "Desde un lugar seguro, intenta reconocer la escala del espacio industrial y su relación con el entorno. No accedas a estructuras inestables.",
+      "story_ids": [
+        "story-cera"
+      ],
+      "route_ids": [
+        "R-001"
+      ]
+    },
+    "POI-025": {
+      "title_es": "Muíño das Ovellas: agua e ingenio",
+      "intro_es": "Los molinos del Xabriña transformaban la fuerza del agua en trabajo cotidiano.",
+      "narration_es": "El Muíño das Ovellas forma parte de la cadena de molinos asociada al Xabriña. La documentación de la ruta destaca aquí una conducción de agua especialmente singular, construida reutilizando ruedas de molino superpuestas. Ese detalle permite ver algo habitual en la arquitectura popular: materiales y piezas podían adquirir una segunda vida cuando resolvían un problema práctico. El molino debe entenderse además dentro de una red, junto a caminos, pontellas y otros ingenios hidráulicos del río.",
+      "look_for_es": "Busca la conducción de agua y, si todavía es visible, las piezas circulares reutilizadas en su construcción.",
+      "story_ids": [
+        "story-agua"
+      ],
+      "route_ids": [
+        "R-003",
+        "R-009"
+      ]
+    },
+    "POI-029": {
+      "title_es": "Cuando el agua llegó más cerca de las casas",
+      "intro_es": "Fuentes y lavaderos fueron infraestructuras esenciales mucho antes de que el agua corriente fuese algo cotidiano.",
+      "narration_es": "En Currelos están documentadas obras de fuentes y lavaderos en 1958. Estos espacios servían para abastecerse, lavar y realizar tareas domésticas, pero también eran lugares de encuentro. Su construcción forma parte de las mejoras de abastecimiento y saneamiento que fueron transformando la vida diaria de A Lamosa a mediados del siglo veinte.",
+      "look_for_es": "Observa la relación entre la fuente, el lavadero y las viviendas o caminos próximos.",
+      "story_ids": [
+        "story-agua"
+      ],
+      "route_ids": [
+        "R-003"
+      ]
+    },
+    "POI-053": {
+      "title_es": "Las huellas del Vía Crucis",
+      "intro_es": "En el cierre de la iglesia sobreviven restos de un recorrido devocional que antes tenía más piezas.",
+      "narration_es": "La ficha patrimonial realizada en 2019 registraba en el muro del recinto una cruz completa, otra incompleta y los huecos correspondientes a otras piezas del Vía Crucis. Ese estado debe comprobarse actualmente, pero precisamente las ausencias forman parte de la lectura del lugar: el patrimonio también deja huellas cuando desaparece. El Vía Crucis convertía el entorno de la iglesia en un recorrido ritual dividido en estaciones.",
+      "look_for_es": "Recorre visualmente el muro y busca cruces, fragmentos o huecos, sin asumir que el estado actual sea idéntico al documentado en 2019.",
+      "route_ids": [
+        "R-004",
+        "R-008"
+      ]
+    },
+    "POI-054": {
+      "title_es": "Un púlpito para hablar al atrio",
+      "intro_es": "Este púlpito exterior permite imaginar celebraciones que desbordaban el interior de la iglesia.",
+      "narration_es": "La documentación diocesana sitúa su encargo en 1867 por don Benigno Carrera. Su posición exterior, junto a las escaleras de la torre, permitía dirigirse a las personas reunidas en el atrio durante determinadas celebraciones. Es una pieza sencilla para entender cómo la arquitectura respondía también a la forma en que la comunidad utilizaba el espacio alrededor del templo.",
+      "look_for_es": "Busca su posición respecto a las escaleras y al atrio e imagina desde dónde escucharía la gente.",
+      "route_ids": [
+        "R-008"
+      ]
+    },
+    "POI-055": {
+      "title_es": "Lisboa y A Lamosa unidos por un panel de azulejos",
+      "intro_es": "Este panel cuenta una historia de devoción, pero también de emigración y vínculo con el lugar de origen.",
+      "narration_es": "El panel dedicado a Nosa Señora do Libramento fue colocado en 1952 en la capilla sur. La documentación indica que fue donado por vecinos residentes en Lisboa y que una placa de mármol conserva la dedicatoria. Es una pequeña pieza que conecta A Lamosa con la emigración: quienes vivían lejos seguían participando en la vida y el patrimonio de su parroquia mediante donaciones y mejoras.",
+      "look_for_es": "Observa el panel y la dedicatoria; aquí los nombres y el lugar de procedencia son parte esencial de la historia.",
+      "story_ids": [
+        "story-libramento",
+        "story-emigracion"
+      ],
+      "route_ids": [
+        "R-008"
+      ]
+    },
+    "POI-057": {
+      "title_es": "Ponte Folón: cruzar el Xabriña por un camino histórico",
+      "intro_es": "Ponte Folón es uno de los elementos destacados de la Ruta do Xabriña.",
+      "narration_es": "Este puente de piedra permite cruzar el Xabriña y forma parte de un paisaje en el que caminos, molinos y pasos sobre el agua estaban estrechamente relacionados. La documentación turística oficial lo incluye entre los principales elementos de la Ruta do Xabriña y lo vincula con un camino histórico. Más que contemplarlo como una pieza aislada, conviene imaginarlo cumpliendo su función original: permitir el movimiento de personas y conectar lugares a ambos lados del río.",
+      "look_for_es": "Observa cómo el puente se adapta al cauce y cómo continúa el camino a ambos lados.",
+      "story_ids": [
+        "story-arrieria",
+        "story-agua"
+      ],
+      "route_ids": [
+        "R-003",
+        "R-009"
+      ]
     }
-  }
+  },
+  "updated": "2026-10-02",
+  "notes": "Los relatos distinguen hechos documentados de contexto interpretativo. Los POI sin relato específico continúan usando su descripción hasta completar investigación."
 }
