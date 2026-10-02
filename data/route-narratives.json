@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "activation_defaults": {
+    "arrival_radius_m": 35,
+    "leave_radius_m": 55,
+    "replay_cooldown_min": 30
+  },
+  "routes": {
+    "R-001": {
+      "title": "A Lamosa cereira",
+      "status": "draft",
+      "intro_es": "Esta ruta recorre la memoria de una actividad que marcó la economía de A Lamosa: el trabajo de la cera. El paisaje conserva lagares, eiras y nombres que permiten reconstruir un oficio hoy desaparecido.",
+      "stops": [
+        {
+          "poi_id": "POI-017",
+          "arrival_radius_m": 35
+        },
+        {
+          "poi_id": "POI-052",
+          "arrival_radius_m": 35
+        },
+        {
+          "poi_id": "POI-019",
+          "arrival_radius_m": 35
+        },
+        {
+          "poi_id": "POI-018",
+          "arrival_radius_m": 35
+        }
+      ],
+      "transition_es": "Entre una parada y otra, piensa en el proceso completo: obtener la cera era solo el principio; había que prensarla, purificarla, blanquearla y prepararla para su venta.",
+      "requires_geolocation_review": true
+    },
+    "R-002": {
+      "title": "Camiño dos arrieiros",
+      "status": "draft",
+      "intro_es": "Vamos a seguir la memoria de los caminos que comunicaban A Lamosa con otros lugares. Por ellos circularon vecinos, ganado y mercancías, y también productos como vino y cera.",
+      "stops": [
+        {
+          "poi_id": "POI-016",
+          "arrival_radius_m": 40
+        },
+        {
+          "poi_id": "POI-014",
+          "arrival_radius_m": 40
+        },
+        {
+          "poi_id": "POI-057",
+          "arrival_radius_m": 45
+        }
+      ],
+      "transition_es": "En estos tramos el propio camino es parte del relato. Antes de las carreteras modernas, desplazarse significaba conocer pasos, pendientes, puentes y lugares de descanso.",
+      "requires_geolocation_review": true
+    },
+    "R-003": {
+      "title": "Auga e muíños",
+      "status": "draft",
+      "intro_es": "El Xabriña y sus cursos de agua sostuvieron molinos, pasos, fuentes y lavaderos. Esta ruta propone leer el agua no solo como paisaje natural, sino como una infraestructura histórica.",
+      "stops": [
+        {
+          "poi_id": "POI-051"
+        },
+        {
+          "poi_id": "POI-021"
+        },
+        {
+          "poi_id": "POI-022"
+        },
+        {
+          "poi_id": "POI-023"
+        },
+        {
+          "poi_id": "POI-025"
+        },
+        {
+          "poi_id": "POI-026"
+        },
+        {
+          "poi_id": "POI-029"
+        }
+      ],
+      "transition_es": "Sigue el agua. La posición de cada molino dependía de conducirla y aprovechar el desnivel antes de devolverla al cauce.",
+      "requires_geolocation_review": true
+    },
+    "R-004": {
+      "title": "Cruceiros, petos e devoción",
+      "status": "draft",
+      "intro_es": "En A Lamosa la devoción también se construyó fuera de los templos. Cruces, cruceiros y petos acompañaron caminos, encrucijadas y espacios cotidianos.",
+      "stops": [
+        {
+          "poi_id": "POI-005"
+        },
+        {
+          "poi_id": "POI-006"
+        },
+        {
+          "poi_id": "POI-012"
+        },
+        {
+          "poi_id": "POI-014"
+        },
+        {
+          "poi_id": "POI-015"
+        },
+        {
+          "poi_id": "POI-016"
+        },
+        {
+          "poi_id": "POI-009"
+        },
+        {
+          "poi_id": "POI-010"
+        }
+      ],
+      "transition_es": "Mientras caminas, fíjate en dónde aparece cada pieza: la ubicación junto a un camino, una casa o una encrucijada ayuda a explicar su función.",
+      "requires_geolocation_review": true
+    },
+    "R-005": {
+      "title": "Corzós: memoria dun lugar",
+      "status": "draft",
+      "intro_es": "Esta ruta concentra la mirada en Corzós y en cómo un pequeño conjunto de elementos conserva distintas capas de memoria local.",
+      "stops": [
+        {
+          "poi_id": "POI-008",
+          "arrival_radius_m": 30
+        },
+        {
+          "poi_id": "POI-009",
+          "arrival_radius_m": 25
+        },
+        {
+          "poi_id": "POI-010",
+          "arrival_radius_m": 25
+        },
+        {
+          "poi_id": "POI-031"
+        }
+      ],
+      "transition_es": "Las distancias son pequeñas, pero cada elemento cumple una función distinta. Léelos como un conjunto y no como piezas aisladas.",
+      "requires_geolocation_review": true
+    },
+    "R-008": {
+      "title": "Historia de San Bartolomeu",
+      "status": "draft",
+      "intro_es": "En pocos metros alrededor de San Bartolomeu pueden recorrerse varios siglos de historia de A Lamosa. El edificio, sus capillas, el atrio y la plaza fueron cambiando con la comunidad.",
+      "stops": [
+        {
+          "poi_id": "POI-001",
+          "arrival_radius_m": 35
+        },
+        {
+          "poi_id": "POI-002",
+          "manual_only": true
+        },
+        {
+          "poi_id": "POI-003",
+          "manual_only": true
+        },
+        {
+          "poi_id": "POI-054",
+          "manual_only": true
+        },
+        {
+          "poi_id": "POI-055",
+          "manual_only": true
+        },
+        {
+          "poi_id": "POI-004",
+          "manual_only": true
+        },
+        {
+          "poi_id": "POI-053",
+          "arrival_radius_m": 30
+        },
+        {
+          "poi_id": "POI-007",
+          "arrival_radius_m": 30
+        }
+      ],
+      "transition_es": "No estás visitando un edificio construido de una vez. Cada parada corresponde a una ampliación, una práctica o una necesidad de otra época.",
+      "requires_geolocation_review": false
+    }
+  }
+}
