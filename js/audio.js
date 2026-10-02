@@ -5,14 +5,16 @@ let activeAudio=null;
 let activeAudioUrl=null;
 let speakingToken=0;
 let voices=[];
+let activeNarratedRoute=null;
+let routeStopState=new Map();
 const DEFAULT_RATE=.94;
 
 export function initAudio(){
   window.addEventListener('alm:speak-poi',e=>speakPoi(e.detail));
   window.addEventListener('alm:stop-audio',()=>stopSpeech(false));
   window.addEventListener('alm:lang',()=>{refreshVoices();updateVoiceHint();});
-  window.addEventListener('alm:route-follow-start',()=>stopAuto(false));
-  window.addEventListener('alm:route-follow-stop',()=>{if(localStorage.getItem('aLamosaAutoAudio')==='1')startAuto();});
+  window.addEventListener('alm:route-follow-start',e=>{activeNarratedRoute=e.detail?.routeId||e.detail?.id||null;routeStopState.clear();stopAuto(false);if(localStorage.getItem('aLamosaAutoAudio')==='1')startAuto();});
+  window.addEventListener('alm:route-follow-stop',()=>{activeNarratedRoute=null;routeStopState.clear();if(localStorage.getItem('aLamosaAutoAudio')==='1')startAuto();});
   setupSettings();
   refreshVoices();
   if('speechSynthesis'in window){
@@ -199,10 +201,23 @@ function startAuto(){
   if(watch!=null||!navigator.geolocation)return;
   watch=navigator.geolocation.watchPosition(pos=>{
     const c=[pos.coords.longitude,pos.coords.latitude];
+    const routeNear=activeNarratedRoute?nextRouteStop(c,activeNarratedRoute):null;
+    if(routeNear){speakPoi(routeNear);return;}
+    if(activeNarratedRoute)return;
     const near=S.pois.filter(p=>p.coordinates&&!S.audioSpoken.has(p.id))
       .map(p=>({...p,_d:distanceM(c,p.coordinates)})).filter(p=>p._d<=45).sort((a,b)=>a._d-b._d)[0];
     if(near){S.audioSpoken.add(near.id);speakPoi(near);}
   },e=>recordError(e,'audio-gps'),{enableHighAccuracy:false,maximumAge:8000,timeout:15000});
+}
+function nextRouteStop(c,routeId){
+  const route=S.routeNarratives?.[routeId];if(!route)return null;
+  const defaults=S.routeNarrativeDefaults||{},leave=Number(defaults.leave_radius_m||55),cooldown=Number(defaults.replay_cooldown_min||30)*60000,now=Date.now();
+  let best=null;
+  for(const stop of route.stops||[]){if(stop.manual_only)continue;const p=S.pois.find(x=>x.id===stop.poi_id);if(!p?.coordinates)continue;const d=distanceM(c,p.coordinates),radius=Number(stop.arrival_radius_m||defaults.arrival_radius_m||35),st=routeStopState.get(p.id)||{};
+    if(d>Math.max(leave,radius+15)){st.inside=false;routeStopState.set(p.id,st);continue;}
+    if(d<=radius&&!st.inside&&(!st.playedAt||now-st.playedAt>cooldown)){if(!best||d<best.d)best={p,d,st};}
+  }
+  if(best){best.st.inside=true;best.st.playedAt=now;routeStopState.set(best.p.id,best.st);return best.p;}return null;
 }
 function stopAuto(stopVoice=true){if(watch!=null)navigator.geolocation.clearWatch(watch);watch=null;if(stopVoice)stopSpeech(false);}
 function escapeText(s=''){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
