@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "description": "Relatos extensos de audioguía, independientes de la descripción breve de cada POI. Los campos route_context permiten reutilizar un relato dentro de rutas temáticas.",
+  "guides": {
+    "POI-001": {
+      "title_es": "San Bartolomeu: de ermita a parroquia",
+      "intro_es": "Estás ante uno de los lugares que mejor permite leer la evolución histórica de A Lamosa.",
+      "narration_es": "La documentación conservada sitúa aquí una capilla ya en 1644. Durante los siglos siguientes aquel pequeño centro religioso fue creciendo hasta convertirse en la iglesia parroquial de San Bartolomeu. La separación parroquial se produjo en 1783–1784, un cambio importante porque A Lamosa pasó a disponer de una identidad parroquial propia. El edificio que ves no nació, por tanto, de una sola obra: es el resultado de distintas fases, ampliaciones y necesidades de la comunidad. Las capillas laterales del siglo XIX y la torre del reloj añadida en 1957 permiten seguir esa transformación casi como si el edificio fuese una línea del tiempo. Al observar el conjunto, fíjate en cómo esas partes diferentes terminaron formando la imagen de la iglesia que hoy identifica el centro de A Lamosa.",
+      "look_for_es": "Fíjate en las distintas partes del edificio y en la torre occidental del reloj: no pertenecen todas al mismo momento histórico.",
+      "story_ids": [
+        "story-parroquia",
+        "story-reloj"
+      ],
+      "route_ids": [
+        "R-008"
+      ]
+    },
+    "POI-004": {
+      "title_es": "El reloj que cambió la silueta de A Lamosa",
+      "intro_es": "La torre que tienes ante ti es bastante más reciente que la historia de la iglesia.",
+      "narration_es": "La torre occidental fue construida en 1957 específicamente para instalar el reloj. Su incorporación cambió la silueta del conjunto parroquial y añadió al pueblo algo más que un elemento arquitectónico. Antes de que cada persona llevara la hora en el bolsillo, los relojes públicos y sus campanadas organizaban buena parte del ritmo cotidiano: trabajo, encuentros y celebraciones. En A Lamosa la torre terminó convirtiéndose en uno de los perfiles más reconocibles del centro parroquial. Todavía queda investigación por hacer sobre la maquinaria, su fabricante y su funcionamiento, de modo que esta historia podrá crecer a medida que aparezcan nuevos datos.",
+      "look_for_es": "Mira la diferencia entre la torre y el resto del conjunto e intenta identificar las fases de construcción.",
+      "story_ids": [
+        "story-reloj"
+      ],
+      "route_ids": [
+        "R-008"
+      ]
+    },
+    "POI-005": {
+      "title_es": "Un cruceiro que también pedía limosna",
+      "intro_es": "Este no es solamente un cruceiro: su carácter esmoleiro lo relaciona directamente con la devoción popular.",
+      "narration_es": "El cruceiro de Nosa Señora do Libramento se fecha a comienzos del siglo XX y se atribuye a Quinteiro. Su iconografía reúne varias figuras vinculadas a la tradición cristiana y a la propia parroquia: Adán y Eva, San Bartolomeu y la Virgen del Libramiento. Esa presencia del Libramiento conecta la pieza con una devoción profundamente ligada a A Lamosa y con el conjunto formado por iglesia, capilla y otros elementos religiosos próximos. El término esmoleiro recuerda además una función muy concreta: estos monumentos podían incorporar un espacio destinado a recibir limosnas. No eran únicamente piezas para contemplar, sino elementos integrados en las prácticas religiosas y en la vida cotidiana de quienes pasaban junto a ellos.",
+      "look_for_es": "Busca las figuras talladas y observa cómo el monumento combina cruz, imágenes y función devocional.",
+      "story_ids": [
+        "story-libramento"
+      ],
+      "route_ids": [
+        "R-004",
+        "R-008"
+      ]
+    },
+    "POI-006": {
+      "title_es": "El peto de ánimas del atrio",
+      "intro_es": "Los petos de ánimas son pequeños monumentos, pero cuentan mucho sobre las creencias y costumbres de las comunidades gallegas.",
+      "narration_es": "Este peto conserva varios de los elementos característicos de estas construcciones: una hornacina protegida por reja, una representación religiosa y un cajón destinado a las limosnas. La idea tradicional era que esas ofrendas y oraciones ayudasen a las almas del purgatorio. Por eso los petos aparecían en lugares de paso, cruces de caminos o espacios religiosos: introducían el recuerdo de los difuntos dentro del recorrido cotidiano de la población. El del atrio de San Bartolomeu forma parte de un paisaje devocional más amplio de A Lamosa, junto con cruceiros, capillas y otros petos repartidos por la parroquia.",
+      "look_for_es": "Observa la hornacina, la reja, el azulejo y el lugar reservado para las limosnas.",
+      "story_ids": [
+        "story-libramento"
+      ],
+      "route_ids": [
+        "R-004",
+        "R-008"
+      ]
+    },
+    "POI-007": {
+      "title_es": "El palco y la plaza como lugar de encuentro",
+      "intro_es": "No todo el patrimonio cuenta historias de siglos lejanos. También hay arquitectura que habla de cómo se reunía y celebraba la comunidad.",
+      "narration_es": "Este palco hexagonal de granito está situado junto a la iglesia, en uno de los principales espacios de encuentro de A Lamosa. Los palcos de música fueron piezas fundamentales de muchas fiestas y romerías gallegas: elevaban a los músicos, organizaban el espacio de baile y convertían una plaza en escenario. Su proximidad a la iglesia muestra cómo en un mismo lugar podían convivir la dimensión religiosa y la festiva de la vida parroquial. La plaza fue renovada en 2020, de modo que el entorno actual combina un elemento tradicional con intervenciones contemporáneas.",
+      "look_for_es": "Sitúate junto al palco e imagina la plaza ocupada durante una fiesta, con músicos, vecinos y visitantes alrededor.",
+      "story_ids": [],
+      "route_ids": [
+        "R-008"
+      ]
+    },
+    "POI-008": {
+      "title_es": "San Miguel de Corzós: un edificio reconstruido",
+      "intro_es": "La capilla de Corzós conserva una historia mucho más antigua que buena parte de su aspecto actual.",
+      "narration_es": "Una inscripción sitúa la fundación de la capilla de San Miguel de Corzós en 1697. Sin embargo, el edificio atravesó grandes transformaciones: en 1957 fue reconstruido casi por completo y posteriormente recibió nuevas reformas. Esa combinación convierte la capilla en un buen ejemplo de cómo el patrimonio rural no permanece congelado. Las comunidades reparan, reconstruyen y adaptan sus edificios a lo largo de generaciones. Para entender San Miguel hay que mirar, por tanto, dos tiempos a la vez: la memoria de una fundación del siglo XVII y la materialidad de las intervenciones del siglo XX.",
+      "look_for_es": "Busca las diferencias de materiales y detalles que puedan delatar distintas fases de construcción.",
+      "story_ids": [],
+      "route_ids": [
+        "R-005"
+      ]
+    }
+  }
+}
