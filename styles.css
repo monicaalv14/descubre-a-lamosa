@@ -234,3 +234,5 @@ body.route-following .bottom-nav{opacity:.28;pointer-events:none}
 
 .photo-source-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.photo-source-actions .file-btn{text-align:center;justify-content:center}
 @media(max-width:380px){.photo-source-actions{grid-template-columns:1fr}}
+
+.local-photo-preview{display:block;width:100%;padding:0;border:0;background:transparent;cursor:zoom-in}.local-photo-preview img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}.photo-order-actions{display:flex;gap:4px}.photo-order-actions button{flex:1}.photo-lightbox{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:18px}.photo-lightbox img{max-width:100%;max-height:90vh;object-fit:contain;border-radius:10px}.photo-lightbox-close{position:absolute;top:max(14px,env(safe-area-inset-top));right:16px;width:44px;height:44px;border:0;border-radius:50%;background:#fff;font-size:30px;line-height:1;z-index:1}
