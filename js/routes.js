@@ -2,7 +2,7 @@ import {S,$,$$,esc,toast,distanceM,formatDistance,recordError} from './state.js'
 import {openSheet,closeSheets,openNav} from './ui.js';
 import {showRouteGeoJSON,clearRouteGeoJSON,showImportedGeoJSON,updateUserMarker} from './map.js';
 
-let selected=null,selectedGeo=null,lastNearest=null,lastOff=false;
+let selected=null,selectedGeo=null,lastNearest=null,lastOff=false,narratedRouteId=null,narratedVisited=new Set();
 
 export function initRoutes(){
   renderRoutes();window.addEventListener('alm:mode',renderRoutes);
@@ -10,6 +10,8 @@ export function initRoutes(){
   $('#stopFollowingBtn').onclick=stopFollowing;$('#returnRouteBtn').onclick=()=>{if(lastNearest)S.map?.easeTo({center:lastNearest,zoom:17,duration:600});};
   $('#gpxImport').onchange=importGpx;
   window.addEventListener('alm:open-route',e=>openRoute(e.detail));
+  window.addEventListener('alm:route-guide-progress',e=>updateNarratedGuide(e.detail||{}));
+  $('#narratedRouteClose').onclick=stopNarratedGuide;$('#narratedReplayBtn').onclick=replayNarratedNext;$('#narratedStopsBtn').onclick=openNarratedStops;
 }
 export function renderRoutes(){
   const host=$('#routeList'),trails=S.mode==='visitor'?S.trails.filter(r=>/oficial/i.test(r.class||'')):S.trails,project=S.mode==='research'?S.projectRoutes:[];
@@ -25,6 +27,8 @@ function openProjectRoute(id){
   const p=S.projectRoutes.find(r=>r.ID===id);if(!p)return;
   openSheet('#routeSheet','<div class="route-cover project-cover"><span class="route-cover-icon">✎</span><div><span class="eyebrow">RUTA POR VERIFICAR</span><h2>'+esc(p['Nombre provisional'])+'</h2></div></div><p>'+esc(p['Paradas candidatas'])+'</p><p class="section-note"><b>Siguiente trabajo:</b> '+esc(p['Trabajo siguiente'])+'</p><div class="sheet-actions"><button id="prepareProjectRoute" class="primary-btn">Preparar en Campo</button></div>','half');
   $('#prepareProjectRoute').onclick=()=>{closeSheets();openNav('field');setTimeout(()=>{const i=$('#trackName');if(i)i.value=p['Nombre provisional'];},100);};
+  const narrative=S.routeNarratives?.[id];
+  if(narrative){const actions=$('#routeSheet .sheet-actions');if(actions){const b=document.createElement('button');b.className='soft-btn';b.id='startNarratedProject';b.textContent='▶ Iniciar visita guiada';actions.prepend(b);b.onclick=()=>{closeSheets();startNarratedGuide(id);};}}
 }
 export async function openRoute(id){
   const r=S.trails.find(x=>x.id===id);if(!r)return;selected=r;selectedGeo=null;
@@ -114,11 +118,37 @@ function startFollowing(route,geo){
       if(approaching){spokenOnRoute.add(approaching.p.id);S.audioSpoken.add(approaching.p.id);window.dispatchEvent(new CustomEvent('alm:speak-poi',{detail:approaching.p}));}
     }
   },e=>{recordError(e,'route-follow');toast('Se perdió la señal GPS');},{enableHighAccuracy:true,maximumAge:2000,timeout:15000});
-  S.routeFollow={watch,routeId:route.id};window.dispatchEvent(new CustomEvent('alm:route-follow-start'));$('#routeFollowPanel').hidden=false;$('#activeRouteBar').hidden=true;$('#nearbyStrip').hidden=true;document.body.classList.add('route-following');$('#routeFollowStatus').textContent='Buscando posición…';toast('Seguimiento de ruta iniciado');
+  S.routeFollow={watch,routeId:route.id};window.dispatchEvent(new CustomEvent('alm:route-follow-start',{detail:{routeId:route.narrative_id||route.id}}));$('#routeFollowPanel').hidden=false;$('#activeRouteBar').hidden=true;$('#nearbyStrip').hidden=true;document.body.classList.add('route-following');$('#routeFollowStatus').textContent='Buscando posición…';toast('Seguimiento de ruta iniciado');
 }
 export function stopFollowing(){
   if(S.routeFollow?.watch!=null)navigator.geolocation.clearWatch(S.routeFollow.watch);
   const wasFollowing=!!S.routeFollow;S.routeFollow=null;lastNearest=null;lastOff=false;$('#routeFollowPanel').hidden=true;$('#returnRouteBtn').hidden=true;$('#routeRemaining').textContent='';$('#routeDeviation').textContent='';document.body.classList.remove('route-following');if(selected)$('#activeRouteBar').hidden=false;if(wasFollowing)window.dispatchEvent(new CustomEvent('alm:route-follow-stop'));
+}
+function startNarratedGuide(routeId){
+  const route=S.routeNarratives?.[routeId];if(!route)return toast('Esta ruta todavía no tiene narración preparada');
+  stopNarratedGuide(false);narratedRouteId=routeId;narratedVisited=new Set();$('#narratedRoutePanel').hidden=false;$('#narratedRouteName').textContent=route.title||routeId;
+  renderNarratedGuide();window.dispatchEvent(new CustomEvent('alm:route-follow-start',{detail:{routeId}}));toast('Visita guiada iniciada');
+}
+function stopNarratedGuide(notify=true){
+  if(!narratedRouteId)return;const id=narratedRouteId;narratedRouteId=null;narratedVisited.clear();$('#narratedRoutePanel').hidden=true;window.dispatchEvent(new CustomEvent('alm:route-follow-stop',{detail:{routeId:id}}));if(notify)toast('Visita guiada finalizada');
+}
+function narratedItems(){
+  const route=S.routeNarratives?.[narratedRouteId];return (route?.stops||[]).map(s=>({stop:s,poi:S.pois.find(p=>p.id===s.poi_id)})).filter(x=>x.poi);
+}
+function renderNarratedGuide(detail={}){
+  if(!narratedRouteId)return;const items=narratedItems(),done=detail.visitedIds?new Set(detail.visitedIds):narratedVisited;if(detail.visitedIds)narratedVisited=done;
+  const count=done.size,total=items.length,nextId=detail.nextPoiId||items.find(x=>!done.has(x.poi.id))?.poi.id,next=items.find(x=>x.poi.id===nextId);
+  $('#narratedProgressText').textContent=count+' de '+total+' paradas';$('#narratedProgressBar').style.width=(total?Math.min(100,count/total*100):0)+'%';
+  $('#narratedNextName').textContent=next?.poi.name||(count>=total?'Recorrido completado':'—');$('#narratedNextDistance').textContent=Number.isFinite(detail.nextDistance)?formatDistance(detail.nextDistance):(next?.stop.manual_only?'Manual':'');
+}
+function updateNarratedGuide(detail){if(!narratedRouteId||detail.routeId!==narratedRouteId)return;renderNarratedGuide(detail);}
+function replayNarratedNext(){
+  const item=narratedItems().find(x=>!narratedVisited.has(x.poi.id));if(item)window.dispatchEvent(new CustomEvent('alm:speak-poi',{detail:item.poi}));else toast('No quedan paradas pendientes');
+}
+function openNarratedStops(){
+  const items=narratedItems();if(!items.length)return;
+  const html='<div class="sheet-title"><div><span class="eyebrow">VISITA GUIADA</span><h2>'+esc(S.routeNarratives?.[narratedRouteId]?.title||'Paradas')+'</h2></div></div><div class="narrated-stop-list">'+items.map((x,i)=>'<div class="narrated-stop '+(narratedVisited.has(x.poi.id)?'done':'')+'"><span class="narrated-stop-index">'+(i+1)+'</span><div><strong>'+esc(x.poi.name)+'</strong><small>'+(x.stop.manual_only?'Activación manual':'GPS')+'</small></div><button class="soft-btn" data-narrated-play="'+esc(x.poi.id)+'">▶</button></div>').join('')+'</div>';
+  openSheet('#routeSheet',html,'full');document.querySelectorAll('[data-narrated-play]').forEach(b=>b.onclick=()=>{const p=S.pois.find(x=>x.id===b.dataset.narratedPlay);if(p){narratedVisited.add(p.id);window.dispatchEvent(new CustomEvent('alm:speak-poi',{detail:p}));renderNarratedGuide();b.closest('.narrated-stop')?.classList.add('done');}});
 }
 async function importGpx(e){
   const file=e.target.files?.[0];if(!file)return;
