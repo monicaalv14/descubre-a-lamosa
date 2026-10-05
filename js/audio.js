@@ -204,7 +204,7 @@ function startAuto(){
     const c=[pos.coords.longitude,pos.coords.latitude];
     const routeNear=activeNarratedRoute?nextRouteStop(c,activeNarratedRoute):null;
     if(routeNear){speakPoi(routeNear);announceUpcomingAfter(routeNear.id,activeNarratedRoute);return;}
-    if(activeNarratedRoute){updateRouteNarration(c,activeNarratedRoute);}
+    if(activeNarratedRoute){updateRouteNarration(c,activeNarratedRoute);emitRouteGuideProgress(c,activeNarratedRoute);}
     if(activeNarratedRoute)return;
     const near=S.pois.filter(p=>p.coordinates&&!S.audioSpoken.has(p.id))
       .map(p=>({...p,_d:distanceM(c,p.coordinates)})).filter(p=>p._d<=45).sort((a,b)=>a._d-b._d)[0];
@@ -236,6 +236,12 @@ function updateRouteNarration(c,routeId){
   if(!remaining.length&&!routeNarrationState.finished){routeNarrationState.finished=true;const end=S.lang==='gl'?(route.outro_gl||route.outro_es):route.outro_es;speakNarrationText(end||('Has completado las paradas narradas de '+(route.title||'esta ruta')+'.'),route.title||'Ruta');return;}
   const next=remaining.map(x=>({...x,d:distanceM(c,x.poi.coordinates)})).sort((a,b)=>a.d-b.d)[0];
   if(next&&next.d<=180&&next.d>60&&routeNarrationState.nextAnnounced!==next.poi.id&&Date.now()-routeNarrationState.lastTransitionAt>90000){routeNarrationState.nextAnnounced=next.poi.id;speakNarrationText('Te estás acercando a '+next.poi.name+'.',route.title||'Ruta');routeNarrationState.lastTransitionAt=Date.now();}
+}
+function emitRouteGuideProgress(c,routeId){
+  const route=S.routeNarratives?.[routeId];if(!route)return;const items=(route.stops||[]).map(s=>({stop:s,poi:S.pois.find(p=>p.id===s.poi_id)})).filter(x=>x.poi),visitedIds=items.filter(x=>routeStopState.get(x.poi.id)?.playedAt).map(x=>x.poi.id);
+  const pending=items.filter(x=>!visitedIds.includes(x.poi.id));let next=null,nextDistance=null;
+  for(const x of pending){if(x.stop.manual_only||!x.poi.coordinates){if(!next)next=x;continue;}const d=distanceM(c,x.poi.coordinates);if(nextDistance==null||d<nextDistance){next=x;nextDistance=d;}}
+  window.dispatchEvent(new CustomEvent('alm:route-guide-progress',{detail:{routeId,visitedIds,nextPoiId:next?.poi.id||null,nextDistance}}));
 }
 function nextRouteStop(c,routeId){
   const route=S.routeNarratives?.[routeId];if(!route)return null;
