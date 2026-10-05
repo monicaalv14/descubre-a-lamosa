@@ -72,6 +72,13 @@
       <button id="activeRouteClose" aria-label="Cerrar ruta">×</button>
     </div>
 
+    <div id="narratedRoutePanel" class="narrated-route-panel" hidden>
+      <div class="narrated-route-head"><div><small>VISITA GUIADA</small><strong id="narratedRouteName">—</strong></div><button id="narratedRouteClose" aria-label="Finalizar visita">×</button></div>
+      <div class="narrated-progress"><span id="narratedProgressText">0 de 0 paradas</span><div><i id="narratedProgressBar"></i></div></div>
+      <div class="narrated-next"><small>Próxima parada</small><strong id="narratedNextName">—</strong><span id="narratedNextDistance"></span></div>
+      <div class="narrated-controls"><button id="narratedReplayBtn" class="soft-btn">▶ Escuchar</button><button id="narratedStopsBtn" class="soft-btn">☰ Paradas</button></div>
+    </div>
+
     <div id="routeFollowPanel" class="follow-panel route-nav-hud" hidden>
       <div class="follow-progress"><span id="followProgressBar"></span></div>
       <div class="route-nav-main"><small>Restante</small><strong id="followDistance">—</strong></div>
