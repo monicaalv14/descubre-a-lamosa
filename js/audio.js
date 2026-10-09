@@ -109,7 +109,7 @@ export async function speakPoi(p){
   if(!p)return;
   stopSpeech(false);
   const guide=guideFor(p);
-  const recorded=guide?null:recordedAudioFor(p);
+  const recorded=recordedAudioFor(p);
   if(recorded){
     try{
       activeAudio=await audioFromCachedFile(recorded);
